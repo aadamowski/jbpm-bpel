@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices version="1.1"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/j2ee_web_services_1_1.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <webservice-description>
+
+    <!-- descriptive name for the service -->
+    <webservice-description-name>Ticket Service</webservice-description-name>
+    <!-- WSDL implementation file -->
+    <wsdl-file>WEB-INF/wsdl/ticket-impl.wsdl</wsdl-file>
+    <!-- Java<->XML mapping file -->
+    <jaxrpc-mapping-file>WEB-INF/ticket-mapping.xml</jaxrpc-mapping-file>
+
+    <port-component>
+      <!-- logical name for the port (unique within the module) -->
+      <port-component-name>ticketIssuerPort</port-component-name>
+      <!-- WSDL port element (in WSDL implementation file) -->
+      <wsdl-port xmlns:portNS="http://jbpm.org/examples/ticket">portNS:TicketIssuerPort</wsdl-port>
+      <!-- service endpoint interface class -->
+      <service-endpoint-interface>
+        org.jbpm.bpel.tutorial.ticket.TicketIssuer
+      </service-endpoint-interface>
+      <!-- associated servlet (in web.xml) -->
+      <service-impl-bean>
+        <servlet-link>ticketIssuerServlet</servlet-link>
+      </service-impl-bean>
+    </port-component>
+
+  </webservice-description>
+
+</webservices>

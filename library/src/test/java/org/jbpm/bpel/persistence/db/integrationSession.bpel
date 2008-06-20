@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="integrationSession" targetNamespace="http://jbpm.org/bpel/examples"
+  xmlns:def="http://manufacturing.org/wsdl/purchase"
+  xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+  <import namespace="http://manufacturing.org/wsdl/purchase" location="integrationSession.wsdl"
+    importType="http://schemas.xmlsoap.org/wsdl/" />
+  <partnerLinks>
+    <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT"
+      partnerRole="schedulingRequester" myRole="schedulingService" />
+  </partnerLinks>
+  <variables>
+    <variable name="schedule" messageType="def:scheduleMessage" />
+  </variables>
+  <eventHandlers>
+    <onEvent partnerLink="schedulingPL" operation="cancelScheduling" variable="cancellation"
+      messageType="def:scheduleMessage">
+      <scope>
+        <empty />
+      </scope>
+    </onEvent>
+  </eventHandlers>
+  <sequence name="main">
+    <pick name="p" createInstance="yes">
+      <onMessage partnerLink="schedulingPL" operation="requestScheduling" variable="schedule">
+        <empty />
+      </onMessage>
+      <onMessage partnerLink="schedulingPL" operation="sendShippingSchedule" variable="schedule">
+        <empty />
+      </onMessage>
+    </pick>
+    <receive name="r" partnerLink="schedulingPL" operation="returnScheduleTicket"
+      variable="schedule" />
+  </sequence>
+</process>

@@ -1,0 +1,87 @@
+<project name="jbpm.bpel.console" basedir="." default="install.war">
+
+  <property name="jbpm.root" value="../.." />
+
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <target name="compile.dependencies" depends="define.libs.classpath">
+    <ant antfile="${jbpm.root}/bpel/tools/build.xml" target="install.jar" inheritall="no" />
+    <path id="compile.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.commons.fileupload.local}" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+    </path>
+  </target>
+
+  <target name="compile.test.dependencies" depends="define.libs.classpath">
+    <path id="compile.test.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.console.local}" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+    </path>
+  </target>
+
+  <target name="test.dependencies" depends="define.libs.classpath">
+    <path id="test.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.console.local}" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+      <pathelement location="target/test.classes" />
+      <pathelement location="src/test/config" />
+    </path>
+  </target>
+
+  <target name="create.manifest">
+    <mkdir dir="target/META-INF" />
+    <manifest file="target/META-INF/MANIFEST.MF">
+      <attribute name="Implementation-Title" value="jBPM BPEL Console" />
+      <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+      <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+      <attribute name="Implementation-Vendor" value="JBoss Inc." />
+      <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+      <attribute name="Class-Path" value="lib/${lib.commons.lang.name} lib/${lib.jaxen.name}
+lib/${lib.jbpm.jpdl.jar.file} lib/${lib.jbpm.identity.jar.file} 
+lib/${lib.jbpm.bpel.jar.file} lib/${lib.jbpm.bpel.config.file} 
+lib/${lib.jbpm.bpel.container.name}" />
+    </manifest>
+  </target>
+
+  <!-- do not include resources as if the console were a library -->
+  <!-- let target package decide what resources to include and where to place them -->
+  <target name="include.resources" />
+
+  <!-- WEB MODULE : jbpm-bpel.war -->
+
+  <target name="package.war"
+          depends="compile, create.manifest"
+          description="creates the jbpm bpel console, a web application">
+    <war destfile="${lib.jbpm.bpel.console.target}"
+         webxml="src/main/resources/web/web.xml"
+         manifest="target/META-INF/MANIFEST.MF">
+      <classes dir="target/classes" />
+      <lib file="${lib.commons.fileupload.local}" />
+      <lib file="${lib.jakarta.io.local}" />
+      <lib dir="${jwsdp.home}/jaxrpc/lib">
+        <include name="jaxrpc-impl.jar" />
+        <include name="jaxrpc-spi.jar" />
+      </lib>
+      <lib file="${lib.jbpm.bpel.tools.jar.local}" />
+      <fileset dir="src/main/resources" excludes="web/**" />
+      <webinf dir="src/main/resources/web" excludes="web.xml" />
+    </war>
+  </target>
+
+  <target name="install.war" depends="package.war">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy file="${lib.jbpm.bpel.console.target}" todir="${local.repository}/${lib.jbpm.bpel.dir}" />
+  </target>
+
+</project>

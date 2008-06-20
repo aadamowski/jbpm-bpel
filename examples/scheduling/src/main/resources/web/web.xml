@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <!-- Production Scheduling Process -->
+  <servlet>
+    <servlet-name>schedulingServlet</servlet-name>
+    <servlet-class>org.jbpm.bpel.tutorial.scheduling.SchedulingPT_Impl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>schedulingServlet</servlet-name>
+    <url-pattern>/schedulingProcess</url-pattern>
+  </servlet-mapping>
+
+</web-app>

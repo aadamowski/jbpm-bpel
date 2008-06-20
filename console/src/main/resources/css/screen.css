@@ -1,0 +1,216 @@
+body { background-color: white; margin: 0px; padding: 0px; }
+
+/* TOP MENU -------------------------------------------- */
+#TopLogo { position: absolute; left: 0px; top: 0px; z-index: 5; }
+#TopMenu { position: absolute; right: 0px; top: 0px; z-index: 5; }
+#TopMenu td { height:22px; width: 120px; text-align: center; font: bold 9pt Verdana, Helvetica, Arial, sans-serif; background: #b70000 ; }
+#TopMenu a { display: block; width: 120px; height:20px; padding-top: 2px; color: white; text-decoration: none; }
+#TopMenu td a:hover { background: #800000 ; }
+
+/* CONTROL MENU ----------------------------------------*/
+#ControlMenu { position: absolute; top: 30px; right: 10px; z-index: 5; text-align: right; }
+#ControlMenu ul { padding-left: 0px; margin: 0px; display: inline; }
+#ControlMenu li { list-style: none; color: #d8d8d8; font: 11px Verdana, Helvetica, Arial, sans-serif; display: inline; }
+#ControlMenu a { color: #666666; text-decoration: none; margin-left: 5px; margin-right: 5px; }
+#ControlMenu a:hover { text-decoration: underline; }
+#ControlMenu form { margin: 0px; padding: 0px; }
+#ControlMenu input.searchbutton { height: 21px; width: 24px; border: none; }
+
+
+/* BREADCRUMB ------------------------------------------*/
+#Breadcrumb { display: none; }
+#Breadcrumb { position: absolute; min-width: 600px; top: 60px; right: 10px; left: 275px; border: 1px solid #6e6e6e; z-index: 5; padding-top: 5px;}
+#Breadcrumb ul { padding-left: 0px; margin: 0px; display: inline; }
+#Breadcrumb li { list-style: none; color: #333333; font: 11px Verdana, Helvetica, Arial, sans-serif; display: inline; }
+#Breadcrumb li.root { color: #666666; font-weight: bold; }
+#Breadcrumb a { color: #005EB6; text-decoration: none; }
+#Breadcrumb a:hover { text-decoration: underline; }
+#Breadcrumb li:before { content: "\00BB \0020"; }
+#Breadcrumb li.root:before { content: " "; }
+
+
+/* BODY ------------------------------------------------*/
+#BodyTable { width: 100%; }
+#BodyTable td { vertical-align: top; }
+#BodyTable td.topheader { height: 102px; }
+#BodyTable td.leftside { width: 219px; padding-bottom: 119px; }
+#BodyTable td.bodycell { font: 11px Verdana, Helvetica, Arial, sans-serif; padding: 0px 30px 119px 0px; }
+#ContentContainer { }
+#ContentContainer h1:first-child { margin-top: 5px; }
+
+
+/* LEFT MENU -------------------------------------------*/
+/*1  10/179/0, 20/166/3, +45 = 226 */
+/*2  8/167/0, 18/154/3, +44 = 219 */
+/* deprecated
+#LeftMenu { margin-right: 44px; border-right: solid 1px white; padding-bottom: 13px; }
+#LeftMenu ul { padding: 0px; margin: 0px; }
+#LeftMenu li { list-style: none; }
+#LeftMenu ul li a { width: 167px; font-weight: bold; padding: 4px 0px 4px 8px; border-top: solid 1px white; }
+#LeftMenu ul ul li a { width: 154px; font-weight: normal; padding: 3px 3px 3px 18px; border-top: none;}
+#LeftMenu ul ul { padding-bottom: 8px; }
+#LeftMenu a { display: block; font: 11px Verdana, Helvetica, Arial, sans-serif; text-decoration: none; }
+#LeftMenu a:link, #LeftMenu a:visited { color: #ffffff; }
+#LeftMenu a:hover { background-color: #cccccc; color: #000000; }
+*/
+/* core */
+#LeftMenu { margin-right: 44px; padding-bottom: 13px; }
+#LeftMenu li { list-style: none; font: 11px Verdana, Helvetica, Arial, sans-serif; }
+#LeftMenu a { display: block; text-decoration: none; color: #ffffff;}
+
+
+/* 1st level */
+#LeftMenu ul {
+  padding: 0px;
+  margin: 0px; 
+}
+#LeftMenu ul li {
+  border-top: solid 1px white;
+}
+#LeftMenu ul li a {
+  width: 167px;
+  padding: 4px 0px 4px 8px;
+  /* 0 + 8 + 167 = 175px */
+  font-weight: bold;
+}
+#LeftMenu ul li a:hover {
+  background-color: #cccccc;
+  color: black;
+}
+
+#LeftMenu ul li.jbworld {
+  background-color: #b86905;
+}
+
+#LeftMenu ul li.jbworld a {
+  color: white;
+}
+
+#LeftMenu ul li.jbworld a:hover {
+  background-color: #c29470;
+}
+
+#LeftMenu ul li.current {
+  background-color: #cccccc;
+}
+#LeftMenu ul li.current a {
+  color: black;
+}
+#LeftMenu ul li.current a:hover {
+  background-color: #F0F0F0;
+}
+
+
+/* 2nd level */
+#LeftMenu ul li ul {
+  padding: 0px 0px 8px 0px;
+  margin: 0px; 
+}
+#LeftMenu ul li ul li {
+  border-top: none;
+}
+#LeftMenu ul li ul li a {
+  width: 154px;
+  padding: 3px 3px 3px 18px;
+  /* 3 + 18 + 154 = 175px */
+  color: white;
+  font-weight: normal;
+}
+#LeftMenu ul li ul li a:hover {
+  background-color: #cccccc;
+}
+#LeftMenu ul li.current ul li a:hover {
+  background-color: #F0F0F0;
+}
+#LeftMenu ul li.current ul li.current {
+  margin: 3px 10px 3px 10px;
+  background-color: #F0F0F0;
+}
+#LeftMenu ul li.current ul li.current a {
+ padding: 5px 3px 2px 8px; 
+  width: 144px;
+  /* 3 + 8 + 144 + 10 + 10 = 175px */
+  color: black;
+  font-weight: bold;
+  font-size: 10px;
+}
+#LeftMenu ul li ul li.current a:hover {
+  text-decoration: underline;
+}
+
+/* 3rd level */
+#LeftMenu ul li.current ul li.current ul {
+  padding: 5px;
+  margin-left: 20px;
+}
+#LeftMenu ul li.current ul li.current ul li {
+  border-top: none;
+  list-style: square;
+}
+#LeftMenu ul li.current ul li.current ul li a {
+  padding: 3px 3px 3px 3px;
+  width: 119px;
+  /* 3 + 3 + 5 + 25 + 10 + 10 = 56 - 175px = 119 */
+  color: black;
+  font-weight: normal;
+  font-size: 10px;
+}
+#LeftMenu ul li.current ul li.current ul li a:hover {
+  text-decoration: underline;
+}
+
+
+
+/* ADS ------------------------------------------------*/
+#LeftAds {}
+#LeftAds .item { margin-top: 10px; margin-bottom: 10px; }
+
+/* FOOTER ---------------------------------------------*/
+
+#footer {
+	position:absolute;
+	font-size:10px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+        text-align:center;
+        width: 100%;
+}
+	
+
+ 
+#footer .leftcurve {
+	position: absolute;
+	float: left;
+	width: 123px; 
+	background: transparent url(../images/bg_bottom_red.gif) bottom left no-repeat; 
+	top: -1px;
+	height: 104px;
+	left: 0px;
+ }
+
+
+/* -------------------------------------------------------------------------
+		BRANDING
+	------------------------------------------------------------------------- */
+div.brand_NETWORK #BodyTable { background: transparent url(../images/bg_top_red.gif) top left no-repeat; }
+div.brand_NETWORK #LeftMenu { background: #777777 url(../images/bg_side_btm_red.gif) bottom right no-repeat; }
+div.brand_NETWORK #TopSearch input.searchbutton { background: #ffffff url(../images/btn_go_red.gif) right no-repeat; } 
+div.brand_JEMS #BodyTable { background: transparent url(../images/bg_top_red.gif) top left no-repeat; }
+div.brand_JEMS #LeftMenu { background: #777777 url(../images/bg_side_btm_red.gif) bottom right no-repeat; }
+div.brand_JEMS #TopSearch input.searchbutton { background: #ffffff url(../images/btn_go_red.gif) right no-repeat; } 
+div.brand_DOTCOM #BodyTable { background: transparent url(../images/bg_top_red.gif) top left no-repeat; }
+div.brand_DOTCOM #LeftMenu { background: #777777 url(../images/bg_side_btm_red.gif) bottom right no-repeat; }
+div.brand_DOTCOM #TopSearch input.searchbutton { background: #ffffff url(../images/btn_go_red.gif) right no-repeat; } 
+div.brand_FED #BodyTable { background: transparent url(../images/bg_top_red.gif) top left no-repeat; }
+div.brand_FED #LeftMenu { background: #777777 url(../images/bg_side_btm_red.gif) bottom right no-repeat; }
+div.brand_FED #TopSearch input.searchbutton { background: #ffffff url(../images/btn_go_red.gif) right no-repeat; } 
+
+
+
+/* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	 fancy positioning for footer - DO NOT change unless you know what you're doing
+	 */
+html, body { height: 100%; }
+#container { position: relative; min-height: 100%; height: 100%;}
+html>body #container { height: auto; }
+
+

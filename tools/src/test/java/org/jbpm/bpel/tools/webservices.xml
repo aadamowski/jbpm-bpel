@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices version="1.1" xmlns="http://java.sun.com/xml/ns/j2ee">
+  <webservice-description>
+    <webservice-description-name>atmService</webservice-description-name>
+    <wsdl-file>WEB-INF/wsdl/service.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>WEB-INF/jaxrpc-mapping.xml</jaxrpc-mapping-file>
+    <port-component>
+      <port-component-name>agentPort</port-component-name>
+      <wsdl-port xmlns:portNS="urn:samples:atmProcess">portNS:agentPort</wsdl-port>
+      <service-endpoint-interface>org.example.TravelAgent</service-endpoint-interface>
+      <service-impl-bean>
+        <servlet-link>agentServlet</servlet-link>
+      </service-impl-bean>
+      <handler>
+        <handler-name>agentHandler</handler-name>
+        <handler-class>org.jbpm.bpel.integration.server.SoapHandler</handler-class>
+      </handler>
+    </port-component>
+    <port-component>
+      <port-component-name>frontPort</port-component-name>
+      <wsdl-port xmlns:portNS="urn:samples:atmProcess">portNS:frontPort</wsdl-port>
+      <service-endpoint-interface>org.example.Atm</service-endpoint-interface>
+      <service-impl-bean>
+        <servlet-link>frontServlet</servlet-link>
+      </service-impl-bean>
+      <handler>
+        <handler-name>frontHandler</handler-name>
+        <handler-class>org.jbpm.bpel.integration.server.SoapHandler</handler-class>
+      </handler>
+    </port-component>
+  </webservice-description>
+</webservices>

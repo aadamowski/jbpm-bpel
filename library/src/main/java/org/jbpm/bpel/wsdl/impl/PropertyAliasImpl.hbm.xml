@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.wsdl.impl.PropertyAliasImpl" table="BPEL_PROPERTYALIAS">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+
+    <many-to-one name="property" class="org.jbpm.bpel.wsdl.impl.PropertyImpl" column="PROPERTY_"
+      foreign-key="FK_ALIAS_PROPERTY" />
+
+    <many-to-one name="message" class="com.ibm.wsdl.MessageImpl" column="MESSAGE_" foreign-key="FK_ALIAS_MESSAGE" />
+    <property name="part" column="PART_" />
+
+    <property name="type" type="qname">
+      <column name="TYPELOCALNAME_" />
+      <column name="TYPENAMESPACE_" />
+    </property>
+
+    <property name="element" type="qname">
+      <column name="ELEMENTLOCALNAME_" />
+      <column name="ELEMENTNAMESPACE_" />
+    </property>
+
+    <many-to-one name="query" column="QUERY_" foreign-key="FK_ALIAS_QUERY" cascade="all" />
+
+  </class>
+
+</hibernate-mapping>

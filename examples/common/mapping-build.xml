@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<project name="mapping">
+
+  <!-- ================== -->
+  <!-- === PROPERTIES === -->
+  <!-- ================== -->
+
+  <!-- Development section (begin) -->
+  <property name="jbpm.root" value="../../.." />
+
+  <property name="common.dir" value="${jbpm.root}/bpel/examples/common" />
+  <property name="config.dir" value="${common.dir}/src/main/config" />
+
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+  <!-- Development section (end) -->
+
+  <!-- Distribution section (begin) ===
+  <property name="jbpm.bpel.home" value="../.." />
+
+  <property name="common.dir" value="${jbpm.bpel.home}/examples/common" />
+  <property name="config.dir" value="${jbpm.bpel.home}/config" />
+
+  <property file="${config.dir}/build.properties" />
+  ==== Distribution section (end) -->
+
+  <property name="java.dir" value="src/main/java" />
+  <property name="resources.dir" value="src/main/resources" />
+  <property name="web.dir" location="${resources.dir}/web" />
+
+  <property name="output.dir" value="target" />
+  <property name="output.java.dir" value="${output.dir}/java" />
+  <property name="output.classes.dir" value="${output.dir}/classes" />
+  <property name="output.web.dir" value="${output.dir}/resources/web" />
+
+  <property name="module.name" value="${ant.project.name}" />
+
+  <property name="jboss.server.dir" value="${jboss.home}/server/${jboss.server}" />
+  <property name="jboss.wsdl.dir" value="${jboss.server.dir}/data/wsdl/${module.name}.war" />
+
+  <!-- ================== -->
+  <!-- === CLASSPATHS === -->
+  <!-- ================== -->
+
+  <path id="jboss.path">
+    <pathelement location="${config.dir}" />
+    <fileset dir="${jboss.home}/client" includes="*.jar" />
+  </path>
+
+  <!-- =============================== -->
+  <!-- === JAVA MAPPING GENERATION === -->
+  <!-- =============================== -->
+
+  <target name="check.mapping">
+    <uptodate property="mapping.uptodate" targetfile="${output.web.dir}/${module.name}-mapping.xml">
+      <srcfiles dir=".">
+        <include name="src/main/resources/web/wsdl/**" />
+        <include name="target/resources/web/wsdl/**" />
+      </srcfiles>
+    </uptodate>
+  </target>
+
+  <target name="detect.mapping.tool">
+    <available property="wscompile.available" file="${jwsdp.home}/jaxrpc/lib/jaxrpc-impl.jar" />
+    <available property="wstools.available"
+               classname="org.jboss.ws.tools.ant.wstools"
+               classpathref="jboss.path" />
+    <condition property="mapping.tool.available">
+      <or>
+        <isset property="wscompile.available" />
+        <isset property="wstools.available" />
+      </or>
+    </condition>
+    <fail unless="mapping.tool.available">no mapping tool available</fail>
+  </target>
+
+  <target name="wstools"
+          depends="detect.mapping.tool"
+          if="wstools.available"
+          unless="wscompile.available">
+    <!-- make output directories -->
+    <mkdir dir="${output.java.dir}" />
+    <!-- define and invoke wstools -->
+    <taskdef name="wstools" classname="org.jboss.ws.tools.ant.wstools">
+      <classpath id="wstools.path">
+        <path refid="jboss.path" />
+        <pathelement location="${web.dir}" />
+        <pathelement location="${output.web.dir}" />
+      </classpath>
+    </taskdef>
+    <wstools dest="${output.java.dir}" config="${resources.dir}/wstools.xml" verbose="yes" />
+    <!-- move jax-rpc mapping document to resources directory -->
+    <move file="${output.java.dir}/${module.name}-mapping.xml" todir="${output.web.dir}" />
+  </target>
+
+  <target name="wscompile" depends="detect.mapping.tool" if="wscompile.available">
+    <!-- make output directories -->
+    <mkdir dir="${output.java.dir}" />
+    <mkdir dir="${output.classes.dir}" />
+    <mkdir dir="${output.web.dir}" />
+    <!-- define and invoke wscompile -->
+    <taskdef name="wscompile" classname="com.sun.xml.rpc.tools.ant.Wscompile">
+      <classpath id="wscompile.path">
+        <pathelement location="${jwsdp.home}/jaxrpc/lib/jaxrpc-api.jar" />
+        <pathelement location="${jwsdp.home}/jaxrpc/lib/jaxrpc-impl.jar" />
+        <pathelement location="${jwsdp.home}/jaxrpc/lib/jaxrpc-spi.jar" />
+        <pathelement location="${jwsdp.home}/saaj/lib/saaj-api.jar" />
+        <pathelement location="${jwsdp.home}/jwsdp-shared/lib/jax-qname.jar" />
+        <pathelement location="${java.home}/../lib/tools.jar" />
+      </classpath>
+    </taskdef>
+    <wscompile fork="on"
+               import="on"
+               keep="on"
+               features="norpcstructures,wsi"
+               base="${output.classes.dir}"
+               sourcebase="${output.java.dir}"
+               mapping="${output.web.dir}/${module.name}-mapping.xml"
+               config="${resources.dir}/wscompile.xml"
+               jvmargs="-Duser.dir=${basedir}">
+      <classpath refid="wscompile.path" />
+    </wscompile>
+    <!-- delete service implementation bean classes -->
+    <delete>
+      <fileset dir="${output.java.dir}" includes="**/*_Impl.java" />
+      <fileset dir="${output.classes.dir}" includes="**/*_Impl.class" />
+    </delete>
+  </target>
+
+  <target name="detect.wsdl">
+    <available property="wsdl.dir.available" file="${web.dir}/wsdl" type="dir" />
+    <available property="published.wsdl.available" file="${jboss.wsdl.dir}" type="dir" />
+  </target>
+
+  <target name="get.published.wsdl" depends="detect.wsdl" unless="wsdl.dir.available">
+    <mkdir dir="${output.web.dir}/wsdl" />
+    <copy todir="${output.web.dir}/wsdl">
+      <fileset dir="${jboss.wsdl.dir}" />
+    </copy>
+  </target>
+
+  <target name="generate.mapping"
+          description="generate java mapping"
+          depends="get.published.wsdl, check.mapping"
+          unless="mapping.uptodate">
+    <antcall target="wstools" />
+    <antcall target="wscompile" />
+  </target>
+
+</project>

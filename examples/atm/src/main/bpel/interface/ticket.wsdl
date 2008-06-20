@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/ticket"
+  xmlns:tns="http://jbpm.org/examples/ticket" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <message name="ticketRequest">
+    <documentation>ticket creation request</documentation>
+  </message>
+
+  <message name="ticketMessage">
+    <documentation>ticket number wrapper</documentation>
+    <part name="ticketNo" type="xsd:int" />
+  </message>
+
+  <portType name="TicketIssuer">
+    <documentation>interface to ticket issuer service</documentation>
+
+    <operation name="createTicket">
+      <documentation>generate a ticket number, distinct from previous calls</documentation>
+      <input message="tns:ticketRequest" />
+      <output message="tns:ticketMessage" />
+    </operation>
+
+  </portType>
+
+</definitions>

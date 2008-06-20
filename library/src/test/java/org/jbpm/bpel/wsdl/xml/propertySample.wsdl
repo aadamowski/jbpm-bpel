@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="properties" 
+  targetNamespace="http://example.com/supplyCorrelation.wsdl" 
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <vprop:property name="customerID" type="xsd:string"/>
+  <vprop:property name="orderNumber" type="xsd:int"/>
+  <vprop:property name="vendorID" type="xsd:string"/>
+  <vprop:property name="invoiceNumber" type="xsd:int"/>
+</definitions>

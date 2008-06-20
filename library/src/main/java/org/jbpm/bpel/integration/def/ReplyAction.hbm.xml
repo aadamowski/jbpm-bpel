@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.integration.def.ReplyAction" extends="org.jbpm.bpel.integration.def.MessageAction"
+    discriminator-value="P">
+
+    <property name="messageExchange" column="MESSAGEEXCHANGE_" />
+    <many-to-one name="variable" column="VARIABLEDEFINITION_" foreign-key="FK_REPLIER_VARDEF" />
+    <many-to-one name="correlations" column="CORRELATIONS_" foreign-key="FK_REPLIER_CORRELATIONS" cascade="all" />
+    <property name="faultName" type="qname">
+      <column name="FAULTLOCALNAME_" />
+      <column name="FAULTNAMESPACE_" />
+    </property>
+
+  </subclass>
+
+</hibernate-mapping>

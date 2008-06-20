@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.exe.FaultInstance" table="BPEL_FAULTINSTANCE">
+
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+
+    <property name="name" type="qname">
+      <column name="LOCALNAME_" />
+      <column name="NAMESPACE_" />
+    </property>
+    <property name="elementValue" type="element" column="ELEMENTVALUE_" length="4000" />
+
+    <many-to-one name="messageValue" column="MESSAGEVALUE_" foreign-key="FK_FLTINST_MSGVALUE"
+      cascade="all" />
+
+  </class>
+
+</hibernate-mapping>

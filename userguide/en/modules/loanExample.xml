@@ -1,0 +1,24 @@
+<chapter id="tutorial.loan">
+
+  <title>Loan Example</title>
+  
+  <para>This chapter presents an all-time BPM classic: loan approval. An individual or
+    company in seek of funds applies for a loan in a financial organization. Small amounts
+    are approved automatically. Large amounts are presented to an agent for further
+    evaluation. The agent has the final word on approving or rejecting the loan.</para>
+    
+  <para>Some variants of the example take into account the credit of the borrower. In this
+    instance, however, that aspect was disregarded in favor of focusing on the human 
+    participation in the process. Neither BPEL4WS 1.1 nor WS-BPEL 2 specify an activity
+    that allows direct people involvement. The present example demonstrates how to get
+    people involved through a partner task management service.</para>
+    
+  <para>The task management service introduced here builds upon the jPDL task management <ulink 
+    url="http://docs.jboss.com/jbpm/v3/userguide/taskmanagement.html">model</ulink>.
+    This solution has two advantages. First, it leverages a proven model and makes its
+    facilities immediately available to client applications. Second, it shares database resources
+    with jPDL processes.</para>
+    
+  <para>The next diagram depicts the loan process.</para>
+
+</chapter>

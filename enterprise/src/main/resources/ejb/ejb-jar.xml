@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <description>jBPM Services and JMS Connector</description>
+  <display-name>JBoss jBPM Command Services</display-name>
+
+  <enterprise-beans>
+
+    <session>
+      <description>jBPM Command Service SLSB</description>
+      <display-name>jBPM Command Service SLSB</display-name>
+      <ejb-name>CommandServiceBean</ejb-name>
+      <home>org.jbpm.ejb.RemoteCommandServiceHome</home>
+      <remote>org.jbpm.ejb.RemoteCommandService</remote>
+      <local-home>org.jbpm.ejb.LocalCommandServiceHome</local-home>
+      <local>org.jbpm.ejb.LocalCommandService</local>
+      <ejb-class>org.jbpm.ejb.impl.CommandServiceBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Container</transaction-type>
+      <!-- 
+        <env-entry>
+        <env-entry-name>JbpmCfgResource</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>jbpm.cfg.xml</env-entry-value>
+        </env-entry>
+      -->
+    </session>
+
+    <session>
+      <description>jBPM BPEL Scheduler Control SLSB</description>
+      <display-name>jBPM BPEL Scheduler Control SLSB</display-name>
+      <ejb-name>SchedulerControlBean</ejb-name>
+      <local-home>org.jbpm.bpel.scheduler.ejbtimer.SchedulerControlHome</local-home>
+      <local>org.jbpm.bpel.scheduler.ejbtimer.SchedulerControl</local>
+      <ejb-class>org.jbpm.bpel.scheduler.ejbtimer.SchedulerControlBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <!-- 
+        <env-entry>
+        <env-entry-name>JbpmCfgResource</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>jbpm.cfg.xml</env-entry-value>
+        </env-entry>
+      -->
+    </session>
+
+    <message-driven>
+      <description>
+        Listens for jBPM serialized commands and routes them to the command service SLSB
+      </description>
+      <ejb-name>CommandListenerBean</ejb-name>
+      <ejb-class>org.jbpm.ejb.impl.CommandListenerBean</ejb-class>
+      <transaction-type>Container</transaction-type>
+      <message-destination-type>javax.jms.Queue</message-destination-type>
+      <ejb-local-ref>
+        <ejb-ref-name>ejb/LocalCommandServiceBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local-home>org.jbpm.ejb.LocalCommandServiceHome</local-home>
+        <local>org.jbpm.ejb.LocalCommandService</local>
+        <ejb-link>CommandServiceBean</ejb-link>
+      </ejb-local-ref>
+    </message-driven>
+
+    <message-driven>
+      <description>
+        Listens for jBPM jobId's and delegates execution of the referenced Job to the command
+        service SLSB
+      </description>
+      <ejb-name>JobListenerBean</ejb-name>
+      <ejb-class>org.jbpm.ejb.impl.JobListenerBean</ejb-class>
+      <transaction-type>Container</transaction-type>
+      <message-destination-type>javax.jms.Queue</message-destination-type>
+      <ejb-local-ref>
+        <ejb-ref-name>ejb/LocalCommandServiceBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local-home>org.jbpm.ejb.LocalCommandServiceHome</local-home>
+        <local>org.jbpm.ejb.LocalCommandService</local>
+        <ejb-link>CommandServiceBean</ejb-link>
+      </ejb-local-ref>
+    </message-driven>
+
+  </enterprise-beans>
+
+
+  <assembly-descriptor>
+
+    <container-transaction>
+      <method>
+        <ejb-name>CommandServiceBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+
+    <!--
+    <container-transaction>
+      <method>
+        <ejb-name>SchedulerControlBean</ejb-name>
+        <method-name>createTimer</method-name>
+      </method>
+      <method>
+        <ejb-name>SchedulerControlBean</ejb-name>
+        <method-name>cancelTimers</method-name>
+      </method>
+      <trans-attribute>Mandatory</trans-attribute>
+    </container-transaction>
+    -->
+
+    <!--
+    <container-transaction>
+      <method>
+        <ejb-name>SchedulerControlBean</ejb-name>
+        <method-name>ejbTimeout</method-name>
+      </method>
+      <trans-attribute>RequiresNew</trans-attribute>
+    </container-transaction>
+    -->
+
+    <container-transaction>
+      <method>
+        <ejb-name>CommandListenerBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+
+  </assembly-descriptor>
+
+</ejb-jar>

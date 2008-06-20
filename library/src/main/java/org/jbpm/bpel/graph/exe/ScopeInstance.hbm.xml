@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.exe.ScopeInstance" table="BPEL_SCOPEINSTANCE"
+    discriminator-value="S">
+
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <property name="state" column="STATE_">
+      <type name="enum">
+        <param name="class">org.jbpm.bpel.graph.exe.ScopeState</param>
+      </type>
+    </property>
+
+    <many-to-one name="definition" column="DEFINITION_" foreign-key="FK_SCOPEINST_SCOPEDEF" />
+    <many-to-one name="token" column="TOKEN_" foreign-key="FK_SCOPEINST_TOKEN" />
+    <many-to-one name="faultInstance" column="FAULTINSTANCE_" foreign-key="FK_SCOPEINST_FAULTINST"
+      cascade="all" />
+
+    <any name="compensator" id-type="long" meta-type="char">
+      <meta-value value="I" class="org.jbpm.bpel.graph.exe.ScopeInstance" />
+      <meta-value value="C" class="org.jbpm.bpel.graph.scope.Compensate" />
+      <meta-value value="S" class="org.jbpm.bpel.graph.scope.CompensateScope" />
+      <column name="COMPENSATORCLASS_" />
+      <column name="COMPENSATOR_" />
+    </any>
+
+    <subclass name="org.jbpm.bpel.graph.exe.EventInstance" discriminator-value="E" />
+
+  </class>
+
+</hibernate-mapping>

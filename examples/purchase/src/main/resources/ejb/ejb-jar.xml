@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>CallbackMessageBeans</display-name>
+
+  <enterprise-beans>
+
+    <!-- Message Driven Beans -->
+    <message-driven>
+
+      <display-name>InvoiceCallbackMessageBean</display-name>
+      <ejb-name>InvoiceCallback</ejb-name>
+      <ejb-class>org.jbpm.bpel.tutorial.purchase.ejb.InvoiceCallbackMessageBean</ejb-class>
+
+      <transaction-type>Container</transaction-type>
+      <message-destination-type>javax.jms.Queue</message-destination-type>
+
+      <service-ref>
+
+        <service-ref-name>service/PurchaseOrder</service-ref-name>
+        <service-interface>
+          org.jbpm.bpel.tutorial.purchase.PurchaseOrderService
+        </service-interface>
+        <wsdl-file>META-INF/wsdl/purchase-service.wsdl</wsdl-file>
+        <jaxrpc-mapping-file>META-INF/purchase-mapping.xml</jaxrpc-mapping-file>
+
+      </service-ref>
+
+    </message-driven>
+
+    <message-driven>
+
+      <display-name>ShippingCallbackMessageBean</display-name>
+      <ejb-name>ShippingCallback</ejb-name>
+      <ejb-class>org.jbpm.bpel.tutorial.purchase.ejb.ShippingCallbackMessageBean</ejb-class>
+
+      <transaction-type>Container</transaction-type>
+      <message-destination-type>javax.jms.Queue</message-destination-type>
+
+      <service-ref>
+
+        <service-ref-name>service/PurchaseOrder</service-ref-name>
+        <service-interface>
+          org.jbpm.bpel.tutorial.purchase.PurchaseOrderService
+        </service-interface>
+        <wsdl-file>META-INF/wsdl/purchase-service.wsdl</wsdl-file>
+        <jaxrpc-mapping-file>META-INF/purchase-mapping.xml</jaxrpc-mapping-file>
+
+      </service-ref>
+
+    </message-driven>
+
+  </enterprise-beans>
+
+</ejb-jar>

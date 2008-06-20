@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="loan" targetNamespace="http://jbpm.org/examples/loan"
+  xmlns:tns="http://jbpm.org/examples/loan" xmlns:task="http://jbpm.org/examples/task"
+  xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/loan" location="interface/loaner.wsdl" />
+  <import namespace="http://jbpm.org/examples/task" location="interface/task.wsdl" />
+
+  <plt:partnerLinkType name="borrower-loaner">
+    <plt:role name="loaner">
+      <plt:portType name="tns:Loaner" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="taskRequester-taskManager">
+    <plt:role name="taskRequester">
+      <plt:portType name="task:TaskCallback" />
+    </plt:role>
+    <plt:role name="taskManager">
+      <plt:portType name="task:TaskManager" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <bpel:property name="taskId" type="xsd:long" />
+
+  <bpel:propertyAlias propertyName="tns:taskId" messageType="task:createTaskResponse" part="taskId" />
+  <bpel:propertyAlias propertyName="tns:taskId" messageType="task:endTaskRequest" part="taskInfo"
+    query="/taskInfo/@taskId" />
+
+  <bpel:property name="borrowerName" type="xsd:string" />
+
+  <bpel:propertyAlias propertyName="tns:borrowerName" messageType="tns:loanRequest" part="borrower" />
+  <bpel:propertyAlias propertyName="tns:borrowerName" messageType="tns:statusRequest"
+    part="borrower" />
+
+</definitions>

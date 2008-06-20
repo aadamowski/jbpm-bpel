@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpelApplication name="ba" targetNamespace="http://jbpm.org/bpel/examples"
+  xmlns="urn:jbpm.org:bpel-1.1:application">
+  <partnerLinks>
+    <partnerLink name="pl">
+      <myRole handle="pl2" />
+    </partnerLink>
+  </partnerLinks>
+  <scopes>
+    <scope name="s1">
+      <partnerLinks>
+        <partnerLink name="pl">
+          <myRole handle="pl1" />
+        </partnerLink>
+        <partnerLink name="pla">
+          <myRole handle="pla" />
+        </partnerLink>
+      </partnerLinks>
+    </scope>
+    <scope name="s2">
+      <scopes>
+        <scope name="s3" />
+      </scopes>
+    </scope>
+  </scopes>
+  <serviceCatalogs>
+    <urlCatalog>
+      <wsdl location="partnerLinkTypeSample.wsdl" />
+      <wsdl location="propertyAliasSample.wsdl" />
+    </urlCatalog>
+  </serviceCatalogs>
+</bpelApplication>

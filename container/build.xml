@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="jbpm.bpel.container" default="install.jar">
+
+  <!-- =================== -->
+  <!-- === DEFINITIONS === -->
+  <!-- =================== -->
+
+  <macrodef name="iterate">
+    <attribute name="target" />
+    <sequential>
+      <subant target="@{target}" inheritall="no">
+        <fileset dir="." includes="*/build.xml" />
+      </subant>
+    </sequential>
+  </macrodef>
+
+  <!-- =============== -->
+  <!-- === CLEANUP === -->
+  <!-- =============== -->
+
+  <target name="clean" description="removes all generated files">
+    <iterate target="clean" />
+  </target>
+
+  <target name="install.jar" description="installs all container jars">
+    <iterate target="install.jar" />
+  </target>
+
+</project>

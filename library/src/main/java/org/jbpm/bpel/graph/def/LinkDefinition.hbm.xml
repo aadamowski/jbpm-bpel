@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.def.LinkDefinition" table="BPEL_LINKDEFINITION">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+
+    <property name="name" column="NAME_" />
+    <many-to-one name="transitionCondition" column="CONDITION_" foreign-key="FK_LINKDEF_CONDITION" cascade="all" />
+    <many-to-one name="source" column="SOURCE_" foreign-key="FK_LINKDEF_SOURCE" />
+    <many-to-one name="target" column="TARGET_" foreign-key="FK_LINKDEF_TARGET" />
+
+  </class>
+
+</hibernate-mapping>

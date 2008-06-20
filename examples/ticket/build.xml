@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<project name="ticket" default="main">
+
+  <import file="../common/ws-build.xml" />
+
+  <target name="test" description="test the deployed component (stub)" />
+
+</project>

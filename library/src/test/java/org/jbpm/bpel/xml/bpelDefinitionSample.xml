@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpelDefinition location="hello.bpel" xmlns="urn:jbpm.org:bpel-1.1:definition"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:jbpm.org:bpel-1.1:definition 
+    http://docs.jboss.com/jbpm/xsd/bpel_definition_1_1.xsd">
+	<imports>
+    <wsdl location="helloMessages.wsdl"/>
+    <schema location="helloTypes.xsd" />
+    <wsdl location="helloPortTypes.wsdl"/>
+  </imports>
+</bpelDefinition>

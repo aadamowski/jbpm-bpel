@@ -1,0 +1,28 @@
+<jbpm-configuration>
+
+  <jbpm-context>
+    <service name="integration" factory="org.jbpm.bpel.graph.exe.MockIntegrationService$Factory" />
+  </jbpm-context>
+
+  <!-- configuration resources in jbpm-{version}.jar -->
+  <string name="resource.converter" value="org/jbpm/db/hibernate/jbpm.converter.properties" />
+  <string name="resource.jpdl.parsers" value="org/jbpm/jpdl/par/jbpm.parsers.xml" />
+
+  <!-- configuration resources in jbpm-bpel-{version}.jar -->
+  <string name="resource.parsers" value="org/jbpm/bpel/par/generic.parsers.xml" />
+  <string name="resource.bpel.parsers" value="org/jbpm/bpel/par/bpel.parsers.xml" />
+  <string name="resource.bpel.modules" value="org/jbpm/bpel/graph/def/bpel.modules.properties" />
+  <string name="resource.activity.readers" value="org/jbpm/bpel/xml/activity.readers.xml" />
+  <string name="resource.catalog.readers" value="org/jbpm/bpel/xml/catalog.readers.xml" />
+  <string name="resource.catalog.writers" value="org/jbpm/bpel/xml/catalog.writers.xml" />
+  <string name="resource.endpoint.reference.factories" value="org/jbpm/bpel/endpointref/endpoint.reference.factories.xml" />
+  <string name="resource.evaluator.factories" value="org/jbpm/bpel/sublang/exe/evaluator.factories.xml" />
+  <string name="resource.expression.functions" value="org/jbpm/bpel/sublang/xpath/expression.functions.xml" />
+  <string name="resource.join.condition.functions" value="org/jbpm/bpel/sublang/xpath/join.condition.functions.xml" />
+  <string name="resource.property.query.functions" value="org/jbpm/bpel/sublang/xpath/property.query.functions.xml" />
+  <string name="resource.variable.query.functions" value="org/jbpm/bpel/sublang/xpath/expression.functions.xml" />
+
+  <!-- configuration resources in test suite -->
+  <string name="resource.varmapping" value="org/jbpm/bpel/graph/exe/varmapping.xml" />
+
+</jbpm-configuration>

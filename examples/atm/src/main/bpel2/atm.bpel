@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="AtmFrontEnd" targetNamespace="http://jbpm.org/examples/atm"
+  xmlns:acc="http://jbpm.org/examples/account" xmlns:atm="http://jbpm.org/examples/atm"
+  xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+  xmlns:tic="http://jbpm.org/examples/ticket" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="atm.wsdl"
+    namespace="http://jbpm.org/examples/atm" />
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="interface/frontend.wsdl"
+    namespace="http://jbpm.org/examples/atm" />
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="interface/ticket.wsdl"
+    namespace="http://jbpm.org/examples/ticket" />
+  <import importType="http://schemas.xmlsoap.org/wsdl/" location="interface/account.wsdl"
+    namespace="http://jbpm.org/examples/account" />
+
+  <partnerLinks>
+    <partnerLink myRole="FrontEnd" name="atm" partnerLinkType="atm:Atm-Front">
+      <documentation>relationship with the ATM</documentation>
+    </partnerLink>
+  </partnerLinks>
+
+  <variables>
+    <variable name="connected" type="xsd:boolean">
+      <documentation>ATM connection flag</documentation>
+    </variable>
+    <variable name="logged" type="xsd:boolean">
+      <documentation>customer access flag</documentation>
+    </variable>
+    <variable messageType="tic:ticketMessage" name="ticketMsg">
+      <documentation>ticket number wrapper</documentation>
+    </variable>
+  </variables>
+
+  <correlationSets>
+    <correlationSet name="atmInteraction" properties="atm:ticketId">
+      <documentation>conversation with a connected ATM</documentation>
+    </correlationSet>
+  </correlationSets>
+
+  <sequence name="MainSeq">
+
+    <scope name="TicketCreationUnit">
+
+      <partnerLinks>
+        <partnerLink name="ticket" partnerLinkType="atm:Front-Ticket" partnerRole="TicketIssuer">
+          <documentation>relationship with the ticket issuer</documentation>
+        </partnerLink>
+      </partnerLinks>
+
+      <variables>
+        <variable messageType="tic:ticketRequest" name="ticketReq">
+          <documentation>ATM connection request</documentation>
+        </variable>
+        <variable messageType="atm:connectRequest" name="connectReq">
+          <documentation>ticket creation request</documentation>
+        </variable>
+      </variables>
+
+      <sequence name="TicketCreationSeq">
+
+        <receive createInstance="yes" name="AcceptConnection" operation="connect" partnerLink="atm"
+          portType="atm:FrontEnd" variable="connectReq">
+          <documentation>receive a connection request</documentation>
+        </receive>
+
+        <invoke inputVariable="ticketReq" name="CreateTicket" operation="createTicket"
+          outputVariable="ticketMsg" partnerLink="ticket" portType="tic:TicketIssuer">
+          <documentation>generate a ticket number</documentation>
+          <correlations>
+            <correlation initiate="yes" pattern="in" set="atmInteraction" />
+          </correlations>
+        </invoke>
+
+        <reply name="SendTicketNumber" operation="connect" partnerLink="atm" portType="atm:FrontEnd"
+          variable="ticketMsg">
+          <documentation>send the ticket number back to the ATM</documentation>
+          <correlations>
+            <correlation initiate="no" set="atmInteraction" />
+          </correlations>
+        </reply>
+
+      </sequence>
+
+    </scope>
+
+    <assign name="InitializeStatus" validate="no">
+      <documentation>initialize the status flags</documentation>
+      <copy>
+        <from>true()</from>
+        <to variable="connected" />
+      </copy>
+      <copy>
+        <from>false()</from>
+        <to variable="logged" />
+      </copy>
+    </assign>
+
+    <scope name="ConnectionUnit">
+      <documentation>handle the ATM connection</documentation>
+
+      <variables>
+        <variable messageType="atm:logOnRequest" name="logOnReq">
+          <documentation>customer log on request</documentation>
+        </variable>
+        <variable messageType="atm:statusResponse" name="statusRsp">
+          <documentation>connection status response</documentation>
+        </variable>
+      </variables>
+
+      <eventHandlers>
+        <onEvent messageType="tic:ticketMessage" operation="status" partnerLink="atm"
+          portType="atm:FrontEnd" variable="ticketMsg">
+
+          <correlations>
+            <correlation initiate="no" set="atmInteraction" />
+          </correlations>
+
+          <scope name="StatusUnit">
+
+            <sequence name="StatusSeq">
+
+              <if name="StatusDecision">
+
+                <condition>$logged</condition>
+                <assign name="SetStatusLogged" validate="no">
+                  <copy>
+                    <from>'logged'</from>
+                    <to part="status" variable="statusRsp" />
+                  </copy>
+                </assign>
+
+                <elseif>
+                  <condition>$connected</condition>
+                  <assign name="SetStatusConnected" validate="no">
+                    <copy>
+                      <from>'connected'</from>
+                      <to part="status" variable="statusRsp" />
+                    </copy>
+                  </assign>
+                </elseif>
+
+                <else>
+                  <assign name="Assign" validate="no">
+                    <copy>
+                      <from>'disconnected'</from>
+                      <to part="status" variable="statusRsp" />
+                    </copy>
+                  </assign>
+                </else>
+
+              </if>
+
+              <reply name="SendStatus" operation="status" partnerLink="atm" portType="atm:FrontEnd"
+                variable="statusRsp" />
+
+            </sequence>
+
+          </scope>
+
+        </onEvent>
+
+      </eventHandlers>
+
+      <while name="ConnectionLoop">
+        <documentation>accept ATM requests, one at a time</documentation>
+        <condition>$connected</condition>
+
+        <pick name="ConnectionMenu">
+          <documentation>listen for either disconnect or log on request</documentation>
+
+          <onMessage operation="logOn" partnerLink="atm" portType="atm:FrontEnd"
+            variable="logOnReq">
+
+            <correlations>
+              <correlation initiate="no" set="atmInteraction" />
+            </correlations>
+
+            <scope name="AccountUnit">
+              <documentation>handle account access</documentation>
+
+              <partnerLinks>
+                <partnerLink name="account" partnerLinkType="atm:Front-Account"
+                  partnerRole="AccountSystem">
+                  <documentation>relationship with the account system</documentation>
+                </partnerLink>
+              </partnerLinks>
+
+              <variables>
+                <variable messageType="acc:accessMessage" name="accessMsg">
+                  <documentation>access check response</documentation>
+                </variable>
+                <variable messageType="acc:customerMessage" name="customerMsg">
+                  <documentation>customer name wrapper</documentation>
+                </variable>
+                <variable messageType="atm:logOnResponse" name="logOnRsp">
+                  <documentation>customer access acknowledgment</documentation>
+                </variable>
+                <variable messageType="atm:unauthorizedAccess" name="unauthorizedAccess">
+                  <documentation>customer access fault</documentation>
+                </variable>
+                <variable messageType="acc:balanceMessage" name="balanceMsg">
+                  <documentation>account balance wrapper</documentation>
+                </variable>
+                <variable messageType="atm:balanceChange" name="balanceChange">
+                  <documentation>balance change request</documentation>
+                </variable>
+                <variable messageType="acc:accountOperation" name="accountOperation">
+                  <documentation>account system operation request</documentation>
+                </variable>
+                <variable name="newBalance" type="xsd:double">
+                  <documentation>resulting balance after withdrawal</documentation>
+                </variable>
+                <variable messageType="atm:insufficientFunds" name="insufficientFunds">
+                  <documentation>withdraw fault</documentation>
+                </variable>
+              </variables>
+
+              <correlationSets>
+                <correlationSet name="customerInteraction" properties="atm:customerId">
+                  <documentation>conversation with a logged customer</documentation>
+                </correlationSet>
+              </correlationSets>
+
+              <sequence name="AccountSeq">
+
+                <assign name="PrepareAccessCheck" validate="no">
+                  <documentation>populate access check request</documentation>
+                  <copy>
+                    <from part="customerName" variable="logOnReq" />
+                    <to part="customerName" variable="customerMsg" />
+                  </copy>
+                </assign>
+
+                <invoke inputVariable="customerMsg" name="CheckAccess" operation="checkAccess"
+                  outputVariable="accessMsg" partnerLink="account" portType="acc:AccountSystem">
+                  <documentation>check account access privilege</documentation>
+                  <correlations>
+                    <correlation initiate="yes" pattern="out" set="customerInteraction" />
+                  </correlations>
+                </invoke>
+
+                <if name="AccessDecision">
+                  <documentation>decide outcome of customer access request</documentation>
+                  <condition>$accessMsg.granted</condition>
+
+                  <sequence name="AccessGrantedSeq">
+                    <documentation>grant customer access</documentation>
+
+                    <assign name="SetLoggedOn" validate="no">
+                      <documentation>turn on logged flag</documentation>
+                      <copy>
+                        <from>true()</from>
+                        <to variable="logged" />
+                      </copy>
+                    </assign>
+
+                    <reply name="GrantAccess" operation="logOn" partnerLink="atm"
+                      portType="atm:FrontEnd" variable="logOnRsp">
+                      <documentation>send acknowledgment back to ATM</documentation>
+                    </reply>
+
+                  </sequence>
+
+                  <else>
+
+                    <sequence name="AccessDeniedSeq">
+                      <documentation>deny customer access</documentation>
+
+                      <assign name="PrepareAccessDenial" validate="no">
+                        <documentation>populate access fault</documentation>
+                        <copy>
+                          <from part="customerName" variable="logOnReq" />
+                          <to part="detail" variable="unauthorizedAccess">
+                            <query>customerName</query>
+                          </to>
+                        </copy>
+                      </assign>
+
+                      <reply name="DenyAccess" operation="logOn" partnerLink="atm"
+                        portType="atm:FrontEnd" variable="unauthorizedAccess"
+                        faultName="atm:unauthorizedAccess">
+                        <documentation>send fault back to ATM</documentation>
+                      </reply>
+
+                    </sequence>
+
+                  </else>
+
+                </if>
+
+                <while name="AccountLoop">
+                  <documentation>accept account requests, one at a time</documentation>
+                  <condition>$logged</condition>
+
+                  <pick name="AccountMenu">
+
+                    <onMessage operation="getBalance" partnerLink="atm" portType="atm:FrontEnd"
+                      variable="customerMsg">
+
+                      <correlations>
+                        <correlation initiate="no" set="customerInteraction" />
+                      </correlations>
+
+                      <sequence name="BalanceSeq">
+
+                        <invoke inputVariable="customerMsg" name="QueryBalance"
+                          operation="queryBalance" outputVariable="balanceMsg" partnerLink="account"
+                          portType="acc:AccountSystem">
+                          <documentation>get current account balance</documentation>
+                        </invoke>
+
+                        <reply name="TellBalance" operation="getBalance" partnerLink="atm"
+                          portType="atm:FrontEnd" variable="balanceMsg">
+                          <documentation>return balance to ATM</documentation>
+                        </reply>
+
+                      </sequence>
+
+                    </onMessage>
+
+                    <onMessage operation="deposit" partnerLink="atm" portType="atm:FrontEnd"
+                      variable="balanceChange">
+
+                      <correlations>
+                        <correlation initiate="no" set="customerInteraction" />
+                      </correlations>
+
+                      <sequence name="DepositSeq">
+
+                        <assign name="PrepareDeposit" validate="no">
+                          <documentation>populate balance update request</documentation>
+                          <copy>
+                            <from part="customerName" variable="balanceChange" />
+                            <to part="body" variable="accountOperation">
+                              <query>customerName</query>
+                            </to>
+                          </copy>
+                          <copy>
+                            <from part="amount" variable="balanceChange" />
+                            <to part="body" variable="accountOperation">
+                              <query>amount</query>
+                            </to>
+                          </copy>
+                        </assign>
+
+                        <invoke inputVariable="accountOperation" name="UpdateBalance"
+                          operation="updateBalance" outputVariable="balanceMsg"
+                          partnerLink="account" portType="acc:AccountSystem">
+                          <documentation>post positive balance update</documentation>
+                          <correlations>
+                            <correlation initiate="no" pattern="out" set="customerInteraction" />
+                          </correlations>
+                        </invoke>
+
+                        <reply name="TellNewBalance" operation="deposit" partnerLink="atm"
+                          portType="atm:FrontEnd" variable="balanceMsg">
+                          <documentation>make new balance available to ATM</documentation>
+                        </reply>
+
+                      </sequence>
+
+                    </onMessage>
+
+                    <onMessage operation="withdraw" partnerLink="atm" portType="atm:FrontEnd"
+                      variable="balanceChange">
+
+                      <correlations>
+                        <correlation initiate="no" set="customerInteraction" />
+                      </correlations>
+
+                      <sequence name="WithdrawSeq">
+
+                        <assign name="PrepareBalanceQuery" validate="no">
+                          <documentation>populate balance query request</documentation>
+                          <copy>
+                            <from part="customerName" variable="balanceChange" />
+                            <to part="customerName" variable="customerMsg" />
+                          </copy>
+                        </assign>
+
+                        <invoke inputVariable="customerMsg" name="QueryBalance"
+                          operation="queryBalance" outputVariable="balanceMsg" partnerLink="account"
+                          portType="acc:AccountSystem">
+                          <documentation>get current account balance</documentation>
+                          <correlations>
+                            <correlation initiate="no" pattern="out" set="customerInteraction" />
+                          </correlations>
+                        </invoke>
+
+                        <assign name="EvaluateNewBalance" validate="no">
+                          <documentation>
+                            evaluate amount that would remain in account
+                          </documentation>
+                          <copy>
+                            <from>$balanceMsg.balance - $balanceChange.amount</from>
+                            <to variable="newBalance" />
+                          </copy>
+                        </assign>
+
+                        <if name="BalanceDecision">
+                          <documentation>decide outcome of withdraw request</documentation>
+                          <condition>$newBalance >= 0.0</condition>
+
+                          <sequence name="PositiveBalanceSeq">
+                            <documentation>accept withdrawal</documentation>
+
+                            <assign name="PrepareWithdraw" validate="no">
+                              <documentation>populate balance update request</documentation>
+                              <copy>
+                                <from part="customerName" variable="balanceChange" />
+                                <to part="body" variable="accountOperation">
+                                  <query>customerName</query>
+                                </to>
+                              </copy>
+                              <copy>
+                                <from>-$balanceChange.amount</from>
+                                <to part="body" variable="accountOperation">
+                                  <query>amount</query>
+                                </to>
+                              </copy>
+                            </assign>
+
+                            <invoke inputVariable="accountOperation" name="UpdateBalance"
+                              operation="updateBalance" outputVariable="balanceMsg"
+                              partnerLink="account" portType="acc:AccountSystem">
+                              <documentation>post negative balance update</documentation>
+                              <correlations>
+                                <correlation initiate="no" pattern="out" set="customerInteraction" />
+                              </correlations>
+                            </invoke>
+
+                            <reply name="TellNewBalance" operation="withdraw" partnerLink="atm"
+                              portType="atm:FrontEnd" variable="balanceMsg">
+                              <documentation>return new balance to ATM</documentation>
+                            </reply>
+
+                          </sequence>
+
+                          <else>
+
+                            <sequence name="NegativeBalanceSeq">
+                              <documentation>reject withdrawal</documentation>
+
+                              <assign name="PrepareRejection" validate="no">
+                                <documentation>populate withdraw fault</documentation>
+                                <copy>
+                                  <from part="customerName" variable="balanceChange" />
+                                  <to part="detail" variable="insufficientFunds">
+                                    <query>customerName</query>
+                                  </to>
+                                </copy>
+                                <copy>
+                                  <from part="balance" variable="balanceMsg" />
+                                  <to part="detail" variable="insufficientFunds">
+                                    <query>amount</query>
+                                  </to>
+                                </copy>
+                              </assign>
+
+                              <reply name="RejectWithdraw" operation="withdraw" partnerLink="atm"
+                                portType="atm:FrontEnd" variable="insufficientFunds"
+                                faultName="atm:insufficientFunds">
+                                <documentation>return fault to ATM</documentation>
+                              </reply>
+
+                            </sequence>
+
+                          </else>
+
+                        </if>
+
+                      </sequence>
+
+                    </onMessage>
+
+                    <onMessage operation="logOff" partnerLink="atm" portType="atm:FrontEnd"
+                      variable="customerMsg">
+
+                      <correlations>
+                        <correlation initiate="no" set="customerInteraction" />
+                      </correlations>
+
+                      <assign name="SetLoggedOff" validate="no">
+                        <documentation>turn off logged flag</documentation>
+                        <copy>
+                          <from>false()</from>
+                          <to variable="logged" />
+                        </copy>
+                      </assign>
+
+                    </onMessage>
+
+                    <onAlarm>
+                      <for>'PT2M'</for>
+
+                      <assign name="SetLoggedOff" validate="no">
+                        <documentation>
+                          turn off logged flag after a period of inactivity
+                        </documentation>
+                        <copy>
+                          <from>false()</from>
+                          <to variable="logged" />
+                        </copy>
+                      </assign>
+
+                    </onAlarm>
+
+                  </pick>
+
+                </while>
+
+              </sequence>
+
+            </scope>
+
+          </onMessage>
+
+          <onMessage operation="disconnect" partnerLink="atm" portType="atm:FrontEnd"
+            variable="ticketMsg">
+
+            <correlations>
+              <correlation initiate="no" set="atmInteraction" />
+            </correlations>
+
+            <assign name="SetDisconnected" validate="no">
+              <documentation>turn off connected flag</documentation>
+              <copy>
+                <from>false()</from>
+                <to variable="connected" />
+              </copy>
+            </assign>
+
+          </onMessage>
+
+        </pick>
+
+      </while>
+
+    </scope>
+
+  </sequence>
+
+</process>

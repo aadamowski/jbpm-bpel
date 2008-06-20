@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java-wsdl-mapping xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee    http://www.ibm.com/webservices/xsd/j2ee_jaxrpc_mapping_1_1.xsd">
+<package-mapping>
+<package-type>org.example</package-type>
+<namespaceURI>urn:samples:atmProcess</namespaceURI>
+</package-mapping>
+<package-mapping>
+<package-type>org.example</package-type>
+<namespaceURI>urn:samples:atm</namespaceURI>
+</package-mapping>
+<package-mapping>
+<package-type>org.example</package-type>
+<namespaceURI>http://jbpm.org/examples/trip/</namespaceURI>
+</package-mapping>
+<package-mapping>
+<package-type>org.example</package-type>
+<namespaceURI>urn:samples:atmTypes</namespaceURI>
+</package-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.RentalCar</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:RentalCar</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>company</java-variable-name>
+<xml-attribute-name>company</xml-attribute-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.Order</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:Order</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>date</java-variable-name>
+<xml-attribute-name>date</xml-attribute-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>items</java-variable-name>
+<xml-element-name>items</xml-element-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.OperationFaultType</java-type>
+<root-type-qname xmlns:typeNS="urn:samples:atmTypes">typeNS:operationFaultType</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>code</java-variable-name>
+<xml-element-name>code</xml-element-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>description</java-variable-name>
+<xml-element-name>description</xml-element-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.Hotel</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:Hotel</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>name</java-variable-name>
+<xml-attribute-name>name</xml-attribute-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.Invoice</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:Invoice</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>locator</java-variable-name>
+<xml-attribute-name>locator</xml-attribute-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>cost</java-variable-name>
+<xml-attribute-name>cost</xml-attribute-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.ItemSet</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:ItemSet</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>flight</java-variable-name>
+<xml-element-name>flight</xml-element-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>hotel</java-variable-name>
+<xml-element-name>hotel</xml-element-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>rentalCar</java-variable-name>
+<xml-element-name>rentalCar</xml-element-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.Flight</java-type>
+<root-type-qname xmlns:typeNS="http://jbpm.org/examples/trip/">typeNS:Flight</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>airline</java-variable-name>
+<xml-attribute-name>airline</xml-attribute-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>number</java-variable-name>
+<xml-attribute-name>number</xml-attribute-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<java-xml-type-mapping>
+<java-type>org.example.OperationRequestType</java-type>
+<root-type-qname xmlns:typeNS="urn:samples:atmTypes">typeNS:operationRequestType</root-type-qname>
+<qname-scope>complexType</qname-scope>
+<variable-mapping>
+<java-variable-name>customerName</java-variable-name>
+<xml-element-name>customerName</xml-element-name>
+</variable-mapping>
+<variable-mapping>
+<java-variable-name>amount</java-variable-name>
+<xml-element-name>amount</xml-element-name>
+</variable-mapping>
+</java-xml-type-mapping>
+<exception-mapping>
+<exception-type>org.example.OperationFaultType</exception-type>
+<wsdl-message xmlns:exMsgNS="urn:samples:atm">exMsgNS:operationFault</wsdl-message>
+<constructor-parameter-order>
+<element-name>code</element-name>
+<element-name>description</element-name>
+</constructor-parameter-order>
+</exception-mapping>
+<service-interface-mapping>
+<service-interface>org.example.AtmService</service-interface>
+<wsdl-service-name xmlns:serviceNS="urn:samples:atmProcess">serviceNS:atmService</wsdl-service-name>
+<port-mapping>
+<port-name>agentPort</port-name>
+<java-port-name>agentPort</java-port-name>
+</port-mapping>
+<port-mapping>
+<port-name>frontPort</port-name>
+<java-port-name>frontPort</java-port-name>
+</port-mapping>
+</service-interface-mapping>
+<service-endpoint-interface-mapping>
+<service-endpoint-interface>org.example.TravelAgent</service-endpoint-interface>
+<wsdl-port-type xmlns:portTypeNS="http://jbpm.org/examples/trip/">portTypeNS:TravelAgent</wsdl-port-type>
+<wsdl-binding xmlns:bindingNS="http://jbpm.org/examples/trip/">bindingNS:TravelAgentBinding</wsdl-binding>
+<service-endpoint-method-mapping>
+<java-method-name>purchaseTrip</java-method-name>
+<wsdl-operation>purchaseTrip</wsdl-operation>
+<method-param-parts-mapping>
+<param-position>0</param-position>
+<param-type>org.example.Order</param-type>
+<wsdl-message-mapping>
+<wsdl-message xmlns:wsdlMsgNS="http://jbpm.org/examples/trip/">wsdlMsgNS:purchaseRequest</wsdl-message>
+<wsdl-message-part-name>order</wsdl-message-part-name>
+<parameter-mode>IN</parameter-mode>
+</wsdl-message-mapping>
+</method-param-parts-mapping>
+<wsdl-return-value-mapping>
+<method-return-value>org.example.Invoice</method-return-value>
+<wsdl-message xmlns:wsdlMsgNS="http://jbpm.org/examples/trip/">wsdlMsgNS:purchaseResponse</wsdl-message>
+<wsdl-message-part-name>invoice</wsdl-message-part-name>
+</wsdl-return-value-mapping>
+</service-endpoint-method-mapping>
+</service-endpoint-interface-mapping>
+<service-endpoint-interface-mapping>
+<service-endpoint-interface>org.example.Atm</service-endpoint-interface>
+<wsdl-port-type xmlns:portTypeNS="urn:samples:atm">portTypeNS:atm</wsdl-port-type>
+<wsdl-binding xmlns:bindingNS="urn:samples:atm">bindingNS:atmBinding</wsdl-binding>
+<service-endpoint-method-mapping>
+<java-method-name>logon</java-method-name>
+<wsdl-operation>logon</wsdl-operation>
+<method-param-parts-mapping>
+<param-position>0</param-position>
+<param-type>int</param-type>
+<wsdl-message-mapping>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:logonRequest</wsdl-message>
+<wsdl-message-part-name>sessionID</wsdl-message-part-name>
+<parameter-mode>IN</parameter-mode>
+</wsdl-message-mapping>
+</method-param-parts-mapping>
+<method-param-parts-mapping>
+<param-position>1</param-position>
+<param-type>java.lang.String</param-type>
+<wsdl-message-mapping>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:logonRequest</wsdl-message>
+<wsdl-message-part-name>customerName</wsdl-message-part-name>
+<parameter-mode>IN</parameter-mode>
+</wsdl-message-mapping>
+</method-param-parts-mapping>
+</service-endpoint-method-mapping>
+<service-endpoint-method-mapping>
+<java-method-name>deposit</java-method-name>
+<wsdl-operation>deposit</wsdl-operation>
+<method-param-parts-mapping>
+<param-position>0</param-position>
+<param-type>org.example.OperationRequestType</param-type>
+<wsdl-message-mapping>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:operationRequest</wsdl-message>
+<wsdl-message-part-name>request</wsdl-message-part-name>
+<parameter-mode>IN</parameter-mode>
+</wsdl-message-mapping>
+</method-param-parts-mapping>
+<wsdl-return-value-mapping>
+<method-return-value>double</method-return-value>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:operationResponse</wsdl-message>
+<wsdl-message-part-name>balance</wsdl-message-part-name>
+</wsdl-return-value-mapping>
+</service-endpoint-method-mapping>
+<service-endpoint-method-mapping>
+<java-method-name>withdraw</java-method-name>
+<wsdl-operation>withdraw</wsdl-operation>
+<method-param-parts-mapping>
+<param-position>0</param-position>
+<param-type>org.example.OperationRequestType</param-type>
+<wsdl-message-mapping>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:operationRequest</wsdl-message>
+<wsdl-message-part-name>request</wsdl-message-part-name>
+<parameter-mode>IN</parameter-mode>
+</wsdl-message-mapping>
+</method-param-parts-mapping>
+<wsdl-return-value-mapping>
+<method-return-value>double</method-return-value>
+<wsdl-message xmlns:wsdlMsgNS="urn:samples:atm">wsdlMsgNS:operationResponse</wsdl-message>
+<wsdl-message-part-name>balance</wsdl-message-part-name>
+</wsdl-return-value-mapping>
+</service-endpoint-method-mapping>
+</service-endpoint-interface-mapping>
+</java-wsdl-mapping>

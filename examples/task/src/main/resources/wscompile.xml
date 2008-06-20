@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+
+  <wsdl location="src/main/resources/web/wsdl/task-management.wsdl"
+    packageName="org.jbpm.bpel.tutorial.task">
+
+    <namespaceMappingRegistry>
+      <namespaceMapping namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+        packageName="org.jbpm.bpel.tutorial.wsa" />
+    </namespaceMappingRegistry>
+
+  </wsdl>
+
+</configuration>

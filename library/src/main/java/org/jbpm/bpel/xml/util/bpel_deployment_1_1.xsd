@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="urn:jbpm.org:bpel-1.1:deployment" elementFormDefault="qualified"
+  xmlns:tns="urn:jbpm.org:bpel-1.1:deployment" xmlns="http://www.w3.org/2001/XMLSchema">
+
+  <element name="bpelDeployment" type="tns:tBpelDeployment" />
+
+  <complexType name="tScope">
+    <sequence>
+      <element name="partnerLinks" type="tns:tPartnerLinks" minOccurs="0" />
+      <element name="scopes" type="tns:tScopes" minOccurs="0" />
+    </sequence>    <attribute name="name" type="NCName" />
+  </complexType>
+
+  <complexType name="tScopes">
+    <sequence>
+      <element name="scope" type="tns:tScope" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="tPartnerLinks">
+    <sequence>
+      <element name="partnerLink" type="tns:tPartnerLink" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="tPartnerLink">
+    <sequence>
+      <element name="partnerRole" minOccurs="0">
+        <complexType>
+          <sequence>
+            <any namespace="##other" minOccurs="0" processContents="lax" />
+          </sequence>
+          <attribute name="initiate" default="static">
+            <simpleType>
+              <restriction base="string">
+                <enumeration value="static" />
+                <enumeration value="push" />
+                <enumeration value="pull" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </complexType>
+      </element>
+      <element name="myRole" minOccurs="0">        <complexType>
+          <attribute name="handle" type="token" />
+          <attribute name="service" type="QName" />
+          <attribute name="port" type="token" />
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="name" type="NCName" use="required" />
+  </complexType>
+
+  <complexType name="tBpelDeployment">
+    <complexContent>
+      <extension base="tns:tScope">
+        <sequence>
+          <element name="serviceCatalogs" type="tns:tServiceCatalogs" minOccurs="0" />
+        </sequence>
+        <attribute name="version" type="integer" />
+        <attribute name="targetNamespace" type="anyURI" />
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <complexType name="tServiceCatalogs">
+    <sequence>
+      <group ref="tns:catalogGroup" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <group name="catalogGroup">
+    <choice>
+      <element name="urlCatalog" type="tns:tUrlCatalog" />
+      <element name="centralCatalog" type="tns:tCentralCatalog" />
+    </choice>
+  </group>
+
+  <complexType name="tUrlCatalog">
+    <sequence>
+      <element name="wsdl" maxOccurs="unbounded">
+        <complexType>
+          <attribute name="location" type="anyURI" use="required" />
+        </complexType>
+      </element>
+    </sequence>
+    <attribute name="contextUrl" type="anyURI" />
+  </complexType>
+
+  <complexType name="tCentralCatalog" />
+
+</schema>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="portTypeRelationships"
+  targetNamespace="http://manufacturing.org/wsdl/purchase" 
+  xmlns:tns="http://manufacturing.org/wsdl/purchase" 
+  xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"   
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <plnk:partnerLinkType name="schedulingLT">
+    <plnk:role name="schedulingService" portType="tns:schedulingPT"/>
+    <plnk:role name="schedulingRequester" portType="tns:schedulingCallbackPT"/>
+  </plnk:partnerLinkType>  
+  <message name="scheduleMessage">
+    <part name="schedule" type="tns:ScheduleInfo"/>
+  </message>
+  <portType name="schedulingCallbackPT">
+    <operation name="returnScheduleTicket">
+      <input message="tns:scheduleMessage"/>
+    </operation>
+  </portType>
+  <portType name="schedulingPT">
+    <operation name="requestScheduling">
+      <input message="tns:scheduleMessage"/>
+    </operation>
+    <operation name="sendShippingSchedule">
+      <input message="tns:scheduleMessage"/>
+    </operation>
+    <operation name="returnScheduleTicket">
+      <input message="tns:scheduleMessage"/>
+    </operation>
+    <operation name="cancelScheduling">
+      <input message="tns:scheduleMessage" />
+    </operation>
+  </portType>
+</definitions>

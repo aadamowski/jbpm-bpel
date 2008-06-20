@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="loaner" targetNamespace="http://jbpm.org/examples/loan"
+  xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://jbpm.org/examples/loan">
+    <types><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://jbpm.org/examples/loan">
+  <xsd:simpleType name="LoanStatus">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="evaluating"></xsd:enumeration>
+      <xsd:enumeration value="approved"></xsd:enumeration>
+      <xsd:enumeration value="rejected"></xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType></xsd:schema></types>
+    <message name="loanRequest">
+        <part name="borrower" type="xsd:string"></part>
+        <part name="amount" type="xsd:double" />
+  </message>
+  <message name="statusRequest">
+    <part name="borrower" type="xsd:string"></part>
+  </message>
+  <message name="statusResponse">
+    <part name="status" type="tns:LoanStatus"></part>
+  </message>
+  <portType name="Loaner">
+    <operation name="requestLoan">
+      <input message="tns:loanRequest" />
+    </operation>
+    <operation name="getLoanStatus">
+      <input message="tns:statusRequest"></input>
+      <output message="tns:statusResponse"></output>
+    </operation>
+  </portType>
+</definitions>

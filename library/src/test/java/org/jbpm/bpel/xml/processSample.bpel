@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="sampleProcess" 
+  targetNamespace="http://acme.com/ws-bp/purchase" 
+  xmlns:def="http://manufacturing.org/wsdl/purchase"
+  xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable" >
+  <import namespace="http://manufacturing.org/wsdl/purchase"
+    location="partnerLinkTypeSample.wsdl"
+    importType="http://schemas.xmlsoap.org/wsdl/"/>
+  <partnerLinks>
+    <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT" 
+      partnerRole="schedulingRequester" myRole="schedulingService"/>
+  </partnerLinks>
+  <variables>
+    <variable name="schedule" messageType="def:scheduleMessage"/>
+  </variables>
+  <receive partnerLink="schedulingPL" operation="sendShippingSchedule" 
+    variable="schedule"/>
+</process>

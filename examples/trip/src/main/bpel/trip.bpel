@@ -1,0 +1,268 @@
+<process name="TripReservation" targetNamespace="http://jbpm.org/examples/trip"
+  xmlns:tns="http://jbpm.org/examples/trip" xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+
+  <partnerLinks>
+    <partnerLink name="traveler" partnerLinkType="tns:Traveler-Agent" myRole="Agent" />
+    <partnerLink name="ticket" partnerLinkType="tns:Agent-Ticket" partnerRole="TicketIssuer" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="purchaseRequest" messageType="tns:purchaseRequest" />
+    <variable name="cost" type="xsd:double" />
+    <variable name="items" type="tns:ItemSet" />
+    <variable name="cancelRequest" messageType="tns:cancelRequest" />
+    <variable name="cancelResponse" messageType="tns:cancelResponse" />
+    <variable name="detailRequest" messageType="tns:detailRequest" />
+    <variable name="detailResponse" messageType="tns:detailResponse" />
+    <variable name="dateReached" type="xsd:boolean" />
+  </variables>
+
+  <correlationSets>
+    <correlationSet name="trip" properties="tns:tripLocator" />
+  </correlationSets>
+
+  <faultHandlers>
+
+    <catch faultName="tns:cancelation">
+
+      <sequence name="Cancel">
+
+        <compensate name="UndoPurchase" scope="TripPurchase" />
+
+        <assign name="PreparePenalty">
+          <copy>
+            <from variable="cost" />
+            <to variable="cancelResponse" part="penalty" query="/tns:penalty/@fee" />
+          </copy>
+        </assign>
+
+        <reply name="SendPenalty" operation="cancelTrip" partnerLink="traveler"
+          portType="tns:TravelAgent" variable="cancelResponse" />
+
+      </sequence>
+
+    </catch>
+
+  </faultHandlers>
+
+  <sequence name="Main">
+
+    <scope name="TripPurchase">
+
+      <variables>
+        <variable name="purchaseResponse" messageType="tns:purchaseResponse" />
+        <variable name="ticketRequest" messageType="tic:ticketRequest" />
+        <variable name="ticketMessage" messageType="tic:ticketMessage" />
+      </variables>
+
+      <sequence name="PurchaseTrip">
+
+        <receive name="ReceiveTripOrder" operation="purchaseTrip" partnerLink="traveler"
+          portType="tns:TravelAgent" variable="purchaseRequest" createInstance="yes" />
+
+        <flow>
+
+          <sequence name="EvaluateCost">
+
+            <assign name="InitializeCost">
+              <copy>
+                <from expression="0" />
+                <to variable="cost" />
+              </copy>
+              <copy>
+                <from variable="purchaseRequest" part="order" query="/tns:order/items" />
+                <to variable="items" />
+              </copy>
+            </assign>
+
+            <switch name="FlightDecision">
+
+              <case condition="bpel:getVariableData('items')/flight
+                and string(bpel:getVariableData('items')/flight/@xsi:nil) != '1'">
+
+                <scope name="FlightReservation">
+
+                  <compensationHandler>
+                    <assign name="ReimburseFlight">
+                      <copy>
+                        <from expression="bpel:getVariableData('cost') - 300 + 100" />
+                        <to variable="cost" />
+                      </copy>
+                    </assign>
+                  </compensationHandler>
+
+                  <assign name="ChargeFlight">
+                    <copy>
+                      <from expression="bpel:getVariableData('cost') + 300" />
+                      <to variable="cost" />
+                    </copy>
+                  </assign>
+
+                </scope>
+
+              </case>
+
+            </switch>
+
+            <switch name="HotelDecision">
+
+              <case condition="bpel:getVariableData('items')/hotel
+                and string(bpel:getVariableData('items')/hotel/@xsi:nil) != '1'">
+
+                <scope name="HotelReservation">
+
+                  <compensationHandler>
+                    <assign name="ReimburseHotel">
+                      <copy>
+                        <from expression="bpel:getVariableData('cost') - 100 + 25" />
+                        <to variable="cost" />
+                      </copy>
+                    </assign>
+                  </compensationHandler>
+
+                  <assign name="ChargeHotel">
+                    <copy>
+                      <from expression="bpel:getVariableData('cost') + 100" />
+                      <to variable="cost" />
+                    </copy>
+                  </assign>
+
+                </scope>
+
+              </case>
+
+            </switch>
+
+            <switch name="CarDecision">
+
+              <case condition="bpel:getVariableData('items')/rentalCar
+                and string(bpel:getVariableData('items')/rentalCar/@xsi:nil) != '1'">
+
+                <scope name="CarReservation">
+
+                  <compensationHandler>
+                    <assign name="ReimburseCar">
+                      <copy>
+                        <from expression="bpel:getVariableData('cost') - 50 + 5" />
+                        <to variable="cost" />
+                      </copy>
+                    </assign>
+                  </compensationHandler>
+
+                  <assign name="ChargeCar">
+                    <copy>
+                      <from expression="bpel:getVariableData('cost') + 50" />
+                      <to variable="cost" />
+                    </copy>
+                  </assign>
+
+                </scope>
+
+              </case>
+
+            </switch>
+
+          </sequence>
+
+          <invoke name="CreateTicket" operation="createTicket" partnerLink="ticket"
+            portType="tic:TicketIssuer" inputVariable="ticketRequest"
+            outputVariable="ticketMessage">
+            <correlations>
+              <correlation set="trip" initiate="yes" pattern="in" />
+            </correlations>
+          </invoke>
+
+        </flow>
+
+        <assign name="PrepareInvoice">
+          <copy>
+            <from variable="ticketMessage" part="ticketNo" />
+            <to variable="purchaseResponse" part="invoice" query="/tns:invoice/@locator" />
+          </copy>
+          <copy>
+            <from variable="cost" />
+            <to variable="purchaseResponse" part="invoice" query="/tns:invoice/@cost" />
+          </copy>
+        </assign>
+
+        <reply name="SendInvoice" operation="purchaseTrip" partnerLink="traveler"
+          portType="tns:TravelAgent" variable="purchaseResponse">
+          <correlations>
+            <correlation set="trip" />
+          </correlations>
+        </reply>
+
+      </sequence>
+
+    </scope>
+
+    <assign name="SetDateNotReached">
+      <copy>
+        <from expression="false()" />
+        <to variable="dateReached" />
+      </copy>
+    </assign>
+
+    <while name="PredateLoop" condition="bpel:getVariableData('dateReached') = 'false'">
+
+      <pick name="PredateMenu">
+
+        <onMessage operation="getTripDetail" partnerLink="traveler" portType="tns:TravelAgent"
+          variable="detailRequest">
+
+          <correlations>
+            <correlation set="trip" />
+          </correlations>
+
+          <sequence name="DetailTrip">
+
+            <assign name="PrepareTripDetail">
+              <copy>
+                <from variable="purchaseRequest" part="order" query="/tns:order/items" />
+                <to variable="detailResponse" part="detail" query="/tns:detail/items" />
+              </copy>
+              <copy>
+                <from variable="cost" />
+                <to variable="detailResponse" part="detail" query="/tns:detail/@cost" />
+              </copy>
+            </assign>
+
+            <reply name="SendTripDetail" operation="getTripDetail" partnerLink="traveler"
+              portType="tns:TravelAgent" variable="detailResponse" />
+
+          </sequence>
+
+        </onMessage>
+
+        <onMessage operation="cancelTrip" partnerLink="traveler" portType="tns:TravelAgent"
+          variable="cancelRequest">
+
+          <correlations>
+            <correlation set="trip" />
+          </correlations>
+
+          <throw name="CancelTrip" faultName="tns:cancelation" />
+
+        </onMessage>
+
+        <onAlarm until="bpel:getVariableData('purchaseRequest', 'order', '/tns:order/date')">
+
+          <assign name="SetDateReached">
+            <copy>
+              <from expression="true()" />
+              <to variable="dateReached" />
+            </copy>
+          </assign>
+
+        </onAlarm>
+
+      </pick>
+
+    </while>
+
+  </sequence>
+
+</process>

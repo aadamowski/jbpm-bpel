@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="loan" targetNamespace="http://jbpm.org/examples/loan"
+  xmlns:tns="http://jbpm.org/examples/loan" xmlns:task="http://jbpm.org/examples/task"
+  xmlns:plt="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/loan" location="interface/loaner.wsdl" />
+  <import namespace="http://jbpm.org/examples/task" location="interface/task.wsdl" />
+
+  <plt:partnerLinkType name="borrower-loaner">
+    <plt:role portType="tns:Loaner" name="loaner" />
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="taskRequester-taskManager">
+    <plt:role portType="task:TaskCallback" name="taskRequester" />
+    <plt:role portType="task:TaskManager" name="taskManager" />
+  </plt:partnerLinkType>
+
+  <vprop:property name="taskId" type="xsd:long" />
+
+  <vprop:propertyAlias propertyName="tns:taskId" messageType="task:createTaskResponse"
+    part="taskId" />
+
+  <vprop:propertyAlias propertyName="tns:taskId" messageType="task:endTaskRequest"
+    part="taskInfo">
+    <vprop:query>@taskId</vprop:query>
+  </vprop:propertyAlias>
+
+  <vprop:property name="borrowerName" type="xsd:string" />
+
+  <vprop:propertyAlias messageType="tns:loanRequest" part="borrower"
+    propertyName="tns:borrowerName" />
+
+  <vprop:propertyAlias messageType="tns:statusRequest" part="borrower"
+    propertyName="tns:borrowerName" />
+
+</definitions>

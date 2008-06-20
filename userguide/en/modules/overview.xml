@@ -1,0 +1,207 @@
+<chapter id="overview">
+
+  <title>Overview of BPEL</title>
+  
+  <para>BPEL stands for<emphasis> Business Process Execution Language</emphasis>. Originally authored 
+    by a small charter of vendors in the software industry, it is currently under standardization 
+    at OASIS (<link linkend="overview.references">1</link>).</para>
+    
+  <para>The specification delivers "<emphasis>a model and a grammar for describing the behavior
+    of a business process based on interactions between the process</emphasis> [coordinator]
+    <emphasis>and its partners. Interaction with each partner occurs through Web Service 
+    interfaces</emphasis>".</para>
+    
+  <para>BPEL has quickly become the dominant specification to standardize orchestration 
+    logic and process automation between Web services. It has bypassed a number 
+    of alternative specifications such as BPML and WSCI, and became a real candidate 
+    to drive the existing web service infrastructure into process-centric applications 
+    based on a service-oriented architecture.</para>
+  
+  <section id="overview.soa">
+    
+    <title>The service-oriented architecture</title>
+    
+    <para>Recent products and strategies announced by IBM, BEA, Microsoft and Oracle 
+      are targeted at the <emphasis role="bold">service-oriented architecture</emphasis>
+      (<link linkend="overview.references">2</link>). SOA helps enterprises modify their 
+      infrastructure <emphasis>on the flight</emphasis>, according 
+      to changes in the environment. Under this model, new applications are developed 
+      by wiring together software components, or services, that expose reusable business 
+      functions (<link linkend="overview.references">3</link>).</para>
+      
+    <para>Leveraging more from existing assets is a real business challenge right now. 
+      The idea of enabling legacy applications to be deployed as (web) services and 
+      orchestrated across platforms is a key part of why BPEL is becoming a cornerstone 
+      of SOA (<link linkend="overview.references">4</link>).</para>
+      
+  </section>
+  
+  <section id="overview.industry">
+    
+    <title>Industry support</title>
+    
+    <itemizedlist>
+      <listitem><para>IBM and BEA worked together in a proposal named BPELJ, with the purpose 
+        of extending BPEL to integrate it more closely with the J2EE platform 
+        (<link linkend="overview.references">5</link>)</para></listitem>
+      <listitem><para>BEA will provide full support for BPELJ in the release of WebLogic Integration 
+        following version 8.1 (<link linkend="overview.references">6</link>). In addition, it has submitted 
+        a specification request (JSR 207) of an annotated Java syntax and APIs for 
+        developing business processes in Java and deploying them in J2EE containers 
+        (<link linkend="overview.references">7</link>)</para></listitem>
+      <listitem><para>IBM already offers that support as part of WebSphere Business Integration 
+        Server 5.1 (<link linkend="overview.references">8</link>)</para></listitem>
+      <listitem><para>Microsoft BizTalk 2004 includes BPEL import and export capabilities 
+        (<link linkend="overview.references">9</link>)</para></listitem>
+      <listitem><para>Oracle acquired Collaxa, a company that focused on implementing the standard 
+        since 2002 (<link linkend="overview.references">10</link>)</para></listitem>
+    </itemizedlist>
+
+  </section>
+  
+  <section id="overview.oasis">
+  
+    <title>OASIS Technical Comittee</title>
+
+    <para>Despite its acceptance, it is recognized that BPEL remains an emerging technology. 
+      Challenges await those interested in near-term deployment. Version 1.1, dated 
+      May 5, 2003, contains plenty of gaps and ambiguities that should come as no 
+      surprise, considering these factors:</para>
+      
+    <itemizedlist>
+      <listitem><para>The separate roots of the specification (<link linkend="overview.references">
+        11</link>). Microsoft initiated the adoption of Pi-Calculus with XLANG, whereas IBM 
+        revisited the use of Petri Nets with the Web Services Flow Language, WSFL. BPEL descends
+        from both languages.</para></listitem>
+      <listitem><para>The immaturity of the overall Web services <emphasis>stack</emphasis>
+        </para></listitem>
+    </itemizedlist>
+    
+    <para>The OASIS WS-BPEL technical committee is working diligently to overcome these 
+      deficiencies. It released the first draft of version 2.0 in July 30, 2004 and 
+      continues to publish drafts periodically as it resolves issues. Version 2.0 
+      is receiving contributions from a much broader community and becoming the standard 
+      everyone wants it to be.</para>
+    
+  </section>
+  
+  <section id="overview.components">
+    
+    <title>Components and dependencies</title>
+    
+    <table>
+    
+      <title>BPEL components</title>
+    
+      <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+
+      <colspec colwidth="2*"/>
+      <colspec colwidth="1*"/>
+
+      <thead>
+        <row>
+          <entry>Component</entry>
+          <entry>Dependency</entry>
+        </row>
+      </thead>
+
+      <tbody>
+
+        <row> 
+          <entry>Partner relationships</entry>
+          <entry>WSDL 1.1 port types</entry>
+        </row>
+
+        <row> 
+          <entry>Data representation</entry>
+          <entry>XML Schema 1.0</entry>
+        </row>
+
+        <row> 
+          <entry>Data manipulation</entry>
+          <entry>XPath 1.0</entry>
+        </row>
+
+        <row> 
+          <entry>Message exchange</entry>
+          <entry>WSDL 1.1 messages</entry>
+        </row>
+
+        <row> 
+          <entry>Flow-control structures</entry>
+          <entry>-</entry>
+        </row>
+
+        <row> 
+          <entry>Scoping: compensation, event handling and event processing</entry>
+          <entry>-</entry>
+        </row>
+
+      </tbody>
+      
+      </tgroup>    
+    
+    </table>
+  
+  </section>
+  
+  <section id="overview.references">
+  
+    <title>References</title>
+    
+    <orderedlist>
+      <listitem>
+        <para>OASIS Web Services Business Process Execution Language TC</para>
+        <para><ulink url="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsbpel" />
+          </para>
+      </listitem>
+      <listitem>
+        <para>Service-Oriented Architecture </para>
+        <para><ulink 
+          url="http://inews.webopedia.com/TERM/S/Service_Oriented_Architecture.html" /></para>
+      </listitem>
+      <listitem>
+        <para>IBM Refocuses WebSphere on Service-Oriented Architectures </para>
+        <para><ulink 
+          url="http://www.rednova.com/news/stories/3/2004/04/30/story103.html" /></para>
+      </listitem>
+      <listitem>
+        <para>IBM Unveils First SOA Products, Services </para>
+        <para><ulink
+          url="http://www.internetnews.com/ent-news/article.php/3343231" /></para>
+      </listitem>
+      <listitem>
+        <para>BEA, IBM Propose Java/BPEL 'Marriage' </para>
+        <para><ulink 
+          url="http://itmanagement.earthweb.com/entdev/article.php/3337731" /></para>
+      </listitem>
+      <listitem>
+        <para>BEA - BPEL &amp; BPELJ </para>
+        <para><ulink url="http://dev2dev.bea.com/technologies/bpel/index.jsp" /></para>
+      </listitem>
+      <listitem>
+        <para>JSR 207: Process Definition for Java </para>
+        <para><ulink url="http://www.jcp.org/en/jsr/detail?id=207" /></para>
+      </listitem>
+      <listitem>
+        <para>WebSphere Business Integration Server Foundation </para>
+        <para><ulink url="http://www-306.ibm.com/software/integration/wbisf/features/"/></para>
+      </listitem>
+      <listitem>
+        <para>MSDN - Importing BPEL4WS </para>
+        <para><ulink url="http://msdn2.microsoft.com/en-us/library/ms946026.aspx"/></para>
+      </listitem>
+      <listitem>
+        <para>Oracle BPEL Process Manager</para>
+        <para><ulink 
+          url="http://www.oracle.com/technology/products/ias/bpel/index.html"/></para>
+      </listitem>
+      <listitem>
+        <para>A Convergence Path toward a Standard BPM Stack </para>
+        <para><ulink url="http://www.bpmi.org/downloads/BPML-BPEL4WS.pdf"/></para>
+      </listitem>
+    </orderedlist>
+  
+  </section>
+  
+</chapter>

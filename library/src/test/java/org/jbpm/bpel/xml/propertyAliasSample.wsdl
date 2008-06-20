@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="correlatedMessages" targetNamespace="http://manufacturing.org/wsdl/purchase"
+  xmlns:tns="http://manufacturing.org/wsdl/purchase"
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <vprop:property name="orderNumber" type="xsd:int" />
+  <vprop:property name="invoiceId" type="xsd:int" />
+  <vprop:propertyAlias propertyName="tns:orderNumber" messageType="tns:POMessage" part="PO">
+    <vprop:query>orderNumber</vprop:query>
+  </vprop:propertyAlias>
+  <vprop:propertyAlias propertyName="tns:invoiceId" messageType="tns:POMessage" part="PO">
+    <vprop:query>orderNumber</vprop:query>
+  </vprop:propertyAlias>  
+  <types>
+    <xsd:schema>
+      <xsd:complexType name="PurchaseOrder">
+        <xsd:sequence>
+          <xsd:element name="orderNumber" type="xsd:integer" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </types>
+  <message name="POMessage">
+    <part name="PO" type="PurchaseOrder" />
+  </message>
+</definitions>

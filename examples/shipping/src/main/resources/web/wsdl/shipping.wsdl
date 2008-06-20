@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://manufacturing.org/wsdl/purchase"
+  xmlns:tns="http://manufacturing.org/wsdl/purchase"
+  xmlns:pos="http://manufacturing.org/wsdl/purchase"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://manufacturing.org/wsdl/purchase"
+    location="purchase.wsdl" />
+
+  <binding name="shippingSoapBinding" type="pos:shippingPT">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="requestShipping">
+      <soap:operation soapAction="http://manufacturing.org/wsdl/purchase" />
+      <input>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </input>
+      <output>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </output>
+      <fault name="cannotCompleteOrder">
+        <soap:fault name="cannotCompleteOrder" use="literal" />
+      </fault>
+    </operation>
+  </binding>
+
+  <service name="shippingService">
+    <port name="shippingSoapPort" binding="tns:shippingSoapBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+  </service>
+
+</definitions>

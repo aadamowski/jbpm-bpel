@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+  <wsdl location="src/main/resources/web/wsdl/invoice.wsdl"
+    packageName="org.jbpm.bpel.tutorial.invoice">
+    <namespaceMappingRegistry>
+      <namespaceMapping namespace="http://manufacturing.org/xsd/purchase"
+        packageName="org.jbpm.bpel.tutorial.purchase" />
+    </namespaceMappingRegistry>
+  </wsdl>
+</configuration>
+

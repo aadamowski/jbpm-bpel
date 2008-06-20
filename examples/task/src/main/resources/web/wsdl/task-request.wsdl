@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="task-requeriment" targetNamespace="http://jbpm.org/examples/task"
+  xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://jbpm.org/examples/task"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://jbpm.org/examples/task" location="task.wsdl" />
+  <binding name="TaskCallbackBinding" type="tns:TaskCallback">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="taskEnded">
+      <soap:operation soapAction="http://jbpm.org/examples/task/taskEnded" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </input>
+    </operation>
+  </binding>
+  <service name="TaskRequestService">
+    <documentation>
+      This service is not published to the world. It serves as an auxiliary to generate the Java
+      mapping artifacts for the TaskCallback port type.
+    </documentation>
+    <port name="TaskCallbackPort" binding="tns:TaskCallbackBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+  </service>
+</definitions>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="correlatedMessages" 
+ targetNamespace="http://example.com/supplyMessages.wsdl"
+ xmlns:tns="http://example.com/supplyMessages.wsdl"
+ xmlns:cor="http://example.com/supplyCorrelation.wsdl" 
+ xmlns:def="http://manufacturing.org/wsdl/purchase" 
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop" 
+ xmlns:po="http://example.com/po.xsd"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <import namespace="http://manufacturing.org/wsdl/purchase" location="partnerLinkTypeSample.wsdl"/>
+  <import namespace="http://example.com/supplyCorrelation.wsdl" location="propertySample.wsdl"/>
+  <types>
+    <xsd:schema targetNamespace="http://example.com/supplyMessages.wsdl">
+      <xsd:complexType name="PurchaseOrderResponse">
+        <xsd:sequence>
+          <xsd:element name="CID" type="xsd:string"/>
+          <xsd:element name="order" type="xsd:int"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PurchaseOrderReject">
+        <xsd:complexContent>
+          <xsd:extension base="tns:PurchaseOrderResponse">
+            <xsd:sequence>
+              <xsd:element name="reason" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+    </xsd:schema>
+  </types>
+  <message name="POResponse">
+    <part name="RSP" type="tns:PurchaseOrderResponse"/>
+  </message>
+  <message name="POReject">
+    <part name="RJCT" type="tns:PurchaseOrderReject"/>
+  </message>
+  <vprop:propertyAlias propertyName="cor:customerID" messageType="def:POMessage" part="purchaseOrder">
+    <vprop:query>CID</vprop:query>
+  </vprop:propertyAlias>
+  <vprop:propertyAlias propertyName="cor:vendorID" messageType="def:InvMessage" part="IVC">
+    <vprop:query queryLanguage="http://www.w3.org/TR/1999/REC-xpath-19991116">po:Invoice/VID</vprop:query>
+  </vprop:propertyAlias>
+  <vprop:propertyAlias propertyName="cor:orderNumber" messageType="def:POMessage" part="purchaseOrder" />
+  <vprop:propertyAlias propertyName="cor:invoiceNumber" messageType="def:InvMessage" part="IVC">
+    <vprop:query>po:Invoice/InvNum</vprop:query>
+  </vprop:propertyAlias>
+</definitions>

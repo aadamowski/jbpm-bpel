@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.endpointref.SoapEndpointReference" extends="org.jbpm.bpel.endpointref.EndpointReference"
+    discriminator-value="null">
+
+    <property name="address" column="ADDRESS_" />
+    <property name="serviceName" type="qname">
+      <column name="SERVICELOCALNAME_" />
+      <column name="SERVICENAMESPACE_" />
+    </property>
+    <property name="portName" column="PORTNAME_" />
+
+    <subclass name="org.jbpm.bpel.endpointref.wsa.WsaEndpointReference" discriminator-value="A" />
+    <subclass name="org.jbpm.bpel.endpointref.wsdl.WsdlEndpointReference" discriminator-value="D" />
+
+  </subclass>
+
+</hibernate-mapping>

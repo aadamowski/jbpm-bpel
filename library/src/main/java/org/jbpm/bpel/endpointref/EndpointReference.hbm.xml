@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.endpointref.EndpointReference" table="BPEL_ENDPOINTREFERENCE" discriminator-value="null">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <property name="scheme" column="SCHEME_" />
+    <property name="portTypeName" type="qname">
+      <column name="PORTTYPELOCALNAME_" />
+      <column name="PORTTYPENAMESPACE_" />
+    </property>
+
+  </class>
+
+</hibernate-mapping>

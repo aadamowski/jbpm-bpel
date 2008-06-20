@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.def.BpelProcessDefinition"
+    extends="org.jbpm.graph.def.ProcessDefinition" discriminator-value="B">
+
+    <property name="targetNamespace" column="TARGETNAMESPACE_" />
+    <property name="expressionLanguage" column="EXPRESSIONLANG_" />
+    <property name="queryLanguage" column="QUERYLANG_" />
+
+    <set name="namespaces" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="PROCESSDEFINITION_" foreign-key="FK_PROCESSDEF_NAMESPACE" />
+      <one-to-many class="org.jbpm.bpel.graph.def.Namespace" />
+    </set>
+
+  </subclass>
+
+</hibernate-mapping>

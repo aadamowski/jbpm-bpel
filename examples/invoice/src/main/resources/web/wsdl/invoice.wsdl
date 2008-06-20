@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://manufacturing.org/wsdl/purchase"
+  xmlns:tns="http://manufacturing.org/wsdl/purchase"
+  xmlns:pos="http://manufacturing.org/wsdl/purchase"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://manufacturing.org/wsdl/purchase"
+    location="purchase.wsdl" />
+
+  <binding name="invoiceSoapBinding" type="pos:computePricePT">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="initiatePriceCalculation">
+      <soap:operation soapAction="http://manufacturing.org/wsdl/purchase" />
+      <input>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </input>
+      <output>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </output>
+    </operation>
+    <operation name="sendShippingPrice">
+      <soap:operation soapAction="http://manufacturing.org/wsdl/purchase" />
+      <input>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </input>
+      <output>
+        <soap:body use="literal"
+          namespace="http://manufacturing.org/wsdl/purchase" />
+      </output>
+    </operation>
+  </binding>
+
+  <service name="invoiceService">
+    <port name="invoiceSoapPort" binding="tns:invoiceSoapBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+  </service>
+
+</definitions>

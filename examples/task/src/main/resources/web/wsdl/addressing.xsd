@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+  xmlns:tns="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+  xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <element name="EndpointReference" type="tns:EndpointReferenceType" />
+
+  <complexType name="EndpointReferenceType">
+    <sequence>
+      <element name="Address" type="anyURI" />
+      <element name="ReferenceProperties" type="tns:ReferencePropertiesType" minOccurs="0" />
+      <element name="ReferenceParameters" type="tns:ReferenceParametersType" minOccurs="0" />
+      <element name="PortType" type="QName" minOccurs="0" />
+      <element name="ServiceName" type="tns:ServiceNameType" minOccurs="0" />
+      <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ReferencePropertiesType">
+    <sequence>
+      <any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ReferenceParametersType">
+    <sequence>
+      <any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="ServiceNameType">
+    <simpleContent>
+      <extension base="QName">
+        <attribute name="PortName" type="NCName" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <element name="From" type="tns:EndpointReferenceType" />
+
+  <element name="ReplyTo" type="tns:EndpointReferenceType" />
+
+  <element name="FaultTo" type="tns:EndpointReferenceType" />
+
+</schema>

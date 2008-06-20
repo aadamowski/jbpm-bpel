@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogWriters>
+  <catalogWriter catalog="org.jbpm.bpel.integration.catalog.UrlCatalog"
+    class="org.jbpm.bpel.xml.UrlCatalogWriter" />
+  <catalogWriter catalog="org.jbpm.bpel.integration.catalog.CentralCatalog"
+    class="org.jbpm.bpel.xml.CentralCatalogWriter" />
+</catalogWriters>

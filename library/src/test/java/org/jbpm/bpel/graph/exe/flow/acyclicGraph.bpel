@@ -1,0 +1,44 @@
+<flow xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+	<links>
+		<link name="buyToSettle"/>
+		<link name="sellToSettle"/>
+		<link name="toBuyConfirm"/>
+		<link name="toSellConfirm"/>
+	</links>
+	
+	<receive name="getBuyerInformation" partnerLink='aPartner' operation='o'>
+		<sources>
+		<source linkName="buyToSettle"/>
+		</sources>
+	</receive>
+	
+	<receive name="getSellerInformation" partnerLink='aPartner' operation='o'>
+		<sources>
+		<source linkName="sellToSettle"/>
+		</sources>
+	</receive>
+	
+	<receive name="settleTrade"  partnerLink='aPartner' operation='o'>
+		<targets>
+		<joinCondition>$buyToSettle and $sellToSettle</joinCondition>
+		<target linkName="buyToSettle"/>
+		<target linkName="sellToSettle"/>
+		</targets>
+		<sources>
+		<source linkName="toBuyConfirm"/>
+		<source linkName="toSellConfirm"/>
+		</sources>
+	</receive>
+	
+	<receive name="confirmBuyer" partnerLink='aPartner' operation='o'>
+		<targets>
+		<target linkName="toBuyConfirm"/>
+		</targets>
+	</receive>
+	
+	<receive name="confirmSeller" partnerLink='aPartner' operation='o'>
+		<targets>
+		<target linkName="toSellConfirm"/>
+		</targets>
+	</receive>
+</flow>

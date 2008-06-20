@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="urn:samples:atm" xmlns:tns="urn:samples:atm"
+  xmlns:types="urn:samples:atmTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="urn:samples:session" location="partner.wsdl"></import>
+
+  <types>
+    <schema targetNamespace="urn:samples:atmTypes" xmlns="http://www.w3.org/2001/XMLSchema">
+      <complexType name="operationRequestType">
+        <sequence>
+          <element name="customerName" type="string" />
+          <element name="amount" type="double" />
+        </sequence>
+      </complexType>
+      <complexType name="operationFaultType">
+        <sequence>
+          <element name="code" type="int" />
+          <element name="description" type="string" />
+        </sequence>
+      </complexType>
+      <element name="operationFault" type="types:operationFaultType" />
+    </schema>
+  </types>
+
+  <message name="logonRequest">
+    <part name="sessionID" type="xsd:int" />
+    <part name="customerName" type="xsd:string" />
+  </message>
+  <message name="operationResponse">
+    <part name="balance" type="xsd:double" />
+  </message>
+  <message name="operationRequest">
+    <part name="request" type="types:operationRequestType" />
+  </message>
+  <message name="operationFault">
+    <part name="fault" element="types:operationFault" />
+  </message>
+
+  <portType name="atm">
+    <operation name="logon">
+      <input message="tns:logonRequest" />
+    </operation>
+    <operation name="deposit">
+      <input message="tns:operationRequest" />
+      <output message="tns:operationResponse" />
+    </operation>
+    <operation name="withdraw">
+      <input message="tns:operationRequest" />
+      <output message="tns:operationResponse" />
+      <fault name="notEnoughFunds" message="tns:operationFault" />
+    </operation>
+  </portType>
+
+</definitions>

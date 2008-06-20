@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices version="1.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+      http://java.sun.com/xml/ns/j2ee/j2ee_web_services_1_1.xsd">
+
+  <webservice-description>
+
+    <webservice-description-name>Production Scheduling Process</webservice-description-name>
+    <wsdl-file>WEB-INF/wsdl/scheduling.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>WEB-INF/scheduling-mapping.xml</jaxrpc-mapping-file>
+
+    <port-component>
+
+      <port-component-name>schedulingPort</port-component-name>
+      <wsdl-port xmlns:portNS="http://manufacturing.org/wsdl/purchase">
+        portNS:schedulingSoapPort
+      </wsdl-port>
+      <service-endpoint-interface>
+        org.jbpm.bpel.tutorial.scheduling.SchedulingPT
+      </service-endpoint-interface>
+      <service-impl-bean>
+        <servlet-link>schedulingServlet</servlet-link>
+      </service-impl-bean>
+
+    </port-component>
+
+  </webservice-description>
+
+</webservices>

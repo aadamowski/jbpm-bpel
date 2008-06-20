@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="trip" targetNamespace="http://jbpm.org/examples/trip"
+  xmlns:tns="http://jbpm.org/examples/trip" xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:plt="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/ticket" location="ticket.wsdl" />
+
+  <types>
+
+    <xsd:schema targetNamespace="http://jbpm.org/examples/trip">
+
+      <xsd:complexType name="Flight">
+        <xsd:attribute name="airline" type="xsd:string" use="required" />
+        <xsd:attribute name="number" type="xsd:int" use="required" />
+      </xsd:complexType>
+
+      <xsd:complexType name="Hotel">
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+      </xsd:complexType>
+
+      <xsd:complexType name="RentalCar">
+        <xsd:attribute name="company" type="xsd:string" use="required" />
+      </xsd:complexType>
+
+      <xsd:complexType name="ItemSet">
+        <xsd:sequence>
+          <xsd:element name="flight" type="tns:Flight" nillable="true" />
+          <xsd:element name="hotel" type="tns:Hotel" nillable="true" />
+          <xsd:element name="rentalCar" type="tns:RentalCar" nillable="true" />
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="order">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="items" type="tns:ItemSet" />
+            <xsd:element name="date" type="xsd:dateTime" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="invoice">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+          <xsd:attribute name="cost" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="cancelation">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="penalty">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="fee" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="query">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="detail">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="items" type="tns:ItemSet" />
+          </xsd:sequence>
+          <xsd:attribute name="cost" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:schema>
+
+  </types>
+
+  <message name="detailRequest">
+    <part name="query" element="tns:query" />
+  </message>
+
+  <message name="cancelRequest">
+    <part name="cancelation" element="tns:cancelation" />
+  </message>
+
+  <message name="purchaseResponse">
+    <part name="invoice" element="tns:invoice" />
+  </message>
+
+  <message name="cancelResponse">
+    <part name="penalty" element="tns:penalty" />
+  </message>
+
+  <message name="purchaseRequest">
+    <part name="order" element="tns:order" />
+  </message>
+
+  <message name="detailResponse">
+    <part name="detail" element="tns:detail" />
+  </message>
+
+  <portType name="TravelAgent">
+
+    <operation name="purchaseTrip">
+      <input message="tns:purchaseRequest" />
+      <output message="tns:purchaseResponse" />
+    </operation>
+
+    <operation name="cancelTrip">
+      <input message="tns:cancelRequest" />
+      <output message="tns:cancelResponse" />
+    </operation>
+
+    <operation name="getTripDetail">
+      <input message="tns:detailRequest" />
+      <output message="tns:detailResponse" />
+    </operation>
+
+  </portType>
+
+  <plt:partnerLinkType name="Traveler-Agent">
+    <plt:role name="Agent" portType="tns:TravelAgent" />
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="Agent-Ticket">
+    <plt:role name="TicketIssuer" portType="tic:TicketIssuer" />
+  </plt:partnerLinkType>
+
+  <vprop:property name="tripLocator" type="xsd:string" />
+
+  <vprop:propertyAlias propertyName="tns:tripLocator" messageType="tns:purchaseResponse"
+    part="invoice">
+    <vprop:query>@locator</vprop:query>
+  </vprop:propertyAlias>
+
+  <vprop:propertyAlias propertyName="tns:tripLocator" messageType="tns:cancelRequest"
+    part="cancelation">
+    <vprop:query>@locator</vprop:query>
+  </vprop:propertyAlias>
+
+  <vprop:propertyAlias propertyName="tns:tripLocator" messageType="tns:detailRequest"
+    part="query">
+    <vprop:query>@locator</vprop:query>
+  </vprop:propertyAlias>
+
+  <vprop:propertyAlias propertyName="tns:tripLocator" messageType="tic:ticketMessage" part="ticketNo" />
+
+</definitions>

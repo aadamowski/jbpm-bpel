@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project name="purchase" default="main">
+
+  <import file="../common/bpel-build.xml" />
+  <import file="../common/test-build.xml" />
+
+  <property name="ejb.dir" value="${resources.dir}/ejb" />
+
+  <!-- ============================ -->
+  <!-- === PARTNER REGISTRATION === -->
+  <!-- ============================ -->
+
+  <target name="register.partners"
+          depends="define.register.task"
+          description="register the partner services">
+    <registerpartner baselocation="http://localhost:8080/invoice/invoiceService?wsdl" />
+    <registerpartner baselocation="http://localhost:8080/shipping/shippingService?wsdl" />
+    <registerpartner baselocation="http://localhost:8080/scheduling/schedulingProcess?wsdl" />
+  </target>
+
+  <!-- =========================== -->
+  <!-- === EJB MODULE ASSEMBLY === -->
+  <!-- =========================== -->
+
+  <target name="package.ejb" depends="generate.mapping">
+    <!-- compile ejb classes -->
+    <mkdir dir="${output.classes.dir}" />
+    <javac destdir="${output.classes.dir}"
+           classpathref="jboss.path"
+           source="${javac.source}"
+           target="${javac.target}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}">
+      <src path="${java.dir}" />
+      <src path="${output.java.dir}" />
+    </javac>
+    <!-- build ejb module with classes and descriptors -->
+    <jar destfile="${output.dir}/${module.name}-ejb.jar">
+      <!-- ejb descriptors -->
+      <metainf dir="${ejb.dir}" />
+      <!-- jaxrpc mapping file -->
+      <metainf file="${output.web.dir}/${module.name}-mapping.xml" />
+      <!-- wsdl documents -->
+      <zipfileset dir="${jboss.server.dir}/data/wsdl/${module.name}.war" prefix="META-INF/wsdl" />
+      <!-- ejb classes -->
+      <fileset dir="${output.classes.dir}" />
+    </jar>
+  </target>
+
+  <!-- ====================== -->
+  <!-- === TEST EXECUTION === -->
+  <!-- ====================== -->
+
+  <target name="test" depends="package.ejb" description="test the deployed application">
+    <antcall target="test.test" />
+  </target>
+
+</project>

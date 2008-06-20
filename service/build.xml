@@ -1,0 +1,68 @@
+<project name="jbpm.bpel.service" basedir="." default="install.sar">
+
+  <!-- project specific properties -->
+  <property name="jbpm.root" value="../.." />
+
+  <!-- properties files -->
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <!-- import base project build file -->
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <target name="compile.dependencies" depends="define.libs.classpath">
+    <ant antfile="${jbpm.root}/bpel/console/build.xml" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/container/build.xml" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/enterprise/build.xml" target="create.config" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/enterprise/build.xml" target="package.ejb" inheritall="no" />
+
+    <path id="compile.classpath">
+      <path refid="libs.classpath" />
+      <path location="${lib.jbpm.jpdl.jar.local}" />
+      <fileset dir="${jboss.home}/client" includes="*.jar" />
+    </path>
+  </target>
+
+  <target name="create.manifest">
+    <mkdir dir="target/META-INF" />
+    <manifest file="target/META-INF/MANIFEST.MF">
+      <attribute name="Implementation-Title" value="jBPM BPEL Service" />
+      <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+      <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+      <attribute name="Implementation-Vendor" value="JBoss Inc." />
+      <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+    </manifest>
+  </target>
+
+  <target name="package.sar" depends="compile, create.manifest">
+    <!-- build service archive -->
+    <jar destfile="${lib.jbpm.bpel.sar.target}" manifest="target/META-INF/MANIFEST.MF">
+      <!-- modules -->
+      <fileset file="${lib.jbpm.bpel.console.local}" />
+      <fileset file="${jbpm.root}/bpel/enterprise/target/jbpm-bpel-enterprise.jar" />
+      <!-- libraries -->
+      <fileset dir="${local.repository}/${lib.jbpm.bpel.dir}">
+        <include name="${lib.jbpm.bpel.jar.file}" />
+        <include name="${lib.jbpm.bpel.container.jar.file}" />
+      </fileset>
+      <fileset file="${jbpm.root}/bpel/enterprise/target/${lib.jbpm.bpel.config.file}" />
+      <!-- dependencies -->
+      <fileset file="${lib.commons.lang.local}" />
+      <fileset file="${lib.jaxen.local}" />
+      <fileset file="${lib.jbpm.jpdl.jar.local}" />
+      <fileset file="${lib.jbpm.identity.jar.local}" />
+      <fileset file="src/main/resources/jbpm-jmx.jar" />
+      <!-- resources -->
+      <metainf file="src/main/resources/META-INF/jboss-service.xml" />
+    </jar>
+  </target>
+
+  <target name="install.sar"
+          depends="package.sar"
+          description="install jbpm bpel service to local repository">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy file="${lib.jbpm.bpel.sar.target}" todir="${local.repository}/${lib.jbpm.bpel.dir}" />
+  </target>
+
+</project>

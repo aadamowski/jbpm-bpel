@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.basic.assign.Copy"
+    extends="org.jbpm.bpel.graph.basic.AssignOperation" discriminator-value="C">
+
+    <!-- BPEL-192 removed unique constraint for compatibility with Sybase -->
+    <many-to-one name="from" column="FROM_" foreign-key="FK_COPY_FROM" cascade="all" />
+    <!-- BPEL-192 removed unique constraint for compatibility with Sybase -->
+    <many-to-one name="to" column="TO_" foreign-key="FK_COPY_TO" cascade="all" />
+
+  </subclass>
+
+</hibernate-mapping>

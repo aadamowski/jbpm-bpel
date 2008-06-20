@@ -1,0 +1,222 @@
+<project name="jbpm.bpel.library" basedir="." default="install.jar">
+
+  <!-- project specific properties -->
+  <property name="jbpm.root" value="../.." />
+
+  <!-- properties files -->
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <!-- import base project build file -->
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <!-- project specific targets -->
+  <target name="compile.dependencies" depends="define.libs.classpath">
+    <path id="compile.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+    </path>
+  </target>
+
+  <target name="compile.test.dependencies"
+          depends="define.libs.classpath, install.jar, install.config">
+    <path id="compile.test.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+    </path>
+  </target>
+
+  <target name="test.dependencies" depends="define.libs.classpath">
+    <path id="test.classpath">
+      <path refid="libs.classpath" />
+      <fileset dir="${jboss.home}/client" includes="*.jar" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+      <pathelement location="${local.repository}/${lib.jbpm.bpel.dir}/${lib.jbpm.bpel.container.jar.file}" />
+      <pathelement location="${lib.jbpm.bpel.config.local}" />
+      <pathelement location="target/test.classes" />
+      <pathelement location="src/test/config" />
+    </path>
+  </target>
+
+  <target name="create.manifest">
+    <mkdir dir="target/META-INF" />
+    <manifest file="target/META-INF/MANIFEST.MF">
+      <attribute name="Implementation-Title" value="jBPM BPEL" />
+      <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+      <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+      <attribute name="Implementation-Vendor" value="JBoss Inc." />
+      <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+    </manifest>
+  </target>
+
+  <!-- LIBRARY : jbpm-bpel.jar -->
+
+  <target name="package.jar" depends="compile, create.manifest">
+    <jar jarfile="${lib.jbpm.bpel.jar.target}" manifest="target/META-INF/MANIFEST.MF">
+      <fileset dir="target/classes" />
+    </jar>
+  </target>
+
+  <target name="install.jar"
+          depends="package.jar"
+          description="install library to local repository">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}" file="${lib.jbpm.bpel.jar.target}" />
+  </target>
+
+  <target name="deploy.product"
+          depends="install.jar, install.config"
+          description="deploy product to server">
+    <!-- install dependencies -->
+    <ant antfile="${jbpm.root}/bpel/console/build.xml" inheritall="false" />
+    <ant antfile="${jbpm.root}/bpel/enterprise/build.xml" inheritall="false" />
+
+    <!-- copy jbpm libraries -->
+    <copy todir="${jboss.home}/server/${jboss.server}/lib">
+      <fileset file="${lib.jbpm.jpdl.jar.local}" />
+      <fileset file="${lib.jbpm.identity.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.config.local}" />
+      <fileset file="${local.repository}/${lib.jbpm.bpel.dir}/${lib.jbpm.bpel.container.jar.file}" />
+    </copy>
+
+    <!-- copy thirdparty libraries -->
+    <copy todir="${jboss.home}/server/${jboss.server}/lib">
+      <fileset file="${lib.commons.lang.local}" />
+      <fileset file="${lib.jaxen.local}" />
+    </copy>
+
+    <!-- deploy web and enterprise modules -->
+    <copy todir="${jboss.home}/server/${jboss.server}/deploy">
+      <fileset file="${lib.jbpm.bpel.console.local}" />
+      <fileset file="${lib.jbpm.bpel.enterprise.local}" />
+    </copy>
+  </target>
+
+  <!-- CONFIGURATION : jbpm-bpel-config.jar -->
+
+  <target name="package.config" depends="create.manifest">
+    <jar jarfile="${lib.jbpm.bpel.config.target}" manifest="target/META-INF/MANIFEST.MF">
+      <fileset dir="src/main/config" />
+    </jar>
+  </target>
+
+  <target name="install.config"
+          depends="package.config"
+          description="install configuration to local repository">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}" file="${lib.jbpm.bpel.config.target}" />
+  </target>
+
+  <!-- SOURCES : jbpm-bpel-src.zip -->
+
+  <target name="package.src">
+    <zip zipfile="${lib.jbpm.bpel.src.target}">
+      <fileset dir="src/main/java">
+        <include name="**/*.java" />
+        <patternset refid="jar.resource.files" />
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="install.src" depends="package.src">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}" file="${lib.jbpm.bpel.src.target}" />
+  </target>
+
+  <!-- JAVADOCS : jbpm-bpel-javadoc.zip -->
+
+  <target name="generate.javadoc" depends="compile.dependencies" unless="bpel.javadoc.uptodate">
+    <javadoc destdir="target/javadoc"
+             windowtitle="jBPM BPEL ${lib.jbpm.bpel.version}"
+             overview="src/main/java/package.html"
+             classpathref="compile.classpath"
+             source="${javac.source}">
+      <packageset dir="src/main/java" />
+      <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+      <link href="http://java.sun.com/j2ee/1.4/docs/api/" />
+      <link href="http://docs.jboss.com/jbpm/v3/javadoc/" />
+    </javadoc>
+  </target>
+
+  <target name="package.javadoc">
+    <uptodate property="bpel.javadoc.uptodate" targetfile="target/javadoc/index.html">
+      <srcfiles dir="src/main/java" includes="**/*.java" />
+    </uptodate>
+    <antcall target="generate.javadoc" />
+    <zip destfile="${lib.jbpm.bpel.javadoc.target}">
+      <fileset dir="target/javadoc" />
+    </zip>
+  </target>
+
+  <target name="install.javadoc" depends="package.javadoc">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}" file="${lib.jbpm.bpel.javadoc.target}" />
+  </target>
+
+  <target name="test" depends="compile.test, test.dependencies" description="run unit tests">
+    <delete dir="target/test.results" />
+    <mkdir dir="target/test.results/xml" />
+
+    <echo level="info">Java tests</echo>
+    <junit printsummary="yes" fork="yes" forkmode="once" showoutput="false">
+      <classpath refid="${test.classpath}" />
+      <formatter type="xml" />
+      <batchtest todir="target/test.results/xml">
+        <fileset dir="target/test.classes">
+          <include name="**/*Test.class" />
+          <!-- db tests -->
+          <exclude name="**/*DbTest.class" />
+          <!-- server tests -->
+          <exclude name="org/jbpm/bpel/integration/soap/SoapUtilTest.class" />
+          <exclude name="org/jbpm/bpel/integration/def/InvokeActionTest.class" />
+          <exclude name="org/jbpm/bpel/integration/def/ReplyActionTest.class" />
+          <exclude name="org/jbpm/bpel/integration/jms/RequestListenerTest.class" />
+          <exclude name="org/jbpm/bpel/integration/jms/StartListenerTest.class" />
+          <exclude name="org/jbpm/bpel/integration/server/SoapHandlerTest.class" />
+          <exclude name="org/jbpm/bpel/integration/client/SoapCallerTest.class" />
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <echo level="info">Database tests</echo>
+    <junit printsummary="yes" fork="yes" forkmode="once" showoutput="false">
+      <classpath refid="${test.classpath}" />
+      <formatter type="xml" />
+      <batchtest todir="target/test.results/xml">
+        <fileset dir="target/test.classes" includes="**/*DbTest.class" />
+      </batchtest>
+    </junit>
+
+    <echo level="info">Server tests</echo>
+    <echo level="info">If all of the following tests fail, make sure JBoss AS is running</echo>
+    <junit printsummary="yes" fork="yes" forkmode="once">
+      <classpath refid="${test.classpath}" />
+      <formatter type="xml" />
+      <batchtest todir="target/test.results/xml">
+        <fileset dir="target/test.classes">
+          <include name="org/jbpm/bpel/integration/soap/SoapUtilTest.class" />
+          <include name="org/jbpm/bpel/integration/def/InvokeActionTest.class" />
+          <include name="org/jbpm/bpel/integration/def/ReplyActionTest.class" />
+          <include name="org/jbpm/bpel/integration/jms/RequestListenerTest.class" />
+          <include name="org/jbpm/bpel/integration/jms/StartListenerTest.class" />
+          <include name="org/jbpm/bpel/integration/server/SoapHandlerTest.class" />
+          <include name="org/jbpm/bpel/integration/client/SoapCallerTest.class" />
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <echo level="info">If the next junitreport task fails due to heap space, set environment
+      variable ANT_OPTS to -Xmx128m and run the target again</echo>
+    <junitreport todir="target/test.results/xml">
+      <fileset dir="target/test.results/xml" includes="TEST-*.xml" />
+      <report todir="target/test.results" />
+    </junitreport>
+  </target>
+
+</project>

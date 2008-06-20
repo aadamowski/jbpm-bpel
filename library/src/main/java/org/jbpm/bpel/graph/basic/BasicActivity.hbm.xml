@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.basic.Assign" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="d">
+
+    <list name="operations" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="ASSIGN_" foreign-key="FK_OPERATION_ASSIGN" />
+      <list-index column="ASSIGNINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.basic.AssignOperation" />
+    </list>
+
+  </subclass>
+
+  <subclass name="org.jbpm.bpel.graph.basic.Empty" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="h" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Exit" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="f" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Invoke" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="c" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Receive" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="a">
+
+    <property name="createInstance" column="CREATEINSTANCE_" />
+
+  </subclass>
+
+  <subclass name="org.jbpm.bpel.graph.basic.Reply" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="b" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Rethrow" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="p" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Throw" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="e">
+
+    <property name="faultName" type="qname">
+      <column name="FAULTLOCALNAME_" />
+      <column name="FAULTNAMESPACE_" />
+    </property>
+
+    <many-to-one name="faultVariable" column="VARIABLE_" foreign-key="FK_THROW_VARIABLE"
+      cascade="all" />
+
+  </subclass>
+
+  <subclass name="org.jbpm.bpel.graph.basic.Validate" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="q" />
+
+  <subclass name="org.jbpm.bpel.graph.basic.Wait" extends="org.jbpm.bpel.graph.def.Activity"
+    discriminator-value="g" />
+
+</hibernate-mapping>

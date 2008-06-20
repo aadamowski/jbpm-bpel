@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.def.ImportDefinition"
+    extends="org.jbpm.module.def.ModuleDefinition" discriminator-value="P">
+
+    <list name="imports" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_IMPORT" />
+      <list-index column="IMPORTSINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.def.Import" />
+    </list>
+
+    <map name="properties" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_PROPERTY" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.wsdl.impl.PropertyImpl" />
+    </map>
+
+    <map name="messages" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_MESSAGE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="com.ibm.wsdl.MessageImpl" />
+    </map>
+
+    <map name="partnerLinkTypes" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_PARTNERLINKTYPE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.wsdl.impl.PartnerLinkTypeImpl" />
+    </map>
+
+    <map name="portTypes" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_PORTTYPE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="com.ibm.wsdl.PortTypeImpl" />
+    </map>
+
+    <map name="elementTypes" cascade="all" where="CLASS_ = 'E'">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_ELEMENTTYPE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.variable.def.ElementType" />
+    </map>
+
+    <map name="schemaTypes" cascade="all" where="CLASS_ = 'S'">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_SCHEMATYPE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.variable.def.SchemaType" />
+    </map>
+
+    <map name="messageTypes" cascade="all" where="CLASS_ = 'M'">
+      <cache usage="nonstrict-read-write" />
+      <key column="IMPORTDEF_" foreign-key="FK_IMPORTDEF_MESSAGETYPE" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.variable.def.MessageType" />
+    </map>
+  </subclass>
+
+</hibernate-mapping>

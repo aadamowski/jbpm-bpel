@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.integration.exe.CorrelationSetInstance"
+    table="BPEL_CORRELATIONSETINSTANCE">
+
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+
+    <many-to-one name="definition" column="DEFINITION_" foreign-key="FK_CSETINST_CSETDEF" />
+
+    <map name="properties" cascade="all" table="BPEL_CORRELATIONSET_PROPERTY">
+      <key column="CORRELATIONSET_" foreign-key="FK_SETINST_PROPERTY" />
+      <map-key type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </map-key>
+      <element column="VALUE_" type="string" />
+    </map>
+
+  </class>
+
+</hibernate-mapping>

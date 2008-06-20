@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="com.example.translator" namespace="http://example.com/translator" />
+  </global>
+  <wsdl-java file="wsdl/translator.wsdl">
+    <mapping file="translator-mapping.xml" />
+  </wsdl-java>
+</configuration>

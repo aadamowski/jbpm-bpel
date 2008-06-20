@@ -1,0 +1,13 @@
+<evaluatorFactories>
+  <!-- the XPath 1.0 URI from the BPEL 2.0 schema with target namespace
+    http://docs.oasis-open.org/wsbpel/2.0/process/executable -->
+  <evaluatorFactory language="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"
+    class="org.jbpm.bpel.sublang.xpath.XPathEvaluatorFactory" />
+  <!-- the XPath 1.0 URI from the BPEL 2.0 schema with target namespace
+    http://schemas.xmlsoap.org/ws/2004/03/business-process/ -->
+  <evaluatorFactory language="urn:oasis:names:tc:ws2.0:sublang:xpath1.0"
+    class="org.jbpm.bpel.sublang.xpath.XPathEvaluatorFactory" />
+  <!-- BPEL-216 the XPath 1.0 URI from BPEL 1.1, for compatibility with the eclipse designer -->
+  <evaluatorFactory language="http://www.w3.org/TR/1999/REC-xpath-19991116"
+    class="org.jbpm.bpel.sublang.xpath.XPathEvaluatorFactory" />
+</evaluatorFactories>

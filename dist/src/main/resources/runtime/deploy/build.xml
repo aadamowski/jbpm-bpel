@@ -1,0 +1,99 @@
+<project name="jbpm.bpel.deploy" default="main">
+
+  <property name="jbpm.bpel.home" value=".." />
+
+  <property file="../config/build.properties" />
+
+  <basename property="lib.jbpm.bpel.config.file" file="${lib.jbpm.bpel.config.local}" />
+
+  <target name="create.config">
+    <jar destfile="${lib.jbpm.bpel.config.file}">
+      <fileset dir="../config">
+        <include name="jbpm.cfg.xml" />
+        <include name="jbpm.hibernate.cfg.xml" />
+      </fileset>
+      <manifest>
+        <attribute name="Implementation-Title" value="jBPM BPEL" />
+        <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+        <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+        <attribute name="Implementation-Vendor" value="JBoss Inc." />
+        <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="determine.container">
+    <condition property="lib.jbpm.bpel.container.jar.local"
+               value="${lib.jbpm.bpel.jboss403.jar.local}">
+      <or>
+        <equals arg1="${jboss.version}" arg2="4.0.2" />
+        <equals arg1="${jboss.version}" arg2="4.0.3" />
+        <equals arg1="${jboss.version}" arg2="4.0.3SP1" />
+        <equals arg1="${jboss.version}" arg2="4.0.3.SP1" />
+      </or>
+    </condition>
+    <condition property="lib.jbpm.bpel.container.jar.local"
+               value="${lib.jbpm.bpel.jboss405.jar.local}">
+      <or>
+        <equals arg1="${jboss.version}" arg2="4.0.5.GA" />
+      </or>
+    </condition>
+    <condition property="lib.jbpm.bpel.container.jar.local"
+               value="${lib.jbpm.bpel.jboss420.jar.local}">
+      <or>
+        <equals arg1="${jboss.version}" arg2="4.2.0.GA" />
+        <equals arg1="${jboss.version}" arg2="4.2.1.GA" />
+        <equals arg1="${jboss.version}" arg2="4.2.2.GA" />
+      </or>
+    </condition>
+    <fail unless="lib.jbpm.bpel.container.jar.local"
+          message="Unsupported JBoss AS version: ${jboss.version}" />
+    <!-- must overwrite, otherwise switching between server versions goes unnoticed -->
+    <copy tofile="${lib.jbpm.bpel.container.name}"
+          file="${lib.jbpm.bpel.container.jar.local}"
+          overwrite="yes" />
+  </target>
+
+  <target name="package.ear"
+          description="build jbpm bpel enterprise app"
+          depends="create.config, determine.container">
+    <manifest file="META-INF/MANIFEST.MF">
+      <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+      <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+      <attribute name="Implementation-Vendor" value="JBoss Inc." />
+      <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+    </manifest>
+    <ear destfile="${lib.jbpm.bpel.application.name}"
+         appxml="META-INF/application.xml"
+         manifest="META-INF/MANIFEST.MF">
+      <!-- modules -->
+      <fileset file="${lib.jbpm.bpel.console.file}" />
+      <fileset file="${lib.jbpm.bpel.enterprise.file}" />
+      <!-- libraries -->
+      <zipfileset file="${lib.jbpm.jpdl.jar.local}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.identity.jar.local}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.bpel.jar.local}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.bpel.container.name}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.bpel.config.file}" prefix="lib" />
+      <!-- dependencies -->
+      <zipfileset file="${lib.commons.lang.local}" prefix="lib" />
+      <zipfileset file="${lib.jaxen.local}" prefix="lib" />
+    </ear>
+  </target>
+
+  <target name="deploy.ear"
+          description="deploy jbpm bpel enterprise app to server"
+          depends="package.ear">
+    <copy todir="${jboss.home}/server/${jboss.server}/deploy"
+          file="${lib.jbpm.bpel.application.name}" />
+  </target>
+
+  <target name="undeploy.ear"
+          description="undeploy jbpm bpel enterprise app from server"
+          depends="package.ear">
+    <delete file="${jboss.home}/server/${jboss.server}/deploy/${lib.jbpm.bpel.application.name}" />
+  </target>
+
+  <target name="main" description="main target" depends="deploy.ear" />
+
+</project>

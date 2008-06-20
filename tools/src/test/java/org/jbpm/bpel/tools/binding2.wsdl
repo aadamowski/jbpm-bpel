@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/trip/"
+  xmlns:tns="http://jbpm.org/examples/trip/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/trip/" location="interface/doc.wsdl" />
+
+  <binding name="TravelAgentBinding" type="tns:TravelAgent">
+
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <operation name="purchaseTrip">
+      <soap:operation soapAction="http://jbpm.org/examples/trip/#purchaseTrip" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+
+  </binding>
+
+</definitions>

@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.struct.StructuredActivity"
+    extends="org.jbpm.bpel.graph.def.CompositeActivity" discriminator-value="null">
+
+    <list name="activities" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="STRUCTUREDACTIVITY_" foreign-key="FK_STRUCT_ACTIVITY" />
+      <list-index column="NODECOLLECTIONINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.def.Activity" />
+    </list>
+
+    <many-to-one name="begin" column="BEGIN_" foreign-key="FK_STRUCT_BEGIN" cascade="all" />
+    <many-to-one name="end" column="END_" foreign-key="FK_STRUCT_END" cascade="all" />
+
+    <subclass name="org.jbpm.bpel.graph.struct.Sequence" discriminator-value="i" />
+
+    <subclass name="org.jbpm.bpel.graph.struct.Flow" discriminator-value="m">
+
+      <map name="links" cascade="all">
+        <cache usage="nonstrict-read-write" />
+        <key column="FLOW_" foreign-key="FK_FLOW_LINK" />
+        <index column="FLOWINDEX_" type="string" />
+        <one-to-many class="org.jbpm.bpel.graph.def.LinkDefinition" />
+      </map>
+
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.struct.If" discriminator-value="j">
+
+      <list name="conditions" cascade="all">
+        <cache usage="nonstrict-read-write" />
+        <key column="IF_" foreign-key="FK_IF_CONDITION" />
+        <list-index column="IFINDEX_" />
+        <one-to-many class="org.jbpm.bpel.sublang.def.Expression" />
+      </list>
+
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.struct.Pick" discriminator-value="l">
+
+      <list name="onMessages" cascade="all">
+        <cache usage="nonstrict-read-write" />
+        <key column="PICK_MESSAGE_" foreign-key="FK_PICK_ONMESSAGE" />
+        <list-index column="PICKINDEX_" />
+        <one-to-many class="org.jbpm.bpel.integration.def.ReceiveAction" />
+      </list>
+
+      <list name="onAlarms" cascade="all">
+        <cache usage="nonstrict-read-write" />
+        <key column="PICK_ALARM_" foreign-key="FK_PICK_ONALARM" />
+        <list-index column="PICKINDEX_" />
+        <one-to-many class="org.jbpm.bpel.alarm.AlarmAction" />
+      </list>
+
+      <property name="createInstance" column="CREATEINSTANCE_" />
+
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.struct.RepetitiveActivity" discriminator-value="null">
+
+      <many-to-one name="condition" column="CONDITION_" foreign-key="FK_REPETITIVE_CONDITION"
+        cascade="all" />
+      <many-to-one name="loop" column="LOOP_" foreign-key="FK_REPETITIVE_LOOP" cascade="all" />
+
+      <subclass name="org.jbpm.bpel.graph.struct.While" discriminator-value="k" />
+      <subclass name="org.jbpm.bpel.graph.struct.RepeatUntil" discriminator-value="s" />
+
+    </subclass>
+
+  </subclass>
+
+  <subclass name="org.jbpm.bpel.graph.struct.StructuredActivity$Begin"
+    extends="org.jbpm.bpel.graph.def.Activity" discriminator-value="Y" />
+
+  <subclass name="org.jbpm.bpel.graph.struct.StructuredActivity$End"
+    extends="org.jbpm.bpel.graph.def.Activity" discriminator-value="Z" />
+
+  <subclass name="org.jbpm.bpel.graph.struct.RepetitiveActivity$Loop"
+    extends="org.jbpm.bpel.graph.def.Activity" discriminator-value="L" />
+
+</hibernate-mapping>

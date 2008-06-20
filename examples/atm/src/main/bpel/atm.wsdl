@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/atm" xmlns:tns="http://jbpm.org/examples/atm"
+  xmlns:atm="http://jbpm.org/examples/atm" xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:acc="http://jbpm.org/examples/account"
+  xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/atm" location="interface/frontend.wsdl" />
+  <import namespace="http://jbpm.org/examples/ticket" location="interface/ticket.wsdl" />
+  <import namespace="http://jbpm.org/examples/account" location="interface/account.wsdl" />
+
+  <!-- customer name property -->
+  <bpel:property name="customerId" type="xsd:string" />
+
+  <!-- location of costumerId inside messages -->
+  <bpel:propertyAlias propertyName="tns:customerId" messageType="atm:logOnRequest"
+    part="customerName" />
+  <bpel:propertyAlias propertyName="tns:customerId" messageType="atm:balanceChange"
+    part="customerName" />
+  <bpel:propertyAlias propertyName="tns:customerId" messageType="acc:customerMessage"
+    part="customerName" />
+  <bpel:propertyAlias propertyName="tns:customerId" messageType="acc:accountOperation" part="body"
+    query="/body/customerName" />
+
+  <!-- ticket number property -->
+  <bpel:property name="ticketId" type="xsd:int" />
+
+  <!-- location of ticketId inside messages -->
+  <bpel:propertyAlias propertyName="tns:ticketId" messageType="tic:ticketMessage" part="ticketNo" />
+  <bpel:propertyAlias propertyName="tns:ticketId" messageType="atm:logOnRequest" part="ticketNo" />
+
+  <!-- relationship between the ATM and the process -->
+  <plt:partnerLinkType name="Atm-Front">
+    <plt:role name="FrontEnd">
+      <plt:portType name="atm:FrontEnd" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <!-- relationship between the process and the ticket issuer -->
+  <plt:partnerLinkType name="Front-Ticket">
+    <plt:role name="TicketIssuer">
+      <plt:portType name="tic:TicketIssuer" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <!-- relationship between the process and the account system -->
+  <plt:partnerLinkType name="Front-Account">
+    <plt:role name="AccountSystem">
+      <plt:portType name="acc:AccountSystem" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+</definitions>

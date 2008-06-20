@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="org.jbpm.bpel.tutorial.loan"
+      namespace="http://jbpm.org/examples/loan" />
+  </global>
+  <wsdl-java file="wsdl/loan-service.wsdl">
+    <mapping file="loan-mapping.xml" />
+  </wsdl-java>
+</configuration>

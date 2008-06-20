@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.scope.Handler" extends="org.jbpm.bpel.graph.def.CompositeActivity"
+    discriminator-value="B">
+
+    <many-to-one name="activity" column="ACTIVITY_" cascade="all" foreign-key="FK_HANDLER_ACTIVITY" />
+
+    <subclass name="org.jbpm.bpel.graph.scope.Catch" discriminator-value="V">
+
+      <many-to-one name="faultVariable" column="VARIABLE_" foreign-key="FK_CATCH_VARIABLE" cascade="all" />
+      <property name="faultName" type="qname">
+        <column name="FAULTLOCALNAME_" />
+        <column name="FAULTNAMESPACE_" />
+      </property>
+
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.scope.OnEvent" discriminator-value="X">
+      <many-to-one name="variable" column="VARIABLE_" foreign-key="FK_ONEVENT_VARIABLE" cascade="all" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.scope.OnAlarm" discriminator-value="W" />
+
+  </subclass>
+
+</hibernate-mapping>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.def.Import" table="BPEL_IMPORT">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+
+    <property name="namespace" column="NAMESPACE_" />
+    <property name="location" column="LOCATION_" />
+    <property name="type" column="TYPE_">
+      <type name="enum">
+        <param name="class">org.jbpm.bpel.graph.def.Import$Type</param>
+      </type>
+    </property>
+
+  </class>
+
+</hibernate-mapping>

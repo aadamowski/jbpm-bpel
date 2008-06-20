@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="urn:samples:atmProcess" xmlns:tns="urn:samples:atmProcess"
+  xmlns:bindingNS3="http://jbpm.org/examples/trip/" xmlns:bindingNS2="urn:samples:atm"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="urn:samples:atm" location="binding1.wsdl" />
+  <import namespace="http://jbpm.org/examples/trip/" location="binding2.wsdl" />
+
+  <service name="atmService">
+
+    <port name="agentPort" binding="bindingNS3:TravelAgentBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+
+    <port name="frontPort" binding="bindingNS2:atmBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+
+  </service>
+
+</definitions>

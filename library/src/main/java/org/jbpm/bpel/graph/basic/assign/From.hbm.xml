@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.basic.assign.From" table="BPEL_FROM"
+    discriminator-value="null">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromVariable" discriminator-value="V">
+      <many-to-one name="variable" column="VARIABLE_" foreign-key="FK_FROM_VARIABLE" />
+      <property name="part" column="PART_" />
+      <many-to-one name="query" column="QUERY_" foreign-key="FK_FROM_QUERY" cascade="all" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromProperty" discriminator-value="P">
+      <many-to-one name="variable" column="VARIABLE_" foreign-key="FK_FROM_VARIABLE" />
+      <many-to-one name="property" class="org.jbpm.bpel.wsdl.impl.PropertyImpl" column="PROPERTY_"
+        foreign-key="FK_FROM_PROPERTY" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromPartnerLink" discriminator-value="L">
+      <many-to-one name="partnerLink" column="PARTNERLINK_" foreign-key="FK_FROM_PARTNERLINK" />
+      <property name="endpointReference" column="REFERENCE_">
+        <type name="enum">
+          <param name="class">org.jbpm.bpel.graph.basic.assign.FromPartnerLink$Reference</param>
+        </type>
+      </property>
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromExpression" discriminator-value="E">
+      <many-to-one name="expression" column="EXPRESSION_" foreign-key="FK_FROM_EXPRESSION"
+        cascade="all" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromElement" discriminator-value="M">
+      <property name="literal" type="element" column="ELEMENT_" length="4000" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.FromText" discriminator-value="T">
+      <property name="literal" column="TEXT_" length="4000" />
+    </subclass>
+
+  </class>
+
+</hibernate-mapping>

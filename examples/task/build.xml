@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<project name="task" default="main">
+
+  <import file="../common/ws-build.xml" />
+
+  <target name="wscompile" depends="mapping.wscompile" unless="mapping.uptodate">
+    <wscompile fork="on"
+               verbose="on"
+               import="on"
+               keep="on"
+               features="norpcstructures,wsi"
+               base="${output.classes.dir}"
+               sourcebase="${output.java.dir}"
+               mapping="${output.web.dir}/treq-mapping.xml"
+               config="${resources.dir}/treq-wscompile.xml"
+               jvmargs="-Duser.dir=${basedir}">
+      <classpath refid="wscompile.path" />
+    </wscompile>
+  </target>
+
+  <target name="compile.dependencies">
+    <path id="compile.path">
+      <path refid="jboss.path" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+      <pathelement location="${lib.hibernate.local}" />
+    </path>
+  </target>
+
+  <target name="test" description="test the deployed component (stub)" />
+
+</project>

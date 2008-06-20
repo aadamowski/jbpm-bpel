@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <servlet>
+    <servlet-name>taskManagerServlet</servlet-name>
+    <!-- service implementation bean class -->
+    <servlet-class>org.jbpm.bpel.tutorial.task.TaskManager_Impl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <!-- the servlet above -->
+    <servlet-name>taskManagerServlet</servlet-name>
+    <url-pattern>/taskManager</url-pattern>
+  </servlet-mapping>
+
+  <service-ref>
+    <service-ref-name>service/TaskCallback</service-ref-name>
+    <service-interface>javax.xml.rpc.Service</service-interface>
+    <wsdl-file>WEB-INF/wsdl/task-request.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>WEB-INF/treq-mapping.xml</jaxrpc-mapping-file>
+    <port-component-ref>
+      <service-endpoint-interface>
+        org.jbpm.bpel.tutorial.task.TaskCallback
+      </service-endpoint-interface>
+    </port-component-ref>
+  </service-ref>
+
+</web-app>

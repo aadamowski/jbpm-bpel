@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DOCTYPE jboss PUBLIC 
+  "-//JBoss//DTD JBOSS 4.0//EN" 
+  "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd" -->
+<jboss>
+
+  <enterprise-beans>
+
+    <message-driven>
+      <ejb-name>InvoiceCallback</ejb-name>
+      <destination-jndi-name>queue/C</destination-jndi-name>
+    </message-driven>
+
+    <message-driven>
+      <ejb-name>ShippingCallback</ejb-name>
+      <destination-jndi-name>queue/D</destination-jndi-name>
+    </message-driven>
+
+  </enterprise-beans>
+
+</jboss>

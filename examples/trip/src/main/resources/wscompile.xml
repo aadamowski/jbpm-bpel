@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+  <wsdl location="target/resources/web/wsdl/trip-service.wsdl"
+    packageName="org.jbpm.bpel.tutorial.trip" />
+</configuration>

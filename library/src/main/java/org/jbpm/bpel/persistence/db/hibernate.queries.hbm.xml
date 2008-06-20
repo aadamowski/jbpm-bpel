@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+  <typedef class="org.jbpm.bpel.persistence.db.type.QNameType" name="qname" />
+  <typedef class="org.jbpm.bpel.persistence.db.type.EnumType" name="enum" />
+  <typedef class="org.jbpm.bpel.persistence.db.type.ElementType" name="element" />
+
+  <!-- Hibernate 3.2.0 has an issue with dotted class names in the where clause,
+    import classes whose names appear in where clauses here -->
+  <import class="org.jbpm.bpel.graph.struct.StructuredActivity$Begin" />
+
+  <query name="BpelGraphSession.findLatestProcessDefinitions">
+    <![CDATA[
+    select pd.name, pd.targetNamespace, max(pd.version)
+    from org.jbpm.bpel.graph.def.BpelProcessDefinition pd
+    where pd.version >= 1
+    group by pd.name, pd.targetNamespace
+    ]]>
+  </query>
+
+  <query name="IntegrationSession.findReceiveTokens">
+    <![CDATA[
+    select token
+    from org.jbpm.graph.exe.Token token
+      join token.processInstance processInstance
+      join fetch token.node receive
+      join fetch receive.action receiveAction
+      join fetch receiveAction.partnerLink
+      join fetch receiveAction.operation
+    where token.end is null
+      and processInstance.processDefinition = :processDefinition
+    ]]>
+  </query>
+
+  <query name="IntegrationSession.findPickTokens">
+    <![CDATA[
+    select token
+    from org.jbpm.graph.exe.Token token
+      join token.processInstance processInstance
+      join fetch token.node begin
+      join fetch begin.compositeActivity pick
+      join fetch pick.onMessages receiveAction
+      join fetch receiveAction.partnerLink
+      join fetch receiveAction.operation
+    where token.end is null
+      and begin.class = StructuredActivity$Begin
+      and processInstance.processDefinition = :processDefinition
+    ]]>
+  </query>
+
+  <query name="IntegrationSession.findEventTokens">
+    <![CDATA[
+    select token
+    from org.jbpm.graph.exe.Token token
+      join token.processInstance processInstance
+      join fetch token.node scope
+      join fetch scope.onEvents onEvent
+      join fetch onEvent.action receiveAction
+      join fetch receiveAction.partnerLink
+      join fetch receiveAction.operation
+    where token.end is null
+      and token.name = 'events'
+      and processInstance.processDefinition = :processDefinition
+    ]]>
+  </query>
+
+  <query name="ScopeSession.findNextScopeToCompensate">
+    <![CDATA[
+    select scope
+    from org.jbpm.bpel.graph.exe.ScopeInstance scope 
+      join scope.token token
+    where token.processInstance = :processInstance
+      and token.node in (:nestedScopes)
+      and scope.state = 'EA'
+      and token.end is not null
+    order by token.end desc
+    ]]>
+  </query>
+
+</hibernate-mapping>

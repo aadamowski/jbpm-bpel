@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.integration.def.Correlation" table="BPEL_CORRELATION">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+
+    <property name="initiate">
+      <type name="enum">
+        <param name="class">org.jbpm.bpel.integration.def.Correlation$Initiate</param>
+      </type>
+    </property>
+    <many-to-one name="set" column="CORRELATIONSET_" foreign-key="FK_CSETDEF_CORRELATION" />
+
+  </class>
+
+</hibernate-mapping>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="correlatedMessages" 
+  targetNamespace="http://manufacturing.org/wsdl/purchase" 
+  xmlns:tns="http://manufacturing.org/wsdl/purchase"
+  xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/ http://schemas.xmlsoap.org/wsdl/"  
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <bpws:property name="orderNumber" type="xsd:int"/>
+  <bpws:property name="invoiceId" type="xsd:int"/>
+  <bpws:propertyAlias propertyName="tns:orderNumber" messageType="tns:POMessage" part="PO" query="/PO/orderNumber"/>  
+  <bpws:propertyAlias propertyName="tns:invoiceId" messageType="tns:POMessage" part="PO" query="/PO/orderNumber"/>
+  <types>
+    <xsd:schema>
+      <xsd:complexType name="PurchaseOrder">
+        <xsd:sequence>
+	        <xsd:element name="orderNumber" type="xsd:integer"/>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </types>
+  <message name="POMessage">
+    <part name="PO" type="PurchaseOrder"/>
+  </message>
+</definitions>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices version="1.1"
+  xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <webservice-description>
+  
+    <!-- descriptive name for the service -->
+    <webservice-description-name>Account Service</webservice-description-name>
+    <!-- WSDL implementation file -->
+    <wsdl-file>WEB-INF/wsdl/account-impl.wsdl</wsdl-file>
+    <!-- Java<->XML mapping file -->
+    <jaxrpc-mapping-file>WEB-INF/account-mapping.xml</jaxrpc-mapping-file>
+    
+    <port-component>
+      <!-- logical name for the port (unique within the module) -->
+      <port-component-name>AccountSystemPort</port-component-name>
+      <!-- WSDL port element (in WSDL implementation file) -->
+      <wsdl-port xmlns:portNS="http://jbpm.org/examples/account">portNS:AccountSystemPort</wsdl-port>
+      <!-- service endpoint interface class -->
+      <service-endpoint-interface>org.jbpm.bpel.tutorial.account.AccountSystem</service-endpoint-interface>
+      <!-- associated servlet (in web.xml) -->
+      <service-impl-bean>
+        <servlet-link>accountSystemServlet</servlet-link>
+      </service-impl-bean>
+    </port-component>
+    
+  </webservice-description>
+  
+</webservices>

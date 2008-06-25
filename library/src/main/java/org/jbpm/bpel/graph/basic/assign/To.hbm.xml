@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.basic.assign.To" table="BPEL_TO" discriminator-value="null">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.ToVariable" discriminator-value="V">
+      <many-to-one name="variable" column="VARIABLE_" foreign-key="FK_TO_VARIABLE" />
+      <property name="part" column="PART_" />
+      <many-to-one name="query" column="QUERY_" foreign-key="FK_TO_QUERY" cascade="all" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.ToProperty" discriminator-value="P">
+      <many-to-one name="variable" column="VARIABLE_" foreign-key="FK_TO_VARIABLE" />
+      <many-to-one name="property" class="org.jbpm.bpel.wsdl.impl.PropertyImpl" column="PROPERTY_"
+        foreign-key="FK_TO_PROPERTY" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.ToPartnerLink" discriminator-value="L">
+      <many-to-one name="partnerLink" column="PARTNERLINK_" foreign-key="FK_TO_PARTNERLINK" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.graph.basic.assign.ToExpression" discriminator-value="E">
+      <many-to-one name="expression" column="EXPRESSION_" cascade="all"
+        foreign-key="FK_TO_EXPRESSION" />
+    </subclass>
+
+  </class>
+
+</hibernate-mapping>

@@ -1,0 +1,189 @@
+<project name="jbpm.bpel.dist" basedir="." default="package">
+
+  <!-- project specific properties -->
+  <property name="jbpm.root" value="../.." />
+
+  <!-- properties files -->
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <!-- base project build file -->
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <property name="licenses.dir" value="licenses" />
+
+  <property name="license.cpl.name" value="cpl-1.0.txt" />
+  <property name="license.cpl.path" value="${licenses.dir}/${license.cpl.name}" />
+  <property name="license.cpl.local" value="${local.repository}/${license.cpl.path}" />
+  <property name="license.cpl.remote" value="${remote.repository}/${license.cpl.path}" />
+
+  <property name="license.eula.name" value="jbossorg-eula.txt" />
+  <property name="license.eula.path" value="${licenses.dir}/${license.eula.name}" />
+  <property name="license.eula.local" value="${local.repository}/${license.eula.path}" />
+  <property name="license.eula.remote" value="${remote.repository}/${license.eula.path}" />
+
+  <target name="get.licenses" unless="licenses.uptodate">
+    <get dest="${license.cpl.local}" src="${license.cpl.remote}" usetimestamp="yes" />
+    <get dest="${license.eula.local}" src="${license.eula.remote}" usetimestamp="yes" />
+  </target>
+
+  <target name="check.licenses" description="gets the license documents">
+    <condition property="licenses.uptodate">
+      <and>
+        <available file="${license.cpl.local}" />
+        <available file="${license.eula.local}" />
+      </and>
+    </condition>
+    <antcall target="get.licenses" />
+  </target>
+
+  <target name="package" depends="check.licenses, clean">
+
+    <!-- build binaries -->
+    <ant antfile="${jbpm.root}/bpel/enterprise/build.xml" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/enterprise/build.xml" target="create.config" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/console/build.xml" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/container/build.xml" inheritall="no" />
+
+    <!-- package sources -->
+    <ant antfile="${jbpm.root}/bpel/library/build.xml" target="install.src" inheritall="no" />
+
+    <!-- generate documentation -->
+    <ant antfile="${jbpm.root}/bpel/library/build.xml" target="install.javadoc" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/userguide/build.xml" inheritall="no" />
+
+    <!-- BUILDING THE RUNTIME IN target/runtime -->
+
+    <delete dir="target/runtime" />
+
+    <!-- deployables -->
+    <copy todir="target/runtime/deploy">
+      <fileset file="${lib.jbpm.bpel.console.local}" />
+      <fileset file="${lib.jbpm.bpel.enterprise.local}" />
+    </copy>
+    <copy todir="target/runtime/deploy/META-INF">
+      <fileset file="${jbpm.root}/bpel/enterprise/src/main/resources/ear/application.xml" />
+    </copy>
+
+    <!-- product libraries -->
+    <copy todir="target/runtime/lib">
+      <fileset file="${lib.jbpm.jpdl.jar.local}" />
+      <fileset file="${lib.jbpm.identity.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.tools.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.jboss403.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.jboss405.jar.local}" />
+      <fileset file="${lib.jbpm.bpel.jboss420.jar.local}" />
+    </copy>
+
+    <!-- thirdparty libraries -->
+    <copy todir="target/runtime/lib">
+      <fileset file="${lib.ant.local}" />
+      <fileset file="${lib.antlr.local}" />
+      <fileset file="${lib.asm.local}" />
+      <fileset file="${lib.bsh.local}" />
+      <fileset file="${lib.cglib.local}" />
+      <fileset file="${lib.commons.codec.local}" />
+      <fileset file="${lib.commons.collections.local}" />
+      <fileset file="${lib.commons.fileupload.local}" />
+      <fileset file="${lib.commons.httpclient.local}" />
+      <fileset file="${lib.commons.lang.local}" />
+      <fileset file="${lib.commons.logging.local}" />
+      <fileset file="${lib.dom4j.local}" />
+      <fileset file="${lib.hibernate.local}" />
+      <fileset file="${lib.hsqldb.local}" />
+      <fileset file="${lib.jaxen.local}" />
+      <fileset file="${lib.jaxrpc.api.local}" />
+      <fileset file="${lib.jboss.j2ee.local}" />
+      <fileset file="${lib.jboss.saaj.local}" />
+      <fileset file="${lib.servlet-jsp.local}" />
+      <fileset file="${lib.junit.local}" />
+      <fileset file="${lib.log4j.local}" />
+      <fileset file="${lib.servlet.local}" />
+      <fileset file="${lib.wsdl4j.local}" />
+      <fileset file="${lib.xercesimpl.local}" />
+      <fileset file="${lib.xml.apis.local}" />
+    </copy>
+
+    <!-- configuration files -->
+    <copy todir="target/runtime/config">
+      <fileset dir="${jbpm.root}/bpel/enterprise/target/config" excludes="META-INF/**" />
+    </copy>
+    <copy todir="target/runtime/config">
+      <fileset dir="../examples/common/src/main/config" />
+    </copy>
+
+    <!-- examples -->
+    <copy todir="target/runtime/examples">
+      <fileset dir="../examples" />
+    </copy>
+    <delete dir="target/runtime/examples/common/src" />
+    <macrodef name="dev2dist">
+      <attribute name="buildfile" />
+      <sequential>
+        <replace file="@{buildfile}">
+          <replacetoken><![CDATA[Development section (begin) -->]]></replacetoken>
+          <replacevalue><![CDATA[Development section (begin) ===]]></replacevalue>
+        </replace>
+        <replace file="@{buildfile}">
+          <replacetoken><![CDATA[<!-- Development section (end)]]></replacetoken>
+          <replacevalue><![CDATA[==== Development section (end)]]></replacevalue>
+        </replace>
+        <replace file="@{buildfile}">
+          <replacetoken><![CDATA[Distribution section (begin) ===]]></replacetoken>
+          <replacevalue><![CDATA[Distribution section (begin) -->]]></replacevalue>
+        </replace>
+        <replace file="@{buildfile}">
+          <replacetoken><![CDATA[==== Distribution section (end)]]></replacetoken>
+          <replacevalue><![CDATA[<!-- Distribution section (end)]]></replacevalue>
+        </replace>
+      </sequential>
+    </macrodef>
+    <dev2dist buildfile="target/runtime/examples/build.xml" />
+    <dev2dist buildfile="target/runtime/examples/common/mapping-build.xml" />
+    <dev2dist buildfile="target/runtime/examples/common/bpel-build.xml" />
+
+    <!-- sources -->
+    <mkdir dir="target/runtime/src" />
+    <unzip dest="target/runtime/src" src="${lib.jbpm.bpel.src.local}" />
+
+    <!-- user guide -->
+    <mkdir dir="target/runtime/doc/userguide" />
+    <unzip dest="target/runtime/doc/userguide" src="${lib.jbpm.bpel.userguide.local}" />
+
+    <!-- api documentation -->
+    <mkdir dir="target/runtime/doc/api" />
+    <unzip dest="target/runtime/doc/api" src="${lib.jbpm.bpel.javadoc.local}" />
+    
+    <!-- xml schemas -->
+    <copy todir="target/runtime/doc/schema" flatten="yes">
+    	<fileset dir="target/runtime/src" includes="**/*.xsd" />
+    </copy>
+    
+    <!-- images and style sheets -->
+    <copy todir="target/runtime/doc/userguide/html">
+      <fileset dir="${jbpm.root}/bpel/console/src/main/resources">
+        <include name="css/**" />
+        <include name="images/**" />
+      </fileset>
+    </copy>
+
+    <!-- license agreement -->
+    <copy tofile="target/runtime/license.txt" file="${license.cpl.local}" />
+    <copy tofile="target/runtime/jboss.eula.txt" file="${license.eula.local}" />
+
+    <!-- distribution resources -->
+    <copy todir="target/runtime">
+      <fileset dir="src/main/resources/runtime" />
+    </copy>
+
+    <!-- ZIPPING THE RUNTIME -->
+
+    <zip destfile="target/jbpm-bpel-${lib.jbpm.bpel.version}.zip">
+      <zipfileset dir="target/runtime" prefix="jbpm-bpel-${lib.jbpm.bpel.version}" />
+    </zip>
+
+  </target>
+
+</project>

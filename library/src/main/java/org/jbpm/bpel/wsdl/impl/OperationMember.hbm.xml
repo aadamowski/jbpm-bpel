@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.wsdl.impl.OperationMember" table="WSDL_OPERATIONMEMBER" discriminator-value="null">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <property name="name" column="NAME_" />
+    <many-to-one name="message" class="com.ibm.wsdl.MessageImpl" column="MESSAGE_" foreign-key="FK_OPERMEMBER_MESSAGE" />
+
+    <subclass name="org.jbpm.bpel.wsdl.impl.InputImpl" discriminator-value="I" />
+    <subclass name="org.jbpm.bpel.wsdl.impl.OutputImpl" discriminator-value="O" />
+    <subclass name="org.jbpm.bpel.wsdl.impl.FaultImpl" discriminator-value="F" />
+
+  </class>
+
+</hibernate-mapping>

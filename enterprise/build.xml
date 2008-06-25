@@ -1,0 +1,170 @@
+<project name="jbpm.bpel.enterprise" default="install.ear">
+
+  <!-- project specific properties -->
+  <property name="jbpm.root" value="../.." />
+
+  <!-- properties files -->
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <!-- import base project build file -->
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <!-- project specific targets -->
+  <target name="compile.dependencies" depends="define.libs.classpath">
+    <ant antfile="${jbpm.root}/bpel/library/build.xml" inheritall="no" />
+    <path id="compile.classpath">
+      <path refid="libs.classpath" />
+      <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+      <pathelement location="${lib.jbpm.bpel.jar.local}" />
+    </path>
+  </target>
+
+  <!-- do not include resources as if the ejb module were a library -->
+  <!-- let target package.ejb decide what resources to include and where to place them -->
+  <target name="include.resources" />
+
+  <target name="create.manifest">
+    <mkdir dir="target/META-INF" />
+    <manifest file="target/META-INF/MANIFEST.MF">
+      <attribute name="Implementation-Title" value="jBPM BPEL Enterprise Application" />
+      <attribute name="Implementation-Version" value="${lib.jbpm.bpel.version} (date:${now})" />
+      <attribute name="Implementation-URL" value="http://www.jboss.org/products/jbpm" />
+      <attribute name="Implementation-Vendor" value="JBoss Inc." />
+      <attribute name="Implementation-Vendor-Id" value="http://www.jboss.org/" />
+    </manifest>
+  </target>
+
+  <target name="package.ejb" depends="enterprise">
+    <!-- extract the jpdl enterprise jar -->
+    <mkdir dir="target" />
+    <unjar dest="target" src="${lib.jbpm.enterprise.local}">
+      <patternset>
+        <include name="jbpm-enterprise.jar" />
+      </patternset>
+    </unjar>
+    <mkdir dir="target/META-INF" />
+    <jar destfile="target/jbpm-enterprise.jar" update="yes">
+	    <manifest>
+		    <attribute name="Class-Path" value="lib/${lib.commons.lang.name} lib/${lib.jaxen.name}
+lib/${lib.jbpm.jpdl.jar.file} lib/${lib.jbpm.identity.jar.file} 
+lib/${lib.jbpm.bpel.jar.file} lib/${lib.jbpm.bpel.config.file} 
+lib/${lib.jbpm.bpel.container.name}" />
+	    </manifest>
+    </jar>
+  </target>
+
+  <target name="install.ear"
+          depends="package.ear"
+          description="install enterprise app to local repository">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}"
+          file="${lib.jbpm.bpel.enterprise.target}" />
+  </target>
+
+  <target name="create.config">
+    <ant antfile="${jbpm.root}/bpel/library/build.xml" target="install.config" inheritall="no" />
+
+    <mkdir dir="target/config" />
+    <unjar dest="target/config" src="${lib.jbpm.bpel.config.local}" />
+
+    <!-- use data source instead of jdbc connection -->
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[JDBC connection properties (begin) -->]]></replacetoken>
+      <replacevalue><![CDATA[JDBC connection properties (begin) ===]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[<!-- JDBC connection properties (end)]]></replacetoken>
+      <replacevalue><![CDATA[==== JDBC connection properties (end)]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[DataSource properties (begin) ===]]></replacetoken>
+      <replacevalue><![CDATA[DataSource properties (begin) -->]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[==== DataSource properties (end)]]></replacetoken>
+      <replacevalue><![CDATA[<!-- DataSource properties (end)]]></replacevalue>
+    </replace>
+
+    <!-- include identity mappings -->
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[identity mappings (begin) ===]]></replacetoken>
+      <replacevalue><![CDATA[identity mappings (begin) -->]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[==== identity mappings (end)]]></replacetoken>
+      <replacevalue><![CDATA[<!-- identity mappings (end)]]></replacevalue>
+    </replace>
+
+    <!-- use mysql instead of hsql
+    <replace file="target/config/jbpm.hibernate.cfg.xml">
+      <replacetoken><![CDATA[org.hibernate.dialect.HSQLDialect]]></replacetoken>
+      <replacevalue><![CDATA[org.hibernate.dialect.MySQLInnoDBDialect]]></replacevalue>
+    </replace>
+    -->
+
+    <!-- use enterprise instead of standard services -->
+    <replace file="target/config/jbpm.cfg.xml">
+      <replacetoken><![CDATA[Standard services (begin) -->]]></replacetoken>
+      <replacevalue><![CDATA[Standard services (begin) ===]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.cfg.xml">
+      <replacetoken><![CDATA[<!-- Standard services (end)]]></replacetoken>
+      <replacevalue><![CDATA[==== Standard services (end)]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.cfg.xml">
+      <replacetoken><![CDATA[Enterprise services (begin) ===]]></replacetoken>
+      <replacevalue><![CDATA[Enterprise services (begin) -->]]></replacevalue>
+    </replace>
+    <replace file="target/config/jbpm.cfg.xml">
+      <replacetoken><![CDATA[==== Enterprise services (end)]]></replacetoken>
+      <replacevalue><![CDATA[<!-- Enterprise services (end)]]></replacevalue>
+    </replace>
+
+    <jar destfile="target/${lib.jbpm.bpel.config.file}"
+         manifest="target/config/META-INF/MANIFEST.MF">
+      <fileset dir="target/config" excludes="META-INF/**" />
+    </jar>
+  </target>
+
+  <target name="package.ear"
+          description="build enterprise application"
+          depends="package.ejb, create.config, create.manifest">
+    <!-- build binaries -->
+    <ant antfile="${jbpm.root}/bpel/console/build.xml" inheritall="no" />
+    <ant antfile="${jbpm.root}/bpel/container/build.xml" inheritall="no" />
+    <copy tofile="target/${lib.jbpm.bpel.container.name}" 
+          file="${local.repository}/${lib.jbpm.bpel.dir}/${lib.jbpm.bpel.container.jar.file}" />
+    <!-- build ear -->
+    <ear destfile="${lib.jbpm.bpel.enterprise.target}"
+         manifest="target/META-INF/MANIFEST.MF"
+         appxml="src/main/resources/ear/application.xml">
+      <!-- modules -->
+      <fileset file="${lib.jbpm.bpel.console.local}" />
+      <fileset file="target/jbpm-enterprise.jar" />
+      <!-- libraries -->
+      <zipfileset file="${lib.jbpm.jpdl.jar.local}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.identity.jar.local}" prefix="lib" />
+      <zipfileset file="${lib.jbpm.bpel.jar.local}" prefix="lib" />
+      <zipfileset file="target/${lib.jbpm.bpel.container.name}" prefix="lib" />
+      <zipfileset file="target/${lib.jbpm.bpel.config.file}" prefix="lib" />
+      <!-- dependencies -->
+      <zipfileset file="${lib.commons.lang.local}" prefix="lib" />
+      <zipfileset file="${lib.jaxen.local}" prefix="lib" />
+    </ear>
+  </target>
+
+  <target name="deploy.ear"
+          depends="install.ear"
+          description="deploy enterprise application to server">
+    <copy todir="${jboss.home}/server/${jboss.server}/deploy"
+          file="${lib.jbpm.bpel.enterprise.local}" />
+  </target>
+
+  <target name="undeploy.ear"
+          description="undeploy enterprise application from server">
+    <delete file="${jboss.home}/server/${jboss.server}/deploy/${lib.jbpm.bpel.application.name}" />
+  </target>
+
+</project>

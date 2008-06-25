@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<project name="bpel">
+
+  <!-- ================== -->
+  <!-- === PROPERTIES === -->
+  <!-- ================== -->
+
+  <!-- Development section (begin) -->
+  <property name="jbpm.root" value="../../.." />
+
+  <property name="common.dir" value="${jbpm.root}/bpel/examples/common" />
+  <property name="config.dir" value="${common.dir}/src/main/config" />
+
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+  <!-- Development section (end) -->
+
+  <!-- Distribution section (begin) ===
+  <property name="jbpm.bpel.home" value="../.." />
+
+  <property name="common.dir" value="${jbpm.bpel.home}/examples/common" />
+  <property name="config.dir" value="${jbpm.bpel.home}/config" />
+
+  <property file="${config.dir}/build.properties" />
+  ==== Distribution section (end) -->
+
+  <property name="bpel.dir" value="src/main/bpel2" />
+  <property name="output.dir" value="target" />
+
+  <property name="module.name" value="${ant.project.name}" />
+
+  <!-- =================== -->
+  <!-- === DEFINITIONS === -->
+  <!-- =================== -->
+
+  <path id="jbpm.bpel.tools.path">
+    <pathelement location="${config.dir}" />
+    <pathelement location="${lib.commons.codec.local}" />
+    <pathelement location="${lib.commons.httpclient.local}" />
+    <pathelement location="${lib.commons.logging.local}" />
+    <pathelement location="${lib.log4j.local}" />
+    <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+  </path>
+
+  <!-- =============================== -->
+  <!-- === OFFLINE WSDL GENERATION === -->
+  <!-- =============================== -->
+
+  <target name="generate.wsdl" depends="package.process" description="generate wsdl description">
+    <taskdef name="wsdlservice" classname="org.jbpm.bpel.tools.ant.WsdlServiceTask">
+      <classpath>
+        <!-- Development section (begin) -->
+        <pathelement location="${jbpm.root}/bpel/library/src/main/config" />
+        <!-- Development section (end) -->
+        <pathelement location="${config.dir}" />
+        <pathelement location="${lib.commons.collections.local}" />
+        <pathelement location="${lib.commons.lang.local}" />
+        <pathelement location="${lib.commons.logging.local}" />
+        <pathelement location="${lib.dom4j.local}" />
+        <pathelement location="${lib.log4j.local}" />
+        <pathelement location="${lib.jaxen.local}" />
+        <pathelement location="${lib.jbpm.bpel.jar.local}" />
+        <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+        <pathelement location="${lib.jbpm.jpdl.jar.local}" />
+        <pathelement location="${lib.wsdl4j.local}" />
+      </classpath>
+    </taskdef>
+    <wsdlservice processarchive="${output.dir}/${module.name}.zip"
+                 wsdldir="${output.dir}/resources/web/wsdl"
+                 generatedescriptor="no" />
+  </target>
+
+  <!-- ========================== -->
+  <!-- === PROCESS DEPLOYMENT === -->
+  <!-- ========================== -->
+
+  <target name="package.process">
+    <mkdir dir="${output.dir}" />
+    <zip destfile="${output.dir}/${module.name}.zip">
+      <fileset dir="${bpel.dir}" />
+    </zip>
+  </target>
+
+  <target name="deploy.process" depends="package.process" description="deploy process definition">
+    <taskdef name="deployprocess"
+             classname="org.jbpm.bpel.tools.ant.DeploymentTask"
+             classpathref="jbpm.bpel.tools.path" />
+    <deployprocess processarchive="${output.dir}/${module.name}.zip" />
+  </target>
+
+  <!-- ============================ -->
+  <!-- === PARTNER REGISTRATION === -->
+  <!-- ============================ -->
+
+  <target name="define.register.task">
+    <taskdef name="registerpartner"
+             classname="org.jbpm.bpel.tools.ant.RegistrationTask"
+             classpathref="jbpm.bpel.tools.path" />
+  </target>
+
+  <!-- override if your process has partner services -->
+  <target name="register.partners" depends="define.register.task" />
+
+  <!-- ============ -->
+  <!-- === MAIN === -->
+  <!-- ============ -->
+
+  <target name="main" depends="register.partners, deploy.process" description="main target" />
+
+  <!-- =============== -->
+  <!-- === CLEANUP === -->
+  <!-- =============== -->
+
+  <target name="clean" description="remove generated files">
+    <delete dir="${output.dir}" failonerror="no" />
+  </target>
+
+</project>

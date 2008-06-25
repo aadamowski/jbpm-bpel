@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<project name="test">
+
+  <!-- =============== -->
+  <!-- === IMPORTS === -->
+  <!-- =============== -->
+
+  <import file="mapping-build.xml" />
+
+  <!-- project directories -->
+  <property name="client.dir" value="${resources.dir}/client" />
+  <property name="test.java.dir" value="src/test/java" />
+
+  <property name="output.test.dir" value="${output.dir}/test" />
+  <property name="test.classes.dir" value="${output.test.dir}/classes" />
+  <property name="test.reports.dir" value="${output.test.dir}/reports" />
+
+  <!-- ===================================== -->
+  <!-- === APPLICATION CLIENT DEPLOYMENT === -->
+  <!-- ===================================== -->
+
+  <target name="package.client" depends="generate.mapping">
+    <jar destfile="${output.dir}/${module.name}-client.jar">
+      <metainf dir="${client.dir}" />
+      <metainf file="${output.web.dir}/${module.name}-mapping.xml" />
+      <zipfileset dir="${jboss.wsdl.dir}" prefix="META-INF/wsdl" />
+    </jar>
+  </target>
+
+  <!-- ====================== -->
+  <!-- === TEST EXECUTION === -->
+  <!-- ====================== -->
+
+  <target name="compile.test.dependencies">
+    <path id="test.path">
+      <path refid="jboss.path" />
+      <pathelement location="${lib.junit.local}" />
+      <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+      <pathelement location="${output.classes.dir}" />
+    </path>
+  </target>
+
+  <target name="compile.test" depends="compile.test.dependencies">
+    <mkdir dir="${test.classes.dir}" />
+    <javac destdir="${test.classes.dir}"
+           srcdir="${test.java.dir}"
+           source="${javac.source}"
+           target="${javac.target}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}">
+      <classpath refid="test.path" />
+    </javac>
+  </target>
+
+  <target name="test"
+          depends="package.client, compile.test"
+          description="test the deployed component">
+    <mkdir dir="${test.reports.dir}/xml" />
+    <junit fork="yes" forkmode="once" printsummary="yes" dir="${output.dir}">
+      <classpath>
+        <path refid="test.path" />
+        <pathelement location="${lib.junit.local}" />
+        <pathelement location="${test.classes.dir}" />
+      </classpath>
+      <jvmarg value="-Djava.endorsed.dirs=${jboss.home}/lib/endorsed" />
+      <formatter type="xml" />
+      <batchtest todir="${test.reports.dir}/xml">
+        <fileset dir="${test.classes.dir}" includes="**/*Test.class" />
+      </batchtest>
+    </junit>
+  </target>
+
+</project>

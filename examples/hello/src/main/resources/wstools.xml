@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="org.jbpm.bpel.tutorial.hello"
+      namespace="http://jbpm.org/examples/hello" />
+  </global>
+  <wsdl-java file="wsdl/hello-service.wsdl">
+    <mapping file="hello-mapping.xml" />
+  </wsdl-java>
+</configuration>

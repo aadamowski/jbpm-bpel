@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Revision$ $Date: 2007/07/20 22:47:53 $ -->
+
+<datasources>
+
+  <local-tx-datasource>
+
+    <!-- The jndi name of the DataSource, it is prefixed with java:/ -->
+    <!-- Datasources are not available outside the virtual machine -->
+    <jndi-name>jbpm/DataSource</jndi-name>
+    
+    <!-- The connection URL, assumes a "jbpm" schema already exists  -->
+    <connection-url>jdbc:mysql://localhost:3306/jbpm</connection-url>
+    
+    <!-- The driver class -->
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    
+    <!-- The login and password -->
+    <user-name>jbpm</user-name>
+    <password>nosecret</password>
+
+    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</exception-sorter-class-name>
+
+    <!-- should only be used on drivers after 3.22.1 with "ping" support -->
+    <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLValidConnectionChecker</valid-connection-checker-class-name>
+
+    <!-- corresponding type-mapping in the standardjbosscmp-jdbc.xml (optional) -->
+    <metadata>
+      <type-mapping>mySQL</type-mapping>
+    </metadata>
+
+  </local-tx-datasource>
+
+</datasources>
+

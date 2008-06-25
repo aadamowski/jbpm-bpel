@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="urn:jbpm.org:bpel-1.1:definition" elementFormDefault="qualified"
+  xmlns:tns="urn:jbpm.org:bpel-1.1:definition" xmlns="http://www.w3.org/2001/XMLSchema">
+
+  <element name="bpelDefinition" type="tns:tBpelDefinition" />
+
+  <complexType name="tBpelDefinition">
+    <sequence>
+      <element name="imports" type="tns:tImports" minOccurs="0" />
+    </sequence>
+    <attribute name="location" type="anyURI" use="required" />
+  </complexType>
+
+  <complexType name="tImports">
+    <sequence>
+      <group ref="tns:importGroup" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <group name="importGroup">
+    <choice>
+      <element name="wsdl" type="tns:tImport" />
+      <element name="schema" type="tns:tImport" />
+    </choice>
+  </group>
+
+  <complexType name="tImport">    <attribute name="location" type="anyURI" use="required" />
+    <attribute name="namespace" type="anyURI" />
+  </complexType>
+
+</schema>

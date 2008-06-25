@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activityReaders>
+  <activityReader name="receive" class="org.jbpm.bpel.xml.ReceiveReader" />
+  <activityReader name="reply" class="org.jbpm.bpel.xml.ReplyReader" />
+  <activityReader name="invoke" class="org.jbpm.bpel.xml.InvokeReader" />
+  <activityReader name="empty" class="org.jbpm.bpel.xml.EmptyReader" />
+  <activityReader name="assign" class="org.jbpm.bpel.xml.AssignReader" />
+  <activityReader name="throw" class="org.jbpm.bpel.xml.ThrowReader" />
+  <activityReader name="exit" class="org.jbpm.bpel.xml.ExitReader" />
+  <activityReader name="wait" class="org.jbpm.bpel.xml.WaitReader" />
+  <activityReader name="sequence" class="org.jbpm.bpel.xml.SequenceReader" />
+  <activityReader name="if" class="org.jbpm.bpel.xml.IfReader" />
+  <activityReader name="switch" class="org.jbpm.bpel.xml.SwitchReader" />
+  <activityReader name="while" class="org.jbpm.bpel.xml.WhileReader" />
+  <activityReader name="repeatUntil" class="org.jbpm.bpel.xml.RepeatUntilReader" />
+  <activityReader name="pick" class="org.jbpm.bpel.xml.PickReader" /> 
+  <activityReader name="flow" class="org.jbpm.bpel.xml.FlowReader" />
+  <activityReader name="scope" class="org.jbpm.bpel.xml.ScopeReader" />
+  <activityReader name="compensate" class="org.jbpm.bpel.xml.CompensateReader" />
+  <activityReader name="compensateScope" class="org.jbpm.bpel.xml.CompensateScopeReader" />
+  <activityReader name="validate" class="org.jbpm.bpel.xml.ValidateReader" />
+</activityReaders>

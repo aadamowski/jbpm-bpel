@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>Task Management Service Client</display-name>
+
+  <service-ref>
+
+    <!-- JNDI name of service interface in client environment context -->
+    <service-ref-name>service/TaskManagement</service-ref-name>
+    <!-- service interface -->
+    <service-interface>org.jbpm.bpel.tutorial.task.TaskManagementService</service-interface>
+    <!-- published WSDL document -->
+    <wsdl-file>META-INF/wsdl/task-management.wsdl</wsdl-file>
+    <!-- Java<->XML mapping file -->
+    <jaxrpc-mapping-file>META-INF/task-mapping.xml</jaxrpc-mapping-file>
+    <!-- WSDL service name, used when more than one service is present in WSDL document -->
+    <service-qname xmlns:serviceNS="http://jbpm.org/examples/task">
+      serviceNS:TaskManagementService
+    </service-qname>
+
+  </service-ref>
+
+</application-client>

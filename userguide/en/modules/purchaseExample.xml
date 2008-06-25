@@ -1,0 +1,732 @@
+<chapter id="tutorial.purchase">
+
+  <title>Purchase Order Example</title>
+  
+  <para>This chapter presents an example of a process for handling a purchase order.</para>
+  
+  <para>The operation of the process is represented in the following figure.</para>
+
+  <figure id="tutorial.purchase.graph">
+    <title>Purchase order process</title>
+    <mediaobject><imageobject><imagedata align="center" fileref="images/purchase.png"
+      width="7.30in" depth="4.32in" scalefit="0"/></imageobject></mediaobject>
+  </figure>
+
+  <para>Upon receiving the purchase order from a customer, the process initiates three tasks
+    concurrently: calculate the final price for the order, select a shipper, and schedule
+    the production and shipment for the order. While some of the processing can proceed
+    concurrently, there are control and data dependencies between the three tasks. The 
+    shipping price is required to finalize the price calculation, and the shipping
+    date is required for the complete fulfillment schedule. When the three tasks are completed,
+    invoice processing can proceed and the invoice is sent to the customer.</para>
+
+  <para>This is the initial example from section 6.1 of the BPEL4WS specification, version 1.1.
+    The specification document can be found at any of the following locations:</para>
+  
+  <itemizedlist>
+  
+    <listitem><para><ulink url="http://dev2dev.bea.com/technologies/webservices/BPEL4WS.jsp"/>
+      </para></listitem>
+      
+    <listitem><para><ulink url="http://www-106.ibm.com/developerworks/webservices/library/ws-bpel/"/>
+      </para></listitem>
+      
+    <listitem><para><ulink url="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnbiz2k2/html/bpel1-1.asp"/>
+      </para></listitem>
+      
+    <listitem><para><ulink url="http://ifr.sap.com/bpel4ws/"/></para></listitem>
+    
+    <listitem><para><ulink url="http://www.siebel.com/bpel"/></para></listitem>
+    
+  </itemizedlist>
+
+  <section id="tutorial.purchase.def">
+  
+    <title>Define the BPEL process</title>
+    
+    <section id="tutorial.purchase.def.bpel">
+
+      <title>Create the BPEL document</title>    
+
+      <para>The purchase order process is, in fact, the initial example from section 6.1 of the 
+        BPEL4WS specification version 1.1. We simply copy the example from the specification 
+        text and paste it in an XML document called <literal>purchase.bpel</literal>.</para>
+
+      <programlisting><![CDATA[<process name="PurchaseOrder" targetNamespace="http://acme.com/ws-bp/purchase"
+  xmlns:lns="http://manufacturing.org/wsdl/purchase"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+
+  <partnerLinks>
+    <partnerLink name="purchasing" partnerLinkType="lns:purchasingLT" 
+      myRole="purchaseService" />
+    <partnerLink name="invoicing" partnerLinkType="lns:invoicingLT" 
+      myRole="invoiceRequester" partnerRole="invoiceService" />
+    <partnerLink name="shipping" partnerLinkType="lns:shippingLT" 
+      myRole="shippingRequester" partnerRole="shippingService" />
+    <partnerLink name="scheduling" partnerLinkType="lns:schedulingLT"
+      partnerRole="schedulingService" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="PO" messageType="lns:POMessage" />
+    <variable name="Invoice" messageType="lns:InvMessage" />
+    <variable name="POFault" messageType="lns:orderFaultType" />
+    <variable name="shippingRequest" messageType="lns:shippingRequestMessage" />
+    <variable name="shippingInfo" messageType="lns:shippingInfoMessage" />
+    <variable name="shippingSchedule" messageType="lns:scheduleMessage" />
+  </variables>
+
+  <faultHandlers>
+
+    <catch faultName="lns:cannotCompleteOrder" faultVariable="POFault">
+
+      <reply partnerLink="purchasing" portType="lns:purchaseOrderPT" 
+        operation="sendPurchaseOrder" variable="POFault" faultName="cannotCompleteOrder" />
+
+    </catch>
+
+  </faultHandlers>
+
+  <sequence name="Main">
+
+    <receive name="ReceivePurchaseOrder" partnerLink="purchasing"
+      portType="lns:purchaseOrderPT" operation="sendPurchaseOrder"
+      variable="PO" createInstance="yes" />
+
+    <flow>
+
+      <links>
+        <link name="ship-to-invoice" />
+        <link name="ship-to-scheduling" />
+      </links>
+
+      <sequence name="Shipping">
+
+        <assign name="PrepareShipping">
+          <copy>
+            <from variable="PO" part="customerInfo" />
+            <to variable="shippingRequest" part="customerInfo" />
+          </copy>
+        </assign>
+
+        <invoke name="RequestShipping" partnerLink="shipping" portType="lns:shippingPT"
+          operation="requestShipping" inputVariable="shippingRequest"
+          outputVariable="shippingInfo">
+          <source linkName="ship-to-invoice" />
+        </invoke>
+
+        <receive name="ReceiveSchedule" partnerLink="shipping" operation="sendSchedule"
+          portType="lns:shippingCallbackPT" variable="shippingSchedule">
+          <source linkName="ship-to-scheduling" />
+        </receive>
+
+      </sequence>
+
+      <sequence name="Invoicing">
+
+        <invoke name="InitiatePriceCalculation" partnerLink="invoicing"
+          portType="lns:computePricePT" operation="initiatePriceCalculation" 
+          inputVariable="PO" />
+
+        <invoke name="SendShippingPrice" partnerLink="invoicing" 
+          portType="lns:computePricePT" operation="sendShippingPrice" 
+          inputVariable="shippingInfo">
+          <target linkName="ship-to-invoice" />
+        </invoke>
+
+        <receive name="ReceiveInvoice" partnerLink="invoicing" 
+          portType="lns:invoiceCallbackPT" operation="sendInvoice" variable="Invoice" />
+
+      </sequence>
+
+      <sequence name="Scheduling">
+
+        <invoke name="RequestScheduling" partnerLink="scheduling" 
+          portType="lns:schedulingPT" operation="requestProductionScheduling"
+          inputVariable="PO" />
+
+        <invoke name="SendShippingSchedule" partnerLink="scheduling"
+          portType="lns:schedulingPT" operation="sendShippingSchedule"
+          inputVariable="shippingSchedule">
+          <target linkName="ship-to-scheduling" />
+        </invoke>
+
+      </sequence>
+
+    </flow>
+
+    <reply name="SendPurchaseOrder" partnerLink="purchasing" portType="lns:purchaseOrderPT"
+      operation="sendPurchaseOrder" variable="Invoice" />
+
+  </sequence>
+
+</process>]]></programlisting>
+
+      <para>This example has several remarkable features:</para>
+      
+      <itemizedlist>
+      
+        <listitem><para>The presence of the <literal>flow</literal> construct to specify
+          multiple activities to be performed concurrently. Links introduce arbitrary control
+          dependencies.</para></listitem>
+          
+        <listitem><para>The <literal>faultHandlers</literal> section lists activities to
+          be performed in response to faults resulting from the invocation of the partner 
+          services.</para></listitem>
+          
+        <listitem><para>Multiple <literal>partnerLink</literal> elements bearing the 
+          <literal>myRole</literal> attribute result in publishing just as many web 
+          service endpoints, all served by the same process.</para></listitem>
+          
+      </itemizedlist>
+      
+    </section>
+    
+    <section id="tutorial.purchase.def.wsdl">
+    
+      <title id="tutorial.purchase.def.wsdl.title">Create/obtain the WSDL interface documents</title>
+      
+      <para>BPEL4WS 1.1 section 6.1 provides the WSDL interface definitions referenced from
+        the process presented earlier. The content of the <literal>purchase.wsdl</literal>
+        file is a reproduction of text from the specification except for a few minor 
+        ammendments commented below.</para>
+                
+      <itemizedlist>
+      
+        <listitem><para>The <literal>&lt;import&gt;</literal> statement that references the
+          external XML Schema document <literal>purchase.xsd</literal> was replaced with a
+          <literal>&lt;types&gt;</literal> section comprising an XML Schema snippet that 
+          simply imports the external schema document.</para></listitem>
+          
+        <listitem><para>In the <literal>orderFaultType</literal> message, an XML Schema
+          simple type describes the <literal>problemInfo</literal> part. The
+          <literal>sns:problemInfo</literal> element replaced the original 
+          <literal>xsd:string</literal> type.</para></listitem>
+        
+      </itemizedlist>
+      
+      <programlisting><![CDATA[<definitions targetNamespace="http://manufacturing.org/wsdl/purchase"
+  xmlns:sns="http://manufacturing.org/xsd/purchase"
+  xmlns:pos="http://manufacturing.org/wsdl/purchase"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <plnk:partnerLinkType name="purchasingLT">
+    <plnk:role name="purchaseService">
+      <plnk:portType name="pos:purchaseOrderPT" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+
+  <plnk:partnerLinkType name="invoicingLT">
+    <plnk:role name="invoiceService">
+      <plnk:portType name="pos:computePricePT" />
+    </plnk:role>
+    <plnk:role name="invoiceRequester">
+      <plnk:portType name="pos:invoiceCallbackPT" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+
+  <plnk:partnerLinkType name="shippingLT">
+    <plnk:role name="shippingService">
+      <plnk:portType name="pos:shippingPT" />
+    </plnk:role>
+    <plnk:role name="shippingRequester">
+      <plnk:portType name="pos:shippingCallbackPT" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+
+  <plnk:partnerLinkType name="schedulingLT">
+    <plnk:role name="schedulingService">
+      <plnk:portType name="pos:schedulingPT" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://manufacturing.org/xsd/purchase"
+        schemaLocation="purchase.xsd" />
+    </xsd:schema>
+  </types>
+
+  <message name="POMessage">
+    <part name="customerInfo" type="sns:customerInfo" />
+    <part name="purchaseOrder" type="sns:purchaseOrder" />
+  </message>
+
+  <message name="InvMessage">
+    <part name="IVC" type="sns:Invoice" />
+  </message>
+
+  <message name="orderFaultType">
+    <part name="problemInfo" element="sns:problemInfo" />
+  </message>
+
+  <message name="shippingRequestMessage">
+    <part name="customerInfo" type="sns:customerInfo" />
+  </message>
+
+  <message name="shippingInfoMessage">
+    <part name="shippingInfo" type="sns:shippingInfo" />
+  </message>
+
+  <message name="scheduleMessage">
+    <part name="schedule" type="sns:scheduleInfo" />
+  </message>
+
+  <!-- portTypes supported by the purchase order process -->
+
+  <portType name="purchaseOrderPT">
+    <operation name="sendPurchaseOrder">
+      <input message="pos:POMessage" />
+      <output message="pos:InvMessage" />
+      <fault name="cannotCompleteOrder" message="pos:orderFaultType" />
+    </operation>
+  </portType>
+
+  <portType name="invoiceCallbackPT">
+    <operation name="sendInvoice">
+      <input message="pos:InvMessage" />
+    </operation>
+  </portType>
+
+  <portType name="shippingCallbackPT">
+    <operation name="sendSchedule">
+      <input message="pos:scheduleMessage" />
+    </operation>
+  </portType>
+
+  <!-- portType supported by the invoice services -->
+
+  <portType name="computePricePT">
+    <operation name="initiatePriceCalculation">
+      <input message="pos:POMessage" />
+    </operation>
+    <operation name="sendShippingPrice">
+      <input message="pos:shippingInfoMessage" />
+    </operation>
+  </portType>
+
+  <!-- portType supported by the shipping service -->
+
+  <portType name="shippingPT">
+    <operation name="requestShipping">
+      <input message="pos:shippingRequestMessage" />
+      <output message="pos:shippingInfoMessage" />
+      <fault name="cannotCompleteOrder" message="pos:orderFaultType" />
+    </operation>
+  </portType>
+
+  <!-- portType supported by the production scheduling process -->
+
+  <portType name="schedulingPT">
+    <operation name="requestProductionScheduling">
+      <input message="pos:POMessage" />
+    </operation>
+    <operation name="sendShippingSchedule">
+      <input message="pos:scheduleMessage" />
+    </operation>
+  </portType>
+
+</definitions>]]></programlisting>
+
+      <para><ulink url="http://ws-i.org">WS-I</ulink> is an industry organization that promotes 
+        Web services interoperability across platforms. On April 16, 2004 the organization 
+        published the Basic Profile (BP) 1.0. The BP contains guidelines and recommendations 
+        to fill gaps and ambiguities in core Web services specifications such as SOAP and WSDL
+        that led to compatibility issues.</para>
+        
+      <para>BPEL4WS 1.1, published May 5, 2003, predates BP 1.0. Not surprisingly, the sample
+        WSDL document does not adhere to the profile. The changes above are required to make
+        the document compliant with BP 1.0.</para>
+      
+    </section>
+    
+    <section id="tutorial.purchase.def.deploy">
+    
+      <title>Deploy the process definition</title>
+      
+      <para>Our master WSDL document <literal>purchase.wsdl</literal> supplies all the
+        WSDL elements required by the process. There are no other WSDL documents.</para>
+            
+      <para>If supplied, <literal>bpel-definition.xml</literal> would point to the <literal>
+        purchase.bpel</literal> and <literal>purchase.wsdl</literal> files from the previous
+        two sections.</para>
+        
+      <programlisting><![CDATA[<bpelDefinition location="purchase.bpel" xmlns="urn:jbpm.org:bpel-1.1:definition">
+
+  <imports>
+    <wsdl location="purchase.wsdl" />
+  </imports>
+
+</bpelDefinition>]]></programlisting>
+      
+      <para>To deploy the process definition to the jBPM database, call:</para>
+  
+      <synopsis>ant deploy.process</synopsis>
+  
+      <para>The above target creates a file named <literal>purchase.zip</literal> and 
+        submits it to the jBPM service. The server console should read:</para>
+  
+      <screen>13:27:34,921 INFO  [DeploymentServlet] deployed process definition: PurchaseOrder
+13:27:35,640 INFO  [WebModuleBuilder] packaged web module: purchase.war
+13:27:35,640 INFO  [DeploymentServlet] deployed web module: purchase.war
+13:27:36,734 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=purchase,&nextLine;
+endpoint=invoiceRequesterServlet
+13:27:36,734 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=purchase,&nextLine;
+endpoint=purchaseServiceServlet
+13:27:36,750 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=purchase,&nextLine;
+endpoint=shippingRequesterServlet
+13:27:36,765 INFO  [TomcatDeployer] deploy, ctxPath=/purchase, warUrl=...
+13:27:36,937 INFO  [IntegrationConfigurator] message reception enabled for process:&nextLine;
+PurchaseOrder
+13:27:37,140 INFO  [WSDLFilePublisher] WSDL published to: .../purchase-service.wsdl</screen>
+
+      <para>The purchase order process requires the collaboration of three different partner
+        services to complete: <literal>invoice</literal>, <literal>shipping</literal> and
+        <literal>scheduling</literal>. To deploy them, change to the partner directory and 
+        run the next target.</para>
+        
+      <synopsis>ant deploy.webservice</synopsis>
+      
+      <para>The screen below confirms the correct deployment of the partner services.</para>
+      
+      <screen>16:09:10,390 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=invoice,&nextLine;
+endpoint=invoiceServlet
+16:09:10,421 INFO  [TomcatDeployer] deploy, ctxPath=/invoice, warUrl=...
+16:09:10,859 INFO  [WSDLFilePublisher] WSDL published to: .../invoice.wsdl
+--
+16:09:36,312 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=shipping,&nextLine;
+endpoint=shippingServlet
+16:09:36,343 INFO  [TomcatDeployer] deploy, ctxPath=/shipping, warUrl=...
+16:09:36,671 INFO  [WSDLFilePublisher] WSDL published to: .../shipping.wsdl
+--
+16:09:47,328 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=scheduling,&nextLine;
+endpoint=schedulingServlet
+16:09:47,390 INFO  [TomcatDeployer] deploy, ctxPath=/scheduling, warUrl=...
+16:09:47,734 INFO  [WSDLFilePublisher] WSDL published to: .../scheduling.wsdl</screen>
+
+      <para>You should have the following endpoints listed in the JBossWS service endpoints 
+        page.</para>
+      
+      <table>
+      
+        <title>Partner endpoints</title>
+
+        <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+        
+        <colspec colwidth="1*"/>
+        <colspec colwidth="3*"/>
+        
+        <thead>
+        
+          <row>
+            <entry>Partner link</entry>
+            <entry>Endpoint</entry>
+          </row>
+
+        </thead>
+      
+        <tbody>
+
+          <row>
+            <entry>invoicing</entry>
+            <entry>http://127.0.0.1:8080/invoice/invoiceService</entry>
+          </row>
+          
+          <row>
+            <entry>shipping</entry>
+            <entry>http://127.0.0.1:8080/shipping/shippingService</entry>
+          </row>
+          
+          <row>
+            <entry>scheduling</entry>
+            <entry>http://127.0.0.1:8080/scheduling/schedulingProcess</entry>
+          </row>
+          
+        </tbody>
+        
+        </tgroup>
+      
+      </table>
+      
+      <table>
+      
+        <title>My endpoints</title>
+
+        <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+
+        <colspec colwidth="1*"/>
+        <colspec colwidth="3*"/>
+
+        <thead>
+        
+          <row>
+            <entry>Partner link</entry>
+            <entry>Endpoint</entry>
+          </row>
+
+        </thead>
+      
+        <tbody>
+
+          <row>
+            <entry>purchasing</entry>
+            <entry>http://127.0.0.1:8080/purchase/purchaseService</entry>
+          </row>
+          
+          <row>
+            <entry>invoicing</entry>
+            <entry>http://127.0.0.1:8080/purchase/invoiceRequester</entry>
+          </row>
+          
+          <row>
+            <entry>shipping</entry>
+            <entry>http://127.0.0.1:8080/purchase/shippingRequester</entry>
+          </row>
+          
+        </tbody>
+        
+        </tgroup>
+      
+      </table>
+      
+      <para>Do not forget to register the partner services in the catalog. Use this
+        command to do it.</para>
+        
+      <synopsis>ant register.partners</synopsis>
+      
+      <para>You can verify the partner services are visible in the catalog using
+        the web console.</para>
+
+      <table>
+      
+        <title>Service catalog</title>
+
+        <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+        
+        <colspec colwidth="3*"/>
+        <colspec colwidth="1*"/>
+
+        <thead>
+        
+          <row>
+            <entry>Base location</entry>
+            <entry>Services</entry>
+          </row>
+
+        </thead>
+      
+        <tbody>
+
+          <row>
+            <entry>http://localhost:8080/invoice/invoiceService?wsdl</entry>
+            <entry>invoiceService</entry>
+          </row>
+          
+          <row>
+            <entry>http://localhost:8080/shipping/shippingService?wsdl</entry>
+            <entry>shippingService</entry>
+          </row>
+
+          <row>
+            <entry>http://localhost:8080/scheduling/schedulingProcess?wsdl</entry>
+            <entry>schedulingService</entry>
+          </row>          
+
+        </tbody>
+        
+        </tgroup>
+      
+      </table>
+      
+    </section>
+    
+  </section>
+
+  <section id="tutorial.purchase.client">
+
+    <title>Build the WSEE application client</title>
+    
+    <section id="tutorial.purchase.client.appclient">
+
+      <title>Application client deployment descriptor</title>
+      
+      <para>Reference your WSDL definitions and Java mapping artifacts from the <literal>
+        application-client.xml</literal> descriptor.</para>
+  
+      <programlisting><![CDATA[<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>Purchase Order Client</display-name>
+
+  <service-ref>
+
+    <service-ref-name>service/PurchaseOrder</service-ref-name>
+    <service-interface>
+      org.jbpm.bpel.tutorial.purchase.PurchaseOrderService
+    </service-interface>
+    <wsdl-file>META-INF/wsdl/purchase-service.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>META-INF/purchase-mapping.xml</jaxrpc-mapping-file>
+
+  </service-ref>
+
+</application-client>]]></programlisting>
+    
+    </section>
+
+    <section id="tutorial.purchase.client.env">
+
+      <title>Environment context</title>
+
+      <para>Allocate a JNDI name for the client environment context in <literal>jboss-client.xml
+        </literal>.</para>
+      
+      <programlisting><![CDATA[<jboss-client>
+  <jndi-name>jbpmbpel-client</jndi-name>
+</jboss-client>]]></programlisting>
+
+      <tip><para>The <literal>jndi-name</literal> above is shared among all examples. You can
+        share a single JNDI name among multiple application clients to keep them organized
+        and reduce the number of top-level entries in the global JNDI context of the server.
+        Just make sure you give different <literal>service-ref-name</literal>s to each client
+        in the respective <literal>application-client.xml</literal> file.</para></tip>
+
+    </section>
+    
+  </section>
+  
+  <section id="tutorial.purchase.test">
+
+    <title>Test the process</title>
+
+    <para>Once our process is up and running, we need to make sure that it works as expected.
+      Here we create a JUnit test case called <classname>PurchaseOrderTest</classname> and 
+      exercise different usage scenarios.</para>
+  
+    <section id="tutorial.purchase.test.remote">
+  
+      <title>Remote web service access</title>
+
+      <para>This is the setup code for establishing a connection with the purchase order
+        process:</para>
+
+      <programlisting><![CDATA[private PurchaseOrderPT purchaseOrderPT;
+
+  protected void setUp() throws Exception {
+    InitialContext ctx = new InitialContext();
+    /*
+     * "service/PurchaseOrder" is the JNDI name of the service interface
+     * instance relative to the client environment context. This name matches
+     * the <service-ref-name> in application-client.xml
+     */
+    PurchaseOrderProcessService service = (PurchaseOrderProcessService) ctx.lookup(
+        "java:comp/env/service/PurchaseOrder");
+    purchaseOrderPT = service.getPurchaseServicePort();
+  }]]></programlisting>
+  
+      <para>The descriptions of the test scenarios come next.</para>
+      
+      <orderedlist>
+      
+        <listitem>
+        
+          <para><literal>testSendPurchaseOrderAvailable</literal>: fill in a purchase order
+            with details about the customer, the shipping address and the requested items.
+            The shipper serves the given address. Hence, we expect to place this order and get
+            the corresponding invoice back without any problem.</para>
+
+          <programlisting><![CDATA[public void testSendPurchaseOrderAvailable() throws RemoteException {
+  CustomerInfo customerInfo = new CustomerInfo();
+  customerInfo.setCustomerId("manager");
+  customerInfo.setAddress("123 Main St");
+
+  PurchaseOrder purchaseOrder = new PurchaseOrder();
+  purchaseOrder.setOrderId(10);
+  purchaseOrder.setPartNumber(23);
+  purchaseOrder.setQuantity(4);
+
+  try {
+    Invoice invoice = purchaseOrderPT.sendPurchaseOrder(customerInfo,
+        purchaseOrder);
+    /*
+     * In our system, the part number is also the unit price! 
+     * The shipper charges a flat fare of $10.95.
+     */
+    assertEquals(purchaseOrder.getPartNumber()
+        * purchaseOrder.getQuantity()
+        + 10.95, invoice.getAmount(), 0.001);
+    assertEquals(purchaseOrder.getOrderId(), invoice.getOrderId());
+  }
+  catch (ProblemInfo e) {
+    fail("shipping to available address should complete");
+  }
+}]]></programlisting>
+
+        </listitem>
+        
+        <listitem>
+        
+          <para><literal>testSendPurchaseOrderNotAvailable</literal>: fill in a purchase order
+            with details about the customer, the shipping address and the requested items.
+            The shipper does <emphasis>not</emphasis> serve the given address. Hence, we expect
+            a problem when placing this order.</para>
+          
+          <programlisting><![CDATA[public void testSendPurchaseOrderNotAvailable() throws RemoteException {
+  CustomerInfo customerInfo = new CustomerInfo();
+  customerInfo.setCustomerId("freddy");
+  customerInfo.setAddress("666 Elm St");
+
+  PurchaseOrder purchaseOrder = new PurchaseOrder();
+  purchaseOrder.setOrderId(20);
+  purchaseOrder.setPartNumber(13);
+  purchaseOrder.setQuantity(7);
+
+  try {
+    purchaseOrderPT.sendPurchaseOrder(customerInfo, purchaseOrder);
+    fail("shipping to unavailable address should not complete");
+  }
+  catch (ProblemInfo e) {
+    assertTrue(e.getDetail().indexOf(customerInfo.getAddress()) != -1);
+  }
+}]]></programlisting>
+        
+        </listitem>
+        
+      </orderedlist>
+  
+    </section>
+
+    <section id="tutorial.purchase.test.jndi">
+
+      <title>Client JNDI properties</title>
+
+      <para>The JNDI properties are exactly the same for all examples. In 
+        particular, the <varname>j2ee.clientName</varname> property does not change because
+        all examples share the <literal>&lt;jndi-name&gt;</literal> in
+        their respective <literal>jboss-client.xml</literal> descriptors.</para>
+        
+      <para>Refer to the <link linkend="tutorial.hello.test.jndi" 
+        endterm="tutorial.hello.test.jndi.title" /> in the first example for a listing
+        of the properties.</para>
+
+    </section>
+
+    <section id="tutorial.purchase.test.run">
+
+      <title>Test execution</title>
+
+      <para>The following target runs the test case:</para>
+
+      <synopsis>ant test</synopsis>
+
+      <para>If everything goes well the target output should look like this:</para>
+
+      <screen>test.test:
+    [junit] Running org.jbpm.bpel.tutorial.purchase.PurchaseOrderTest
+    [junit] Tests run: 2, Failures: 0, Errors: 0, Time elapsed: 8.781 sec</screen>
+    
+    </section>    
+  
+  </section>
+
+</chapter>

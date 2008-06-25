@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="sampleProcess" 
+  targetNamespace="http://acme.com/ws-bp/purchase" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/ws/2003/03/business-process/
+                      http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/" 
+  xmlns:def="http://manufacturing.org/wsdl/purchase">
+  <partnerLinks>
+    <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT" 
+      partnerRole="schedulingRequester" myRole="schedulingService"/>
+  </partnerLinks>
+  <variables>
+    <variable name="schedule" messageType="def:scheduleMessage"/>
+  </variables>
+  <receive partnerLink="schedulingPL" operation="sendShippingSchedule" 
+    variable="schedule" portType="def:schedulingPT"/>
+</process>

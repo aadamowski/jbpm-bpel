@@ -1,0 +1,72 @@
+<jbpm-configuration>
+
+  <jbpm-context>
+
+    <!-- Standard services (begin) -->
+    <service name="persistence" factory="org.jbpm.persistence.db.DbPersistenceServiceFactory" />
+    <service name="message" factory="org.jbpm.msg.db.DbMessageServiceFactory" />
+    <service name="scheduler" factory="org.jbpm.scheduler.db.DbSchedulerServiceFactory" />
+    <!-- Standard services (end) -->
+
+    <!-- Enterprise services (begin) ===
+    <service name="persistence" factory="org.jbpm.persistence.jta.JtaDbPersistenceServiceFactory" />
+    <service name="message" factory="org.jbpm.msg.jms.JmsMessageServiceFactoryImpl" />
+    <service name="scheduler" factory="org.jbpm.scheduler.ejbtimer.EntitySchedulerServiceFactory" />
+    ==== Enterprise services (end) -->
+
+    <service name="tx" factory="org.jbpm.tx.TxServiceFactory" />
+    <service name="logging" factory="org.jbpm.logging.db.DbLoggingServiceFactory" />
+    <service name="authentication" factory="org.jbpm.security.authentication.DefaultAuthenticationServiceFactory" />
+
+    <service name="integration">
+      <factory>
+        <bean class="org.jbpm.bpel.integration.jms.JmsIntegrationServiceFactory">
+          <field name="jbpmConfiguration"><ref bean="jbpmConfiguration" /></field>
+        </bean>
+      </factory>
+    </service>
+
+  </jbpm-context>
+
+  <!-- configuration property used by db persistence service -->
+  <string name="resource.hibernate.cfg.xml" value="jbpm.hibernate.cfg.xml" />
+
+  <!-- Enterprise services (begin) ===
+  <null name="jbpm.job.executor" />
+  ==== Enterprise services (end) -->
+
+  <!-- resource names pointing to default configuration files in jbpm-bpel.jar -->
+  <string name="resource.parsers" value="org/jbpm/bpel/par/generic.parsers.xml" />
+  <string name="resource.jpdl.parsers" value="org/jbpm/jpdl/par/jbpm.parsers.xml" />
+  <string name="resource.bpel.parsers" value="org/jbpm/bpel/par/bpel.parsers.xml" />
+  <string name="resource.bpel.modules" value="org/jbpm/bpel/graph/def/bpel.modules.properties" />  
+  <string name="resource.varmapping" value="org/jbpm/bpel/variable/exe/bpel.varmapping.xml" />
+  <string name="resource.activity.readers" value="org/jbpm/bpel/xml/activity.readers.xml"/>
+  <string name="resource.catalog.readers" value="org/jbpm/bpel/xml/catalog.readers.xml" />
+  <string name="resource.catalog.writers" value="org/jbpm/bpel/xml/catalog.writers.xml" />
+  <string name="resource.endpoint.reference.factories" value="org/jbpm/bpel/endpointref/endpoint.reference.factories.xml" />
+  <string name="resource.evaluator.factories" value="org/jbpm/bpel/sublang/exe/evaluator.factories.xml" />
+  <string name="resource.expression.functions" value="org/jbpm/bpel/sublang/xpath/expression.functions.xml" />
+  <string name="resource.join.condition.functions" value="org/jbpm/bpel/sublang/xpath/join.condition.functions.xml" />
+  <string name="resource.property.query.functions" value="org/jbpm/bpel/sublang/xpath/property.query.functions.xml" />
+  <string name="resource.variable.query.functions" value="org/jbpm/bpel/sublang/xpath/expression.functions.xml" />
+  <string name="resource.endpoint.metadata.lookups" value="org/jbpm/bpel/integration/server/endpoint.metadata.lookups.xml" />
+
+  <!-- compression level applied to xml fragments stored in the database -->
+  <!-- see java.util.zip.Deflater for a description of the allowed values -->
+  <int name="jbpm.bpel.xml.deflate.level" value="0" singleton="true" />
+
+  <bean name="jbpm.bpel.central.catalog" class="org.jbpm.bpel.integration.catalog.CentralCatalog"
+    singleton="true">
+    <field name="jbpmConfiguration"><ref bean="jbpmConfiguration" /></field>
+  </bean>
+
+  <!-- time to wait for response messages, in milliseconds -->
+  <!-- when timeout expires, a fault message is sent back to client -->
+  <long name="jbpm.bpel.response.timeout" value="60000" />
+
+  <!-- time to expire one-way messages, in milliseconds -->
+  <!-- when timeout expires, message is no longer available for reception -->
+  <long name="jbpm.bpel.oneway.timeout" value="0" />
+
+</jbpm-configuration>

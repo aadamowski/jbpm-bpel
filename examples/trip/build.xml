@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="trip" default="main">
+
+  <import file="../common/bpel-build.xml" />
+  <import file="../common/test-build.xml" />
+
+  <!-- ============================ -->
+  <!-- === PARTNER REGISTRATION === -->
+  <!-- ============================ -->
+
+  <target name="register.partners"
+          depends="define.register.task"
+          description="register partner services">
+    <registerpartner baselocation="http://localhost:8080/ticket/ticketIssuer?wsdl" />
+  </target>
+
+</project>

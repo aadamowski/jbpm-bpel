@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/atm"
+  xmlns:tns="http://jbpm.org/examples/atm"
+  xmlns:atm="http://jbpm.org/examples/atm"
+  xmlns:acc="http://jbpm.org/examples/account"
+  xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:plt="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/atm"
+    location="interface/frontend.wsdl" />
+  <import namespace="http://jbpm.org/examples/account"
+    location="interface/account.wsdl" />
+  <import namespace="http://jbpm.org/examples/ticket"
+    location="interface/ticket.wsdl" />
+
+  <vprop:property name="customerId" type="xsd:string">
+    <vprop:documentation>customer name property</vprop:documentation>
+  </vprop:property>
+
+  <vprop:propertyAlias propertyName="tns:customerId"
+    messageType="tns:logOnRequest" part="customerName">
+  </vprop:propertyAlias>
+  <vprop:propertyAlias propertyName="tns:customerId"
+    messageType="tns:balanceChange" part="customerName" />
+  <vprop:propertyAlias propertyName="tns:customerId"
+    messageType="acc:customerMessage" part="customerName" />
+  <vprop:propertyAlias propertyName="tns:customerId"
+    messageType="acc:accountOperation" part="body">
+    <vprop:query>/body/customerName</vprop:query>
+  </vprop:propertyAlias>
+
+  <vprop:property name="ticketId" type="xsd:int">
+    <vprop:documentation>ticket number property</vprop:documentation>
+  </vprop:property>
+
+  <vprop:propertyAlias propertyName="tns:ticketId"
+    messageType="tic:ticketMessage" part="ticketNo" />
+  <vprop:propertyAlias propertyName="tns:ticketId"
+    messageType="tns:logOnRequest" part="ticketNo" />
+
+  <plt:partnerLinkType name="Atm-Front">
+    <plt:documentation>
+      relationship between the ATM and the process
+    </plt:documentation>
+    <plt:role name="FrontEnd" portType="tns:FrontEnd" />
+  </plt:partnerLinkType>
+  <plt:partnerLinkType name="Front-Ticket">
+    <vprop:documentation>
+      relationship between the process and the ticket issuer
+    </vprop:documentation>
+    <plt:role name="TicketIssuer" portType="tic:TicketIssuer" />
+  </plt:partnerLinkType>
+  <plt:partnerLinkType name="Front-Account">
+    <plt:documentation>
+      relationship between the process and the account system
+    </plt:documentation>
+    <plt:role name="AccountSystem" portType="acc:AccountSystem" />
+  </plt:partnerLinkType>
+
+</definitions>

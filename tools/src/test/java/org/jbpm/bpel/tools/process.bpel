@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="atm" targetNamespace="urn:samples:atmProcess" xmlns:atm="urn:samples:atm"
+  xmlns:tns="urn:samples:atmProcess"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+
+  <partnerLinks>
+    <partnerLink name="frontEnd" partnerLinkType="tns:atmFrontEnd" myRole="front" />
+    <partnerLink name="sessionFactory" partnerLinkType="tns:atmSessionFactory"
+      partnerRole="factory" />
+    <partnerLink name="travelAgent" partnerLinkType="tns:travelerAgent" myRole="agent" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="logonReq" messageType="atm:logonRequest" />
+  </variables>
+
+  <receive operation="logon" partnerLink="frontEnd" portType="atm:atm" variable="logonReq"
+    createInstance="yes" />
+
+</process>

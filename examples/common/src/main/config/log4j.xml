@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+  <!-- ============================== -->
+  <!-- Append messages to the console -->
+  <!-- ============================== -->
+
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out" />
+
+    <layout class="org.apache.log4j.PatternLayout">
+      <!-- The default pattern: Date Priority [Category] Message\n -->
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+    </layout>
+  </appender>
+
+  <!-- ================ -->
+  <!-- Limit categories -->
+  <!-- ================ -->
+
+  <!-- Apache HTTP Client -->
+  <category name="org.apache.commons.httpclient">
+    <priority value="INFO" />
+  </category>
+  <category name="org.apache.commons.httpclient.HttpMethodDirector">
+    <priority value="WARN" />
+  </category>
+  <category name="httpclient.wire">
+    <priority value="INFO" />
+  </category>
+
+  <!-- JBoss Remoting -->
+  <category name="org.jboss.remoting">
+    <priority value="INFO" />
+  </category>
+
+  <!-- JBoss Web services, 4.0.3 and earlier -->
+  <category name="org.jboss.axis">
+    <priority value="INFO" />
+  </category>
+  <category name="org.jboss.webservice">
+    <priority value="INFO" />
+  </category>
+  <!-- Show outgoing SOAP messages, 4.0.3 -->
+  <category name="org.jboss.axis.transport.http.HTTPSender">
+    <priority value="DEBUG" />
+  </category>
+
+  <!-- JBoss Web services, 4.0.4 and later -->
+  <category name="org.jboss.ws">
+    <priority value="INFO" />
+  </category>
+  <!-- Show outgoing SOAP messages, 4.0.4 -->
+  <category name="org.jboss.ws.soap.SOAPConnectionImpl">
+    <priority value="DEBUG" />
+  </category>
+  <!-- Show outgoing SOAP messages, 4.0.5 -->
+  <category name="jbossws.SOAPMessage">
+    <priority value="DEBUG" />
+  </category>
+  <!-- Show outgoing SOAP messages, 4.2.0 -->
+  <category name="org.jboss.ws.core.MessageTrace">
+    <priority value="TRACE" />
+  </category>
+
+  <!-- ======================= -->
+  <!-- Setup the Root category -->
+  <!-- ======================= -->
+
+  <root>
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</log4j:configuration>

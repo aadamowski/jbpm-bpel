@@ -1,0 +1,34 @@
+<definitions targetNamespace="http://example.org/translator/client"
+  xmlns:tns="http://example.org/translator/client" xmlns:def="http://example.com/translator"
+  xmlns:sns="http://example.com/translator/types" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:plt="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+  xmlns:vprop="http://docs.oasis-open.org/wsbpel/2.0/varprop"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://example.com/translator"
+    location="http://localhost:8080/translator/text?wsdl" />
+
+  <message name="startInput">
+    <part name="clientName" type="xsd:string" />
+  </message>
+
+  <portType name="client">
+    <operation name="start">
+      <input message="tns:startInput" />
+    </operation>
+  </portType>
+
+  <plt:partnerLinkType name="client-translator">
+    <plt:role name="translator" portType="def:textTranslator" />
+    <plt:role name="client" portType="tns:client" />
+  </plt:partnerLinkType>
+
+  <vprop:property name="clientName" type="xsd:string" />
+
+  <vprop:propertyAlias propertyName="tns:clientName" messageType="def:quoteTextInput"
+    part="clientName" />
+  <vprop:propertyAlias propertyName="tns:clientName" messageType="def:statusTextInput"
+    part="clientName" />
+  <vprop:propertyAlias propertyName="tns:clientName" messageType="tns:startInput" part="clientName" />
+
+</definitions>

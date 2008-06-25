@@ -1,0 +1,831 @@
+<chapter id="tutorial.trip">
+
+  <title>Trip Reservation Example</title>
+
+  <para><emphasis>Trip Reservation</emphasis> is about a travel agency that offers its services 
+    via the web. Travelers pick their choice of flight, hotel and/or rental car. The agency
+    receives orders from its customers and gives invoices in return.</para>
+
+  <para>Invoices contain a trip locator. Travelers keep this locator for further reference.
+    At any time before the trip begins, travelers are able to check the details of their trip.
+    Should a traveler want to cancel, the travel agency assesses a cancellation fee and 
+    reimburses the remaining portion of the amount in the invoice.</para>
+
+  <para>The figure below represents the top level activities of the trip reservation process.
+    </para>
+
+  <figure id="tutorial.trip.main">
+    <title>Trip reservation process</title>
+    <mediaobject><imageobject><imagedata align="center" fileref="images/tripMain.png"
+      width="2.24in" depth="3.08in" scalefit="0" /></imageobject></mediaobject>
+  </figure>
+
+  <section id="tutorial.trip.def">
+
+    <title>Define the BPEL process</title>
+
+    <section id="tutorial.trip.def.bpel">
+
+      <title>Create the BPEL document</title>
+
+      <para>This process has two partnerships. The first, <varname>traveler</varname> is the
+        immediately noticeable link with the customers of the agency. The second is more of
+        an implementation detail and consists of a service that generates the trip locators.
+        In fact, this process reuses the ticket issuer introduced in the <link
+        linkend="tutorial.atm.def.wsdl">ATM example</link>.</para>
+
+      <para>The correlation set <varname>trip</varname> involves activities that exchange
+        the trip locator with external entities. The trip locator helps distinguish
+        reservations from each other.</para>
+
+      <programlisting><![CDATA[<process name="TripReservation" targetNamespace="http://jbpm.org/examples/trip"
+  xmlns:tns="http://jbpm.org/examples/trip" xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+
+  <partnerLinks>
+    <partnerLink name="traveler" partnerLinkType="tns:Traveler-Agent" 
+      myRole="Agent" />
+    <partnerLink name="ticket" partnerLinkType="tns:Agent-Ticket" 
+      partnerRole="TicketIssuer" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="purchaseRequest" messageType="tns:purchaseRequest" />
+    <variable name="cost" type="xsd:double" />
+    <variable name="items" type="tns:ItemSet" />
+    <variable name="cancelRequest" messageType="tns:cancelRequest" />
+    <variable name="cancelResponse" messageType="tns:cancelResponse" />
+    <variable name="detailRequest" messageType="tns:detailRequest" />
+    <variable name="detailResponse" messageType="tns:detailResponse" />
+    <variable name="dateReached" type="xsd:boolean" />
+  </variables>
+
+  <correlationSets>
+    <correlationSet name="trip" properties="tns:tripLocator" />
+  </correlationSets>
+
+  <faultHandlers>
+    ...
+  </faultHandlers>
+  
+  <sequence name="Main">
+    ...
+  </sequence>
+
+</process>]]></programlisting>
+
+      <para>The trip purchase section of the process looks like this:</para>
+
+      <figure id="tutorial.trip.purchase">
+        <title>Trip purchase unit</title>
+        <mediaobject><imageobject><imagedata align="center" fileref="images/tripPurchase.png"
+          width="4.17in" depth="5.10in" scalefit="0"/></imageobject></mediaobject>
+      </figure>
+
+      <para>and behaves like this: after deciding on the desired trip options, the traveler 
+        sends a purchase order which goes to the <varname>purchaseRequest</varname> variable.
+        The cost of the trip is maintained in variable <varname>cost</varname> and is initially
+        set to zero. The process examines the order and charges the flight, hotel and rental 
+        car if requested. In parallel, the process contacts the ticket service and obtains
+        a trip locator. Lastly, an invoice is prepared and sent back to the traveler. The
+        invoice contains the trip locator for the customer's further reference.</para>
+        
+      <programlisting><![CDATA[<scope name="TripPurchase">
+
+  <variables>
+    <variable name="purchaseResponse" messageType="tns:purchaseResponse" />
+    <variable name="ticketRequest" messageType="tic:ticketRequest" />
+    <variable name="ticketMessage" messageType="tic:ticketMessage" />
+  </variables>
+
+  <sequence name="PurchaseTrip">
+
+    <receive name="ReceiveTripOrder" operation="purchaseTrip" partnerLink="traveler"
+      portType="tns:TravelAgent" variable="purchaseRequest" createInstance="yes" />
+
+    <flow>
+
+      <sequence name="EvaluateCost">
+
+        <assign name="InitializeCost">
+          <copy>
+            <from expression="0" />
+            <to variable="cost" />
+          </copy>
+          <copy>
+            <from variable="purchaseRequest" part="order" query="/tns:order/items" />
+            <to variable="items" />
+          </copy>
+        </assign>
+
+        <switch name="FlightDecision">
+
+          <case condition="bpel:getVariableData('items')/flight
+            and string(bpel:getVariableData('items')/flight/@xsi:nil) != '1'">
+
+            <scope name="FlightReservation">
+
+              <compensationHandler>
+                <assign name="ReimburseFlight">
+                  <copy>
+                    <from expression="bpel:getVariableData('cost') - 300 + 100" />
+                    <to variable="cost" />
+                  </copy>
+                </assign>
+              </compensationHandler>
+
+              <assign name="ChargeFlight">
+                <copy>
+                  <from expression="bpel:getVariableData('cost') + 300" />
+                  <to variable="cost" />
+                </copy>
+              </assign>
+
+            </scope>
+
+          </case>
+
+        </switch>
+
+        <switch name="HotelDecision">
+
+          <case condition="bpel:getVariableData('items')/hotel
+            and string(bpel:getVariableData('items')/hotel/@xsi:nil) != '1'">
+
+            <scope name="HotelReservation">
+
+              <compensationHandler>
+                <assign name="ReimburseHotel">
+                  <copy>
+                    <from expression="bpel:getVariableData('cost') - 100 + 25" />
+                    <to variable="cost" />
+                  </copy>
+                </assign>
+              </compensationHandler>
+
+              <assign name="ChargeHotel">
+                <copy>
+                  <from expression="bpel:getVariableData('cost') + 100" />
+                  <to variable="cost" />
+                </copy>
+              </assign>
+
+            </scope>
+
+          </case>
+
+        </switch>
+
+        <switch name="CarDecision">
+
+          <case condition="bpel:getVariableData('items')/rentalCar
+            and string(bpel:getVariableData('items')/rentalCar/@xsi:nil) != '1'">
+
+            <scope name="CarReservation">
+
+              <compensationHandler>
+                <assign name="ReimburseCar">
+                  <copy>
+                    <from expression="bpel:getVariableData('cost') - 50 + 5" />
+                    <to variable="cost" />
+                  </copy>
+                </assign>
+              </compensationHandler>
+
+              <assign name="ChargeCar">
+                <copy>
+                  <from expression="bpel:getVariableData('cost') + 50" />
+                  <to variable="cost" />
+                </copy>
+              </assign>
+
+            </scope>
+
+          </case>
+
+        </switch>
+
+      </sequence>
+
+      <invoke name="CreateTicket" operation="createTicket" partnerLink="ticket"
+        portType="tic:TicketIssuer" inputVariable="ticketRequest"
+        outputVariable="ticketMessage">
+        <correlations>
+          <correlation set="trip" initiate="yes" pattern="in" />
+        </correlations>
+      </invoke>
+
+    </flow>
+
+    <assign name="PrepareInvoice">
+      <copy>
+        <from variable="ticketMessage" part="ticketNo" />
+        <to variable="purchaseResponse" part="invoice" query="/tns:invoice/@locator" />
+      </copy>
+      <copy>
+        <from variable="cost" />
+        <to variable="purchaseResponse" part="invoice" query="/tns:invoice/@cost" />
+      </copy>
+    </assign>
+
+    <reply name="SendInvoice" operation="purchaseTrip" partnerLink="traveler"
+      portType="tns:TravelAgent" variable="purchaseResponse">
+      <correlations>
+        <correlation set="trip" />
+      </correlations>
+    </reply>
+
+  </sequence>
+
+</scope>]]></programlisting>
+        
+      <para>After the invoice is sent, the process expects one of the following three 
+        external events to occur:</para>
+        
+      <orderedlist>
+        <listitem><para>the traveler reviews the trip details</para></listitem>
+        <listitem><para>the traveler cancels the trip</para></listitem>
+        <listitem><para>the trip date arrives</para></listitem>
+      </orderedlist>
+      
+      <para>These events appear as branches in the next model.</para>
+      
+      <figure id="tutorial.trip.predate">
+        <title>Loop before trip date</title>
+        <mediaobject>
+          <imageobject><imagedata align="center" fileref="images/tripPredate.png"  />
+            </imageobject>
+        </mediaobject>
+      </figure>
+      
+      <para>Travelers can review the trip details as many times as they want before the trip
+        date. For this reason, the event listening structure appears inside a loop. Arriving
+        at the trip date just breaks the loop.</para>
+        
+      <programlisting><![CDATA[<assign name="SetDateNotReached">
+  <copy>
+    <from expression="false()" />
+    <to variable="dateReached" />
+  </copy>
+</assign>
+
+<while name="PredateLoop" condition="bpel:getVariableData('dateReached') = 'false'">
+
+  <pick name="PredateMenu">
+
+    <onMessage operation="getTripDetail" partnerLink="traveler" portType="tns:TravelAgent"
+      variable="detailRequest">
+
+      <correlations>
+        <correlation set="trip" />
+      </correlations>
+
+      <sequence name="DetailTrip">
+
+        <assign name="PrepareTripDetail">
+          <copy>
+            <from variable="purchaseRequest" part="order" query="/tns:order/items" />
+            <to variable="detailResponse" part="detail" query="/tns:detail/items" />
+          </copy>
+          <copy>
+            <from variable="cost" />
+            <to variable="detailResponse" part="detail" query="/tns:detail/@cost" />
+          </copy>
+        </assign>
+
+        <reply name="SendTripDetail" operation="getTripDetail" partnerLink="traveler"
+          portType="tns:TravelAgent" variable="detailResponse" />
+
+      </sequence>
+
+    </onMessage>
+
+    <onMessage operation="cancelTrip" partnerLink="traveler" portType="tns:TravelAgent"
+      variable="cancelRequest">
+
+      <correlations>
+        <correlation set="trip" />
+      </correlations>
+
+      <throw name="CancelTrip" faultName="tns:cancelation" />
+
+    </onMessage>
+
+    <onAlarm until="bpel:getVariableData('purchaseRequest', 'order', '/tns:order/date')">
+
+      <assign name="SetDateReached">
+        <copy>
+          <from expression="true()" />
+          <to variable="dateReached" />
+        </copy>
+      </assign>
+
+    </onAlarm>
+
+  </pick>
+
+</while>]]></programlisting>
+        
+      <para>This example takes a distinct approach to handle the cancelation scenario.
+        Instead of branching to determine what options were ordered, this process throws a
+        fault. A global fault handler compensates the trip purchase scope. Compensation handlers
+        (installed only for inner scopes that got activated) reimburse charges and assess 
+        applicable fees. In the end, a bill is sent back to report the forfeited amount.</para>
+        
+      <programlisting><![CDATA[<catch faultName="tns:cancelation">
+
+  <sequence name="Cancel">
+
+    <compensate name="UndoPurchase" scope="tripPurchase" />
+
+    <assign name="PreparePenalty">
+      <copy>
+        <from variable="cost" />
+        <to variable="cancelResponse" part="penalty" query="/tns:penalty/@fee" />
+      </copy>
+    </assign>
+
+    <reply name="SendPenalty" operation="cancelTrip" partnerLink="traveler"
+      portType="tns:TravelAgent" variable="cancelResponse" />
+
+  </sequence>
+
+</catch>]]></programlisting>
+
+    </section>
+    
+    <section id="tutorial.trip.def.wsdl">
+    
+      <title>Create/obtain the WSDL interface documents</title>
+      
+      <para>The WSDL file <literal>trip.wsdl</literal> describes the travel agency service.
+        Apart from schema types, messages and operations, the document characterizes
+        the relationship between (a) the traveler and the agency (<literal>Traveler-Agent
+        </literal>) and (b) the agency and the trip locator issuer (<literal>Agent-Ticket
+        </literal>). The WSDL definition also introduces the trip locator as a property and
+        maps it to fields within the invoice, cancelation and query messages.</para>
+        
+      <programlisting><![CDATA[<definitions name="trip" targetNamespace="http://jbpm.org/examples/trip"
+  xmlns:tns="http://jbpm.org/examples/trip" xmlns:tic="http://jbpm.org/examples/ticket"
+  xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/ticket" location="ticket.wsdl" />
+
+  <types>
+
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://jbpm.org/examples/trip">
+
+      <xsd:complexType name="Flight">
+        <xsd:attribute use="required" name="airline" type="xsd:string" />
+        <xsd:attribute use="required" name="number" type="xsd:int" />
+      </xsd:complexType>
+
+      <xsd:complexType name="Hotel">
+        <xsd:attribute use="required" name="name" type="xsd:string" />
+      </xsd:complexType>
+
+      <xsd:complexType name="RentalCar">
+        <xsd:attribute use="required" name="company" type="xsd:string" />
+      </xsd:complexType>
+
+      <xsd:complexType name="ItemSet">
+        <xsd:sequence>
+          <xsd:element name="flight" minOccurs="0" type="tns:Flight" />
+          <xsd:element name="hotel" minOccurs="0" type="tns:Hotel" />
+          <xsd:element name="rentalCar" minOccurs="0" type="tns:RentalCar" />
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="order">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="items" type="tns:ItemSet" />
+            <xsd:element name="date" type="xsd:dateTime" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="invoice">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+          <xsd:attribute name="cost" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="cancelation">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="penalty">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="fee" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="query">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="locator" type="xsd:int" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="detail">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="items" type="tns:ItemSet" />
+          </xsd:sequence>
+          <xsd:attribute name="cost" type="xsd:double" use="required" />
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:schema>
+
+  </types>
+
+  <message name="purchaseRequest">
+    <part name="order" element="tns:order" />
+  </message>
+
+  <message name="purchaseResponse">
+    <part name="invoice" element="tns:invoice" />
+  </message>
+
+  <message name="cancelResponse">
+    <part name="penalty" element="tns:penalty" />
+  </message>
+
+  <message name="detailResponse">
+    <part name="detail" element="tns:detail" />
+  </message>
+
+  <message name="detailRequest">
+    <part name="query" element="tns:query" />
+  </message>
+
+  <message name="cancelRequest">
+    <part name="cancelation" element="tns:cancelation" />
+  </message>
+
+  <portType name="TravelAgent">
+    <operation name="purchaseTrip">
+      <input message="tns:purchaseRequest" />
+      <output message="tns:purchaseResponse" />
+    </operation>
+    <operation name="cancelTrip">
+      <input message="tns:cancelRequest" />
+      <output message="tns:cancelResponse" />
+    </operation>
+    <operation name="getTripDetail">
+      <input message="tns:detailRequest" />
+      <output message="tns:detailResponse" />
+    </operation>
+  </portType>
+
+  <plt:partnerLinkType name="Traveler-Agent">
+    <plt:role name="Agent">
+      <plt:portType name="tns:TravelAgent" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="Agent-Ticket">
+    <plt:role name="TicketIssuer">
+      <plt:portType name="tic:TicketIssuer" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <bpel:property name="tripLocator" type="xsd:int" />
+
+  <bpel:propertyAlias propertyName="tns:tripLocator" messageType="tns:purchaseResponse"
+    part="invoice" query="/tns:invoice/@locator" />
+
+  <bpel:propertyAlias propertyName="tns:tripLocator" messageType="tns:cancelRequest"
+    part="cancelation" query="/tns:cancelation/@locator" />
+
+  <bpel:propertyAlias propertyName="tns:tripLocator" messageType="tns:detailRequest" 
+    part="query" query="/tns:query/@locator" />
+
+  <bpel:propertyAlias propertyName="tns:tripLocator" messageType="tic:ticketMessage"
+    part="ticketNo" />
+
+</definitions>]]></programlisting>
+
+      <para>Starting from version 1.1.GA, jBPM BPEL parses incoming messages and formats
+        outgoing messages using full WSDL binding information. This means support for the
+        document style and enhancements for the RPC style.</para>
+        
+      <para>Unlike other examples, the <literal>TravelAgent</literal> port type refers only
+        to <literal>wsdl:parts</literal> that have been defined using the <literal>element
+        </literal> attribute. This characterizes the document style.</para>
+
+      <para>There is another document, <literal>ticket.wsdl</literal>, that describes the
+        ticket issuer interface. Please jump to the <link linkend="tutorial.atm.def.wsdl"
+        endterm="tutorial.atm.def.wsdl.title" /> section of the ATM example if you want 
+        to examine this document.</para>
+    
+    </section>
+    
+    <section id="tutorial.trip.def.deploy">
+    
+      <title>Deploy the process definition</title>
+      
+      <para>The master WSDL document <literal>trip.wsdl</literal> contains most
+        WSDL definitions. It imports <literal>ticket.wsdl</literal> to access 
+        the definitions specific to the ticket issuer.</para>
+        
+      <para>Deploy the process definition to the jBPM database calling:</para>
+      
+      <synopsis>ant deploy.process</synopsis>
+      
+      <para>The <literal>deploy-process</literal> target builds the process archive
+        <literal>trip.zip</literal> and submits it to the deployment servlet.
+        In a typical deployment the server prints these messages:</para>
+        
+      <screen>21:10:23,203 INFO  [DeploymentServlet] deployed process definition: TripReservation
+21:10:25,250 INFO  [WebModuleBuilder] packaged web module: trip.war
+21:10:25,250 INFO  [DeploymentServlet] deployed web module: trip.war
+21:10:27,359 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=trip,&nextLine;
+endpoint=AgentServlet
+21:10:27,437 INFO  [TomcatDeployer] deploy, ctxPath=/trip, warUrl=.../tmp41529trip-exp.war/
+21:10:28,250 INFO  [IntegrationConfigurator] message reception enabled for process:&nextLine;
+TripReservation
+21:10:28,546 INFO  [WSDLFilePublisher] WSDL published to: .../trip-service.wsdl</screen>
+
+      <para>Back in the description of the process, we mentioned a partner service that
+        generates unique trip locators. Make sure you deploy that service before any
+        reservation is placed, or the process will malfunction and your virtual travelers
+        will be very angry. Change to the <literal>ticket</literal> directory and trigger
+        the following target.</para>
+
+      <synopsis>ant deploy.webservice</synopsis>
+      
+      <para>The next few lines confirm a successful deployment.</para>
+      
+      <screen>18:12:44,421 INFO  [DefaultEndpointRegistry] register: jboss.ws:context=ticket,&nextLine;
+endpoint=ticketIssuerServlet
+18:12:44,437 INFO  [TomcatDeployer] deploy, ctxPath=/ticket, warUrl=...
+18:12:44,843 INFO  [WSDLFilePublisher] WSDL published to: .../ticket-impl.wsdl</screen>
+
+      <para>The JBossWS service endpoints page should be showing a picture similar to the
+        next one. Of course, the host address and port shown may vary, depending on your
+        server bind address.</para>
+        
+      <figure id="tutorial.trip.endpoints">
+        <title>Endpoints page</title>
+        <mediaobject><imageobject><imagedata fileref="images/tripEndpoints.png" align="center"
+          width="6.03in" depth="4.61in" scalefit="0" /></imageobject></mediaobject>
+      </figure>
+      
+      <note><para>It is worth pointing BPEL endpoints are intermixed with Java and EJB
+        endpoints in the list. For all intents and purposes, BPEL endpoints are no different.
+        </para></note>
+
+      <para>Deploying a partner service is not enough for the jBPM BPEL to know of its
+        existence. Its WSDL description must be registered in the service catalog.
+        The target below is provided for this purpose.</para>
+        
+      <synopsis>ant register.partners</synopsis>
+        
+      <para>The web console allows you to browse the catalog. You can register
+        new partner services manually as well.</para>
+        
+      <figure id="tutorial.trip.partners">
+        <title>Service catalog</title>
+        <mediaobject><imageobject><imagedata fileref="images/tripPartners.png" align="center"
+          width="6.31in" depth="5.56in" scalefit="0" /></imageobject></mediaobject>
+      </figure>
+      
+    </section>
+    
+  </section>
+  
+    <section id="tutorial.trip.client">
+
+    <title>Build the WSEE application client</title>
+    
+    <section id="tutorial.trip.client.appclient">
+
+      <title>Application client deployment descriptor</title>
+      
+      <para>Reference your full WSDL description and Java mapping artifacts from the <literal>
+        application-client.xml</literal> descriptor.</para>
+  
+      <programlisting><![CDATA[<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>Trip Reservation Client</display-name>
+
+  <service-ref>
+
+    <!-- JNDI name of service interface in client environment context -->
+    <service-ref-name>service/Trip</service-ref-name>
+    <!-- service interface -->
+    <service-interface>
+      org.jbpm.bpel.tutorial.trip.TripReservationService
+    </service-interface>
+    <!-- published WSDL document -->
+    <wsdl-file>META-INF/wsdl/trip-service.wsdl</wsdl-file>
+    <!-- Java<->XML mapping file -->
+    <jaxrpc-mapping-file>META-INF/trip-mapping.xml</jaxrpc-mapping-file>
+
+  </service-ref>
+
+</application-client>]]></programlisting>
+    
+    </section>
+    
+    <section id="tutorial.trip.client.env">
+
+      <title>Environment context</title>
+
+      <para>Allocate a JNDI name for the client environment context in <literal>jboss-client.xml
+        </literal>.</para>
+      
+      <programlisting><![CDATA[<jboss-client>
+  <jndi-name>jbpmbpel-client</jndi-name>
+</jboss-client>]]></programlisting>
+
+      <tip><para>The <literal>jndi-name</literal> above is shared among all examples. You can
+        share a single JNDI name among multiple application clients to keep them organized
+        and reduce the number of top-level entries in the global JNDI context of the server.
+        Just make sure you give different <literal>service-ref-name</literal>s to each client
+        in the respective <literal>application-client.xml</literal> file.</para></tip>
+
+    </section>
+    
+  </section>
+
+  <section id="tutorial.trip.test">
+  
+    <title>Test the process</title>
+    
+    <para>To ensure the process works as expected, the test case <literal>TravelAgentTest
+      </literal> is provided.</para>
+      
+    <section id="tutorial.trip.test.remote">
+  
+      <title>Remote web service access</title>
+
+      <para>The test setup code looks up the service instance <literal>tripService</literal>. 
+        This object is a factory from which clients get service endpoint proxies. Sample flight,
+        hotel and car entities are also initialized.</para>
+  
+      <programlisting><![CDATA[private TravelAgent agent;
+
+private Flight flight = new Flight();
+private Hotel hotel = new Hotel();
+private RentalCar car = new RentalCar();
+private Calendar tripDate = Calendar.getInstance();
+
+protected void setUp() throws Exception {
+  /*
+   * "service/Trip" is the JNDI name of the service interface instance relative to
+   * the client environment context. This name matches the <service-ref-name> in 
+   * application-client.xml
+   */
+  InitialContext iniCtx = new InitialContext();
+  TripReservationService tripService = (TripReservationService) iniCtx.lookup(
+    "java:comp/env/service/Trip");
+  agent = tripService.getAgentPort();
+
+  flight.setAirline("AM");
+  flight.setNumber(637);
+  hotel.setName("Maria Isabel");
+  car.setCompany("Alamo");
+  tripDate.add(Calendar.SECOND, 10);
+}]]></programlisting>
+
+     <para>There are three test scenarios.</para>
+     
+     <orderedlist>
+     
+       <listitem>
+       
+         <para><literal>testPurchaseTrip</literal>: create a trip reservation that includes
+           a flight and a hotel. Submit the reservation. Ensure the cost in the invoice
+           matches the price of the selected items.</para>
+         
+         <programlisting><![CDATA[public void testPurchaseTrip() throws RemoteException {
+  ItemSet items = new ItemSet();
+  items.setFlight(flight); // cost: 300
+  items.setHotel(hotel); // cost: 100
+
+  Order order = new Order();
+  order.setDate(tripDate);
+  order.setItems(items);
+
+  Invoice invoice = agent.purchaseTrip(order);
+
+  assertEquals(300 + 100, invoice.getCost(), 0);
+}]]></programlisting>
+       
+       </listitem>
+       
+       <listitem>
+       
+        <para><literal>testGetTripDetails</literal>: reserve a trip, including all offered
+          items. Use the trip locator in the returned invoice to query about the details.
+          Verify the details match the original order.</para>
+        
+        <programlisting><![CDATA[public void testGetTripDetails() throws RemoteException {
+  ItemSet items = new ItemSet();
+  items.setFlight(flight);
+  items.setHotel(hotel);
+  items.setRentalCar(car);
+
+  Order order = new Order();
+  order.setDate(tripDate);
+  order.setItems(items);
+
+  Invoice invoice = agent.purchaseTrip(order);
+
+  Query query = new Query();
+  query.setLocator(invoice.getLocator());
+
+  Detail detail = agent.getTripDetail(query);
+  items = detail.getItems();
+
+  assertEquals(flight.getAirline(), items.getFlight().getAirline());
+  assertEquals(flight.getNumber(), items.getFlight().getNumber());
+  assertEquals(hotel.getName(), items.getHotel().getName());
+  assertEquals(car.getCompany(), items.getRentalCar().getCompany());
+  assertEquals(invoice.getCost(), detail.getCost(), 0);
+}]]></programlisting>
+       
+       </listitem>
+       
+       <listitem>
+       
+        <para><literal>testCancelTrip</literal>: make a reservation for a flight and a 
+          rental car. Cancel the trip using the locator in the invoice. Check the penalty
+          corresponds to the ordered items.</para>
+        
+        <programlisting><![CDATA[public void testCancelTrip() throws Exception {
+  ItemSet items = new ItemSet();
+  items.setFlight(flight); // fee: 100
+  items.setRentalCar(car); // fee: 5
+
+  Order order = new Order();
+  order.setDate(tripDate);
+  order.setItems(items);
+
+  Invoice invoice = agent.purchaseTrip(order);
+
+  Cancelation reference = new Cancelation();
+  reference.setLocator(invoice.getLocator());
+
+  Penalty penalty = agent.cancelTrip(reference);
+
+  assertEquals(100 + 5, penalty.getFee(), 0);
+}]]></programlisting>
+       
+       </listitem>
+     
+     </orderedlist>
+     
+     <note><para>The process instances created to serve the above requests will end 
+       automatically, on or shortly after the stated trip date and time.</para></note>
+
+    </section>
+    
+    <section id="tutorial.trip.test.jndi">
+
+      <title id="tutorial.trip.test.jndi.title">Client JNDI properties</title>
+
+      <para>The JNDI properties are exactly the same for all examples. In particular, the
+        <varname>j2ee.clientName</varname> property does not change because all examples share
+        the <literal>&lt;jndi-name&gt;</literal> in their respective <literal>jboss-client.xml
+        </literal> descriptors. Refer to the <link linkend="tutorial.hello.test.jndi" 
+        endterm="tutorial.hello.test.jndi.title" /> section in the first example for a
+        listing of the properties.</para>
+
+    </section>    
+
+    <section id="tutorial.trip.test.run">
+
+      <title>Test execution</title>
+      
+      <para>To execute the JUnit test, call:</para>
+
+      <synopsis>ant test</synopsis>
+
+      <para>The results you should expect follow.</para>
+      
+      <screen>test:
+    [junit] Running org.jbpm.bpel.tutorial.trip.TravelAgentTest
+    [junit] Tests run: 3, Failures: 0, Errors: 0, Time elapsed: 4.875 sec</screen>
+    
+    </section>
+    
+  </section>
+
+</chapter>

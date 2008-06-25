@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.variable.exe.ElementInstance"
+    extends="org.jbpm.context.exe.VariableInstance" discriminator-value="E">
+    <property name="value" type="element" column="ELEMENTVALUE_" length="4000" />
+  </subclass>
+
+</hibernate-mapping>

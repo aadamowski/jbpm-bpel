@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogReaders>
+  <catalogReader name="urlCatalog" class="org.jbpm.bpel.xml.UrlCatalogReader" />
+  <catalogReader name="centralCatalog" class="org.jbpm.bpel.xml.CentralCatalogReader" />
+</catalogReaders>

@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<project name="ws">
+
+  <!-- =============== -->
+  <!-- === IMPORTS === -->
+  <!-- =============== -->
+
+  <import file="mapping-build.xml" />
+
+  <!-- =================================== -->
+  <!-- === CODE & RESOURCE COMPILATION === -->
+  <!-- =================================== -->
+
+  <!-- override this target if you want to include compile dependencies -->
+  <target name="compile.dependencies">
+    <path id="compile.path">
+      <path refid="jboss.path" />
+    </path>
+  </target>
+
+  <target name="compile" depends="generate.mapping, compile.dependencies">
+    <mkdir dir="${output.classes.dir}" />
+    <javac destdir="${output.classes.dir}"
+           classpathref="compile.path"
+           source="${javac.source}"
+           target="${javac.target}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}">
+      <src path="${java.dir}" />
+      <src path="${output.java.dir}" />
+    </javac>
+    <copy todir="${output.classes.dir}">
+      <fileset dir="${java.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+
+  <!-- =========================== -->
+  <!-- === WEB MODULE ASSEMBLY === -->
+  <!-- =========================== -->
+
+  <target name="package.webservice" depends="compile">
+    <war warfile="${output.dir}/${module.name}.war" webxml="${web.dir}/web.xml">
+      <classes dir="${output.classes.dir}" />
+      <webinf dir="${web.dir}" excludes="web.xml" />
+      <webinf dir="${output.web.dir}" />
+    </war>
+  </target>
+
+  <!-- ============================== -->
+  <!-- === WEB SERVICE DEPLOYMENT === -->
+  <!-- ============================== -->
+
+  <target name="define.jmx.task">
+    <!--
+    <taskdef name="jmx" classname="org.jboss.ant.JMX" classpathref="jboss.path" />
+    -->
+  </target>
+
+  <target name="deploy.webservice"
+          depends="package.webservice, define.jmx.task"
+          description="deploy web service">
+    <!--
+    <jmx adaptername="jmx/invoker/RMIAdaptor">
+      <invoke target="jboss.system:service=MainDeployer" operation="redeploy">
+        <parameter type="java.net.URL" arg="file:/${basedir}/${output.dir}/${module.name}.war" />
+      </invoke>
+    </jmx>
+    -->
+    <copy todir="${jboss.server.dir}/deploy" file="${output.dir}/${module.name}.war" />
+  </target>
+
+  <target name="undeploy.webservice" depends="define.jmx.task" description="undeploy web service">
+    <!--
+    <jmx adaptername="jmx/invoker/RMIAdaptor">
+      <invoke target="jboss.system:service=MainDeployer" operation="undeploy">
+        <parameter type="java.net.URL" arg="file:/${basedir}/${output.dir}/${module.name}.war" />
+      </invoke>
+    </jmx>
+    -->
+    <delete file="${jboss.server.dir}/deploy/${module.name}.war" />
+  </target>
+
+  <!-- ============ -->
+  <!-- === MAIN === -->
+  <!-- ============ -->
+
+  <target name="main" depends="deploy.webservice" description="main target" />
+
+  <!-- =============== -->
+  <!-- === CLEANUP === -->
+  <!-- =============== -->
+
+  <target name="clean" description="remove generated files">
+    <delete dir="${output.dir}" failonerror="no" />
+  </target>
+
+</project>

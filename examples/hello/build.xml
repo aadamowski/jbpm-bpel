@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="hello" default="main">
+
+  <import file="../common/bpel-build.xml" />
+  <import file="../common/test-build.xml" />
+
+</project>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.def.Activity" extends="org.jbpm.graph.def.Node"
+    discriminator-value="null">
+
+    <!-- Support Activity Discriminators -->
+    <!-- B : scope handler -->
+    <!-- V : catch -->
+    <!-- X : onEvent -->
+    <!-- W : onAlarm -->
+    <!-- L : loop -->
+    <!-- Y : structure start -->
+    <!-- Z : structure end -->
+
+    <!-- Basic and Structured Activity Discriminators -->
+    <!-- a : receive -->
+    <!-- b : reply -->
+    <!-- c : invoke -->
+    <!-- d : assign -->
+    <!-- e : throw -->
+    <!-- f : exit -->
+    <!-- g : wait -->
+    <!-- h : empty -->
+    <!-- i : sequence -->
+    <!-- j : switch -->
+    <!-- k : while -->
+    <!-- l : pick -->
+    <!-- m : flow -->
+    <!-- n : scope -->
+    <!-- o : compensate -->
+    <!-- p : rethrow -->
+    <!-- q : validate -->
+    <!-- r : compensateScope -->
+    <!-- s : repeatUntil -->
+
+    <list name="sources" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="SOURCE_" foreign-key="FK_ACTIVITY_SOURCE" />
+      <list-index column="SOURCEINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.def.LinkDefinition" />
+    </list>
+
+    <list name="targets">
+      <cache usage="nonstrict-read-write" />
+      <key column="TARGET_" foreign-key="FK_ACTIVITY_TARGET" />
+      <list-index column="TARGETINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.def.LinkDefinition" />
+    </list>
+
+    <property name="suppressJoinFailure" column="SUPPRESSJOINFAILURE_" />
+    <many-to-one name="compositeActivity" column="COMPOSITEACTIVITY_"
+      foreign-key="FK_ACTIVITY_COMPOSITE" />
+    <many-to-one name="joinCondition" column="JOINCONDITION_"
+      foreign-key="FK_ACTIVITY_JOINCONDITION" cascade="all" />
+
+    <subclass name="org.jbpm.bpel.graph.def.CompositeActivity" discriminator-value="null" />
+
+  </subclass>
+
+</hibernate-mapping>

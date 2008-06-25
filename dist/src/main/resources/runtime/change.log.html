@@ -1,0 +1,145 @@
+<html>
+
+<head>
+<title>JBoss jBPM BPEL - Change Log</title>
+<link rel="stylesheet" type="text/css" href="doc/userguide/html/css/common.css" />
+<link rel="stylesheet" type="text/css" href="doc/userguide/html/css/screen.css" />
+</head>
+
+<!-- HEADER -->
+<body>
+<div class="brand_DOTCOM" id="container">
+
+<div id="TopLogo"><a href="http://www.jboss.com"><img
+  src="doc/userguide/html/images/jboss_logo.gif" alt="JBoss, a division of Red Hat"
+  width="249" height="78" border="0" /></a></div>
+
+<div id="TopMenu">
+<table cellpadding="0" cellspacing="0">
+  <tr>
+    <td><a href="http://jbpm.org">jbpm.org</a></td>
+    <td><a href="http://jboss.org">jboss.org</a></td>
+    <td><a href="http://jboss.com">jboss.com</a></td>
+    <td><a href="http://redhat.com">redhat.com</a></td>
+  </tr>
+</table>
+</div>
+
+<table cellpadding="0" cellspacing="0" id="BodyTable">
+  <tr>
+    <td colspan="2" class="topheader" />
+  </tr>
+  <tr>
+    <td class="leftside">
+    <div id="LeftMenu">
+    <ul>
+      <li><a href="http://jboss.org/wiki/Wiki.jsp?page=JbpmWiki">Wiki</a></li>
+      <li><a href="http://jboss.org/index.html?module=bb&op=viewforum&f=217">Forum</a></li>
+      <li><a href="http://labs.jboss.com/jbossjbpm/blog">Blog</a></li>
+      <li><a href="http://www.jboss.com/services/index">Support</a></li>
+      <li><a href="http://labs.jboss.com/jbossjbpm/downloads">Download</a></li>
+    </ul>
+    </div>
+    </td>
+    <td class="bodycell">
+    <!-- CONTENT -->
+    <h1>Change Log - Version 1.1.GA</h1>
+
+    <h2>Bug</h2>
+    <ul>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-200'>BPEL-200</a>] - Redeployment of a changed PAR (with modified .bpel) requires App Server Restart</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-230'>BPEL-230</a>] - store element properties in a VARCHAR column instead of LONGVARCHAR for oracle compatibility</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-231'>BPEL-231</a>] - integration service opens request listeners even if tx marked for rollback</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-232'>BPEL-232</a>] - Missing &quot;description&quot; property in BpelDefinition mapping</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-242'>BPEL-242</a>] - &lt;scope&gt; not allowed to enclose a start activity</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-250'>BPEL-250</a>] - NPE when deploying a process using jbpm-bpel.jar from BPEL-230</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-256'>BPEL-256</a>] - First activity of a flow has to have a defined target even if the containing flow element has a target</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-258'>BPEL-258</a>] - non-start activities within initial flow are never entered</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-260'>BPEL-260</a>] - Flow activity might not reactivate parent token in race condition</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-264'>BPEL-264</a>] - NPE when dead-path elimination reaches a flow with local links</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-265'>BPEL-265</a>] - structured activities tell they are initial even if they are the targets of links</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-267'>BPEL-267</a>] - NPE extracting content from soap envelope containing default namespace declarations</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-271'>BPEL-271</a>] - NPE when a start IMA references a nonglobal variable</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-278'>BPEL-278</a>] - role referenced in &lt;from&gt; is not verified to exist in the partner link</li>
+
+    </ul>
+    <h2>Feature Request</h2>
+    <ul>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-59'>BPEL-59</a>] - get original BPEL document after deployment</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-204'>BPEL-204</a>] - Add org.jbpm.webapp.servlet.UploadServlet as part of the bpel distribution. </li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-245'>BPEL-245</a>] - make xpath function library extensible</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-259'>BPEL-259</a>] - upgrade to hibernate 3.2.4.SP1</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-269'>BPEL-269</a>] - enhance assignment logging capabilities</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-272'>BPEL-272</a>] - allow xpath expression/query to create more than one occurrence of an element</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-279'>BPEL-279</a>] - variable variant is not supported in predicate</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-282'>BPEL-282</a>] - Engine runs process instances in serie instead of in parallel</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-286'>BPEL-286</a>] - SOAP Communication Exceptions should be catchable inside the process</li>
+
+    </ul>
+    <h2>Task</h2>
+    <ul>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-86'>BPEL-86</a>] - Release jBPM BPEL 1.1</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-190'>BPEL-190</a>] - webservice descriptors generation tool</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-216'>BPEL-216</a>] - Fully automated process deployment</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-217'>BPEL-217</a>] - convert bpel-definition.xml into master wsdl document</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-218'>BPEL-218</a>] - introduce a central service catalog</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-229'>BPEL-229</a>] - move to a portable deployment model</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-233'>BPEL-233</a>] - Simplify activity XML readers</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-234'>BPEL-234</a>] - Convert Invoker, Receiver, Replier and Alarm into Actions</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-235'>BPEL-235</a>] - Revise NodeCollection view of CompositeActivity subclasses</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-236'>BPEL-236</a>] - Convert QNameType from UserType to CompositeUserType</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-237'>BPEL-237</a>] - Remove unnecessary persistent extensions of WSDL4J classes</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-238'>BPEL-238</a>] - Upgrade to jPDL 3.2.GA</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-239'>BPEL-239</a>] - detect and deal with jpdl deployments</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-240'>BPEL-240</a>] - upgrade bpel 1.1 compensate to bpel 2 compensate/compensateScope</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-241'>BPEL-241</a>] - provide a compensation example</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-243'>BPEL-243</a>] - throw selectionFailure when copying from an element with xsi:nil=true</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-249'>BPEL-249</a>] - create ws stack integration subprojects</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-251'>BPEL-251</a>] - cover document-style bindings in service generation tool</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-253'>BPEL-253</a>] - Skip service/artifact generation tools if sources have not changed</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-254'>BPEL-254</a>] - Fix namespace URIs and schema locations of definition and application descriptor schemas</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-255'>BPEL-255</a>] - Update the namespace URI of variable property elements</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-257'>BPEL-257</a>] - rename correlation patterns</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-261'>BPEL-261</a>] - use varbinary instead of varchar as data type to store dom elements</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-262'>BPEL-262</a>] - redeliver messages whose handling fails due to stale state exceptions</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-263'>BPEL-263</a>] - incorporate enterprise support features from jpdl</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-266'>BPEL-266</a>] - incorporate targetNamespace in process definition versioning</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-270'>BPEL-270</a>] - Add support for extensionAssignOperation</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-273'>BPEL-273</a>] - provide a declarative way to install new evaluator factories in the sublanguage framework</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-274'>BPEL-274</a>] - wsdl service generator: eliminate reliance on transitive imports</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-275'>BPEL-275</a>] - web module deployment tool</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-276'>BPEL-276</a>] - generate bpel application descriptor along with wsdl service description</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-280'>BPEL-280</a>] - redeploy web modules upon server restart</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-281'>BPEL-281</a>] - ant tasks for process deployment</li>
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-283'>BPEL-283</a>] - process deployment from web console</li>
+
+    <li>[<a href='http://jira.jboss.com/jira/browse/BPEL-284'>BPEL-284</a>] - document new deployment model</li>
+    </ul>
+
+    <!-- FOOTER -->
+    </td>
+  </tr>
+</table>
+
+<div id="footer">
+<div class="leftcurve"></div>
+<div><a href="http://www.jbpm.org"><img
+  src="doc/userguide/html/images/jbpm_logo.png" alt="JBoss jBPM" width="125"
+  height="41" border="0" /></a><br/></div>
+</div>
+
+</div>
+
+</body>
+
+</html>

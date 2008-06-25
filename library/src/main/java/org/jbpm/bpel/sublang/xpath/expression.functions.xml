@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<functionContext class="org.jaxen.XPathFunctionContext"
+  xmlns:bpel11="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns:bpel2="http://schemas.xmlsoap.org/ws/2004/03/business-process/"
+  xmlns:jbpm="urn:jbpm.org:bpel-1.1">
+  <function name="bpel11:getVariableData" class="org.jbpm.bpel.sublang.xpath.GetVariableDataFunction" />
+  <function name="bpel11:getVariableProperty" class="org.jbpm.bpel.sublang.xpath.GetVariablePropertyFunction" />
+  <function name="bpel2:getVariableProperty" class="org.jbpm.bpel.sublang.xpath.GetVariablePropertyFunction" />
+  <function name="jbpm:getTokenId" class="org.jbpm.bpel.sublang.xpath.GetTokenIdFunction" />
+</functionContext>

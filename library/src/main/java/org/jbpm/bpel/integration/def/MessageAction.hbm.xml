@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.integration.def.MessageAction" extends="org.jbpm.graph.def.Action" abstract="true"
+    discriminator-value="null">
+
+    <!-- K: Invoke -->
+    <!-- R: Receive -->
+    <!-- P: Reply -->
+
+    <many-to-one name="partnerLink" column="PARTNERLINKDEFINITION_" foreign-key="FK_MESSAGECOMP_PLINKDEF" />
+    <many-to-one name="operation" class="com.ibm.wsdl.OperationImpl" column="OPERATION_"
+      foreign-key="FK_MESSAGECOMP_OPERATION" />
+
+  </subclass>
+
+</hibernate-mapping>

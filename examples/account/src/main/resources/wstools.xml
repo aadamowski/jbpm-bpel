@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="org.jbpm.bpel.tutorial.account"
+      namespace="http://jbpm.org/examples/account" />
+  </global>
+  <wsdl-java file="wsdl/account-impl.wsdl">
+    <mapping file="account-mapping.xml" />
+  </wsdl-java>
+</configuration>

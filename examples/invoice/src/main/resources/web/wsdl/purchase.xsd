@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://manufacturing.org/xsd/purchase"
+  xmlns:tns="http://manufacturing.org/xsd/purchase">
+
+  <xsd:complexType name="customerInfo">
+    <xsd:sequence>
+      <xsd:element name="customerId" type="xsd:string" />
+      <xsd:element name="address" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="shippingInfo">
+    <xsd:sequence>
+      <xsd:element name="shippingPrice" type="xsd:float" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="scheduleInfo">
+    <xsd:sequence>
+      <xsd:element name="shipDate" type="xsd:date" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="purchaseOrder">
+    <xsd:sequence>
+      <xsd:element name="orderId" type="xsd:int" />
+      <xsd:element name="partNumber" type="xsd:int" />
+      <xsd:element name="quantity" type="xsd:int" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Invoice">
+    <xsd:sequence>
+      <xsd:element name="amount" type="xsd:float" />
+      <xsd:element name="orderId" type="xsd:int" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProblemInfo">
+    <xsd:sequence>
+      <xsd:element name="detail" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="problemInfo" type="tns:ProblemInfo" />
+
+</xsd:schema>

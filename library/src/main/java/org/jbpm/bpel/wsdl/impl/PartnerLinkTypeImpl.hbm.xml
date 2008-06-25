@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.wsdl.impl.PartnerLinkTypeImpl" table="BPEL_PARTNERLINKTYPE">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+
+    <property name="name" type="qname">
+      <column name="LOCALNAME_" />
+      <column name="NAMESPACE_" />
+    </property>
+
+    <many-to-one name="firstRole" class="org.jbpm.bpel.wsdl.impl.PartnerLinkTypeImpl$RoleImpl" column="FIRSTROLE_"
+      foreign-key="FK_PLINKTYPE_FIRSTROLE" cascade="all" />
+    <many-to-one name="secondRole" class="org.jbpm.bpel.wsdl.impl.PartnerLinkTypeImpl$RoleImpl" column="SECONDROLE_"
+      foreign-key="FK_PLINKTYPE_SECONDROLE" cascade="all" />
+
+  </class>
+
+  <class name="org.jbpm.bpel.wsdl.impl.PartnerLinkTypeImpl$RoleImpl" table="BPEL_ROLE">
+
+    <cache usage="nonstrict-read-write" />
+    <id name="id">
+      <generator class="native" />
+    </id>
+
+    <property name="name" column="NAME_" />
+    <many-to-one name="portType" class="com.ibm.wsdl.PortTypeImpl" column="PORTTYPE_" foreign-key="FK_ROLE_PORTTYPE" />
+
+  </class>
+
+</hibernate-mapping>

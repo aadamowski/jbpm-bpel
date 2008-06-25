@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<definitions targetNamespace="urn:samples:ATMService" 
+  xmlns:tns="urn:samples:ATMService" 
+  xmlns:types="urn:samples:ATMService:types" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/
+                      http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <schema targetNamespace="urn:samples:ATMService:types" xmlns="http://www.w3.org/2001/XMLSchema"><complexType name="operationRequestType"><sequence><element name="customerName" type="string"/><element name="amount" type="double"/></sequence></complexType><element name="operationFault"><complexType><sequence><element name="code" type="int"/><element name="description" type="string"/></sequence></complexType></element></schema>
+  </types>
+  <message name="logonRequest">
+    <part name="sessionID" type="xsd:int"/>
+    <part name="customerName" type="xsd:string"/>
+  </message>
+  <message name="balanceRequest">
+    <part name="customerName" type="xsd:string"/>
+  </message>
+  <message name="logoffRequest">
+    <part name="customerName" type="xsd:string"/>
+  </message>
+  <message name="operationResponse">
+    <part name="balance" type="xsd:double"/>
+  </message>
+  <message name="operationRequest">
+    <part name="request" type="types:operationRequestType"/>
+  </message>
+  <message name="sessionMessage">
+    <part name="sessionID" type="xsd:int"/>
+  </message>
+  <message name="connectRequest">
+  </message>
+  <message name="operationFault">
+    <part name="fault" element="types:operationFault"/>
+  </message>
+  <message name="statusResponse">
+    <part name="status" type="xsd:string"/>
+  </message>
+  <portType name="atm">
+    <operation name="connect">
+      <input message="tns:connectRequest"/>
+      <output message="tns:sessionMessage"/>
+    </operation>
+    <operation name="disconnect">
+      <input message="tns:sessionMessage"/>
+    </operation>
+    <operation name="status">
+      <input message="tns:sessionMessage"/>
+      <output message="tns:statusResponse"/>
+    </operation>
+    <operation name="logon">
+      <input message="tns:logonRequest"/>
+    </operation>
+    <operation name="logoff">
+      <input message="tns:logoffRequest"/>
+    </operation>
+    <operation name="getBalance">
+      <input message="tns:balanceRequest"/>
+      <output message="tns:operationResponse"/>
+    </operation>
+    <operation name="deposit">
+      <input message="tns:operationRequest"/>
+      <output message="tns:operationResponse"/>
+    </operation>
+    <operation name="withdraw">
+      <input message="tns:operationRequest"/>
+      <output message="tns:operationResponse"/>
+      <fault name="notEnoughFunds" message="tns:operationFault"/>
+    </operation>
+  </portType>
+  <binding name="atmBinding" type="tns:atm">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="connect">
+      <soap:operation soapAction="connect"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </output>
+    </operation>
+    <operation name="disconnect">
+      <soap:operation soapAction="disconnect"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+    </operation>
+    <operation name="status">
+      <soap:operation soapAction="status"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </output>
+    </operation>
+    <operation name="logon">
+      <soap:operation soapAction="logon"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+    </operation>
+    <operation name="logoff">
+      <soap:operation soapAction="logoff"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+    </operation>
+    <operation name="getBalance">
+      <soap:operation soapAction="getBalance"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </output>
+    </operation>
+    <operation name="deposit">
+      <soap:operation soapAction="deposit"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </output>
+    </operation>
+    <operation name="withdraw">
+      <soap:operation soapAction="withdraw"/>
+      <input>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:ATMService"/>
+      </output>
+      <fault name="notEnoughFunds">
+        <soap:fault name="notEnoughFunds" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+  <service name="atmService">
+    <port name="atmPort" binding="tns:atmBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI"/>
+    </port>
+  </service>
+</definitions>

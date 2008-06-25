@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>Trip Reservation Client</display-name>
+
+  <service-ref>
+
+    <!-- JNDI name of service interface in client environment context -->
+    <service-ref-name>service/Trip</service-ref-name>
+    <!-- service interface -->
+    <service-interface>org.jbpm.bpel.tutorial.trip.TripReservationService</service-interface>
+    <!-- published WSDL document -->
+    <wsdl-file>META-INF/wsdl/trip-service.wsdl</wsdl-file>
+    <!-- Java<->XML mapping file -->
+    <jaxrpc-mapping-file>META-INF/trip-mapping.xml</jaxrpc-mapping-file>
+
+  </service-ref>
+
+</application-client>

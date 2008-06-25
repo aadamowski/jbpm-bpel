@@ -1,0 +1,158 @@
+<chapter id="introduction">
+
+  <title>Introduction to jBPM BPEL</title>
+  
+  <para>jBPM is a platform for graph-based execution languages. Its design and pluggable 
+    architecture makes it possible to support different languages that can be shown as a
+    graph and represent some sort of execution. The goal of this project is to fully 
+    implement the BPEL specification by leveraging the jBPM foundation.</para>
+
+  <para>jPDL is jBPM's native workflow language. It was designed to fully fledge the 
+    capabilities of the jBPM API. BPEL is an emerging standard for assembling a 
+    set of discrete services into an end-to-end process flow. Even when there is 
+    a slight overlap in their functionality, they are targeted at different audiences.
+    Let us take a look at their similarities and differences. If you are a jBPM connoisseur
+    and wonder what BPEL is about, this might help you get started.</para>
+
+  <section id="introduction.flowcontrol">
+  
+    <title>Flow control</title>
+
+    <para>jPDL specifies the execution flow of a process in terms of a directed graph 
+      of nodes. It includes a set of node types that intend to cover most routing 
+      scenarios. Furthermore, its flexibility allows including custom routing logic 
+      when facing an eccentric process scenario. In contrast, BPEL has a fixed set 
+      of structured activities represented by XML elements. They are nested together 
+      to model a particular execution path. Among them we can find control structures 
+      present in most programming languages like <literal>sequence</literal>, 
+      <literal>while</literal> and <literal>switch</literal>.</para>
+      
+    <para>A more advanced structured activity worth mentioning is <literal>flow</literal>. 
+      It describes parallel paths of execution. Most importantly, it can declare links, which
+      are control dependencies between its enclosed activities. Links allow for modeling 
+      directed graph flows, join conditions for synchronizing activities and even make it
+      possible to detect dead paths of execution.</para>
+      
+    <para>Below, a simplified version of the jBAY auction process coded in BPEL:</para>
+  
+    <programlisting><![CDATA[<process name="auction" targetNamespace="http://www.jBAY.com"
+      xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+  ...
+  <sequence>
+
+  <!-- Seller registers a sale offering and bids from the clients are received. -->
+  <!-- The highest bid is taken. -->
+  ...
+  <flow>
+  
+     <sequence name="shippingSequence">
+       <invoke name="sendItem" operation="shipItem" partnerLink="shipper"/>
+       <receive name="receiveItem" operation="confirmDelivery" partnerLink="shipper"/>
+      </sequence>
+
+     <sequence name="billingSequence">
+       <receive name="receiveMoney" operation="notifyDeposit" partnerLink="bank"/>
+       <invoke name="sendMoney" operation="depositMoney" partnerLink="bank"/>
+     </sequence>
+
+   </flow>
+
+  </sequence>
+
+</process>]]></programlisting>
+  
+  <para>The <literal>receive</literal> and <literal>invoke</literal> elements nested in the 
+    structured elements of the jBAY process are basic activities. They perform the actual work. 
+    The <literal>receiveMoney</literal> and <literal>receiveItem</literal> activities act as 
+    <emphasis>wait states</emphasis>. In jPDL, any node that interrupts the execution path is a 
+    wait state, whereas in BPEL this behavior is given by the <literal>receive</literal>, 
+    <literal>wait</literal> and <literal>pick</literal> activities. In general, the execution 
+    of a process is only interrupted to wait for either an alarm to go off or a message to 
+    arrive.</para>
+    
+  </section>
+
+  <section id="introduction.datahandling">
+  
+    <title>Data Handling</title>
+    
+    <para>jPDL's variable context is based on POJOs. Process data can be manipulated 
+      by inserting BeanShell code in a script node or invoking the methods of class 
+      <classname>ContextInstance</classname> inside action handlers. BPEL's variable context is 
+      made up by XML constructs. You can manipulate data within the assign activity 
+      using XPath expressions and in the <literal>receive</literal> and <literal>invoke</literal> 
+      activities, where message content is received either by an external call or by the return 
+      value of a service invocation.</para>
+      
+   </section>
+
+   <section id="introduction.interaction">
+
+    <title>Interaction with the process</title>
+    
+    <para>Clients of a jPDL definition are expected to start or resume process instances 
+      through the jBPM API. Methods such as <classname>ProcessDefinition</classname>.
+      <methodname>createProcessInstance</methodname> and <classname>Token</classname>.
+      <methodname>signal</methodname> allow client code to interact directly with an executing 
+      process.</para>
+    
+    <para>BPEL takes a different approach. Instead of defining its own APIs, it accommodates
+      custom web service interfaces with which clients interact. These interfaces describe 
+      meaningful business operations and hide the fact that clients are actually 
+      &quot;talking&quot; to an orchestrator. In the next figure, the participants of the jBAY
+      process interact with the auction endpoint. The orchestrator remains opaque.</para>
+      
+    <figure id="introduction.auction">
+      <title>Participants of the auction process</title>
+      <mediaobject><imageobject><imagedata align="center" fileref="images/auction.png" 
+            width="3.59in" depth="3.02in" scalefit="0" /></imageobject></mediaobject>
+    </figure>      
+    
+    <para>The service operations are connected to the process definition through inbound message
+      activities. They mark <emphasis>entry points</emphasis> inside a process definition. 
+      When a client invokes their corresponding operation they respond in one of two ways:</para>
+    
+    <orderedlist>
+      <listitem><para>behave as start states and trigger a new process instance</para></listitem>
+      <listitem><para>resume a process instance previously suspended</para></listitem>
+    </orderedlist>
+    
+  </section>
+
+  <section id="introduction.invoking">
+    
+    <title>Invoking services</title>
+    
+    <para>jPDL processes use action handlers to invoke external services. Calls to Java 
+      component can be coded in an action handler and executed later inside a process. 
+      In BPEL, this behavior is achieved using the <literal>invoke</literal> activity.</para>
+
+  </section>
+  
+  <section id="introduction.whichone">
+
+    <title>Which one is for me?</title>
+
+    <para>Some business processes involve frequent interactions with heterogeneous systems 
+      or partners. In these cases interoperability is essential, and XML is the obvious 
+      data transfer format. If you run into a similar scenario, we encourage you to 
+      choose BPEL. Manipulating XML documents with Java or any other non-XML language
+      is tedious, verbose and error-prone. BPEL alleviates much of this pain through the
+      following features:</para>
+
+    <itemizedlist>
+      <listitem><para>message exchange with efficiency (no Java/XML binding) 
+        and type safety (built-in format checking)</para></listitem>
+      <listitem><para>comfortable message content manipulation (XPath 1.0 expressions)</para>
+        </listitem>
+      <listitem><para>asynchronous message reception</para></listitem>
+      <listitem><para>encapsulation of the underlying web services machinery</para></listitem>
+    </itemizedlist>
+
+    <para>If this is not your case and you are mostly coordinating Java components, use 
+      jPDL. You will find it easier to use and you will be able to model practically 
+      any imaginable scenario by leveraging jPDL's workflow-rich features.</para>
+  
+  </section>
+  
+</chapter>

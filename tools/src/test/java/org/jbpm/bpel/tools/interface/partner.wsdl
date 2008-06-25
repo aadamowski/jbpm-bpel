@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="urn:samples:session" xmlns:tns="urn:samples:session"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <message name="sessionRequest" />
+
+  <message name="sessionMessage">
+    <part name="sessionID" type="xsd:int" />
+  </message>
+
+  <portType name="sessionFactory">
+    <operation name="openSession">
+      <input message="tns:sessionRequest" />
+      <output message="tns:sessionMessage" />
+    </operation>
+  </portType>
+
+</definitions>

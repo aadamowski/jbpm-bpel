@@ -1,0 +1,29 @@
+<definitions targetNamespace="urn:samples:atmProcess" xmlns:tns="urn:samples:atmProcess"
+  xmlns:atm="urn:samples:atm" xmlns:ses="urn:samples:session"
+  xmlns:trp="http://jbpm.org/examples/trip/"
+  xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="urn:samples:atm" location="interface/rpc.wsdl" />
+  <import namespace="urn:samples:session" location="interface/partner.wsdl" />
+  <import namespace="http://jbpm.org/examples/trip/" location="interface/doc.wsdl" />
+
+  <plt:partnerLinkType name="atmFrontEnd">
+    <plt:role name="front">
+      <plt:portType name="atm:atm" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="atmSessionFactory">
+    <plt:role name="factory">
+      <plt:portType name="ses:sessionFactory" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <plt:partnerLinkType name="travelerAgent">
+    <plt:role name="agent">
+      <plt:portType name="trp:TravelAgent" />
+    </plt:role>
+  </plt:partnerLinkType>
+
+</definitions>

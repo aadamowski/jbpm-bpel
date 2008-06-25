@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.integration.def.ReceiveAction"
+    extends="org.jbpm.bpel.integration.def.MessageAction" discriminator-value="R">
+
+    <property name="messageExchange" column="MESSAGEEXCHANGE_" />
+    <many-to-one name="variable" column="VARIABLEDEFINITION_" foreign-key="FK_RECEIVER_VARDEF" />
+    <many-to-one name="correlations" column="CORRELATIONS_" foreign-key="FK_RECEIVER_CORRELATIONS"
+      cascade="all" />
+
+    <any name="inboundMessageActivity" id-type="long" meta-type="char">
+      <meta-value value="R" class="org.jbpm.bpel.graph.basic.Receive" />
+      <meta-value value="P" class="org.jbpm.bpel.graph.struct.Pick" />
+      <meta-value value="E" class="org.jbpm.bpel.graph.scope.OnEvent" />
+      <column name="MESSAGEACTIVITYCLASS_" />
+      <column name="MESSAGEACTIVITY_" />
+    </any>
+
+  </subclass>
+
+</hibernate-mapping>

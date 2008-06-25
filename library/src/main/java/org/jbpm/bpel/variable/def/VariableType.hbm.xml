@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.variable.def.VariableType" table="BPEL_VARIABLETYPE"
+    discriminator-value="null">
+
+    <!-- cache usage causes Hibernate to load all variable types as -->
+    <!-- MessageType; keep it disabled
+      <cache usage="nonstrict-read-write" />
+    -->
+
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+    <discriminator type="char" column="CLASS_" />
+
+    <map name="propertyAliases" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="VARIABLETYPE_" foreign-key="FK_VARIABLETYPE_PROPERTYALIAS" />
+      <index type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </index>
+      <one-to-many class="org.jbpm.bpel.wsdl.impl.PropertyAliasImpl" />
+    </map>
+
+    <subclass name="org.jbpm.bpel.variable.def.MessageType" discriminator-value="M">
+      <many-to-one name="message" class="com.ibm.wsdl.MessageImpl" column="MESSAGE_"
+        foreign-key="FK_MESSAGETYPE_MESSAGE" />
+    </subclass>
+
+    <subclass name="org.jbpm.bpel.variable.def.XmlType" discriminator-value="null">
+
+      <property name="name" type="qname">
+        <column name="LOCALNAME_" />
+        <column name="NAMESPACE_" />
+      </property>
+
+      <subclass name="org.jbpm.bpel.variable.def.SchemaType" discriminator-value="S" />
+      <subclass name="org.jbpm.bpel.variable.def.ElementType" discriminator-value="E" />
+
+    </subclass>
+
+  </class>
+
+</hibernate-mapping>

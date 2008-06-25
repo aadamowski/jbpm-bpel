@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="com.ibm.wsdl.MessageImpl" table="WSDL_MESSAGE">
+
+    <cache usage="nonstrict-read-write" />
+    <id type="long" column="ID_">
+      <generator class="native" />
+    </id>
+
+    <property name="name" type="qname">
+      <column name="LOCALNAME_" />
+      <column name="NAMESPACE_" />
+    </property>
+
+    <map name="parts" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="MESSAGE_" foreign-key="FK_MESSAGE_PART" />
+      <index column="NAME_" type="string" />
+      <one-to-many class="com.ibm.wsdl.PartImpl" />
+    </map>
+
+  </class>
+
+</hibernate-mapping>

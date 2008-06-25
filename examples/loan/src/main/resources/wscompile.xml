@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+
+  <wsdl location="target/resources/web/wsdl/loan-service.wsdl"
+    packageName="org.jbpm.bpel.tutorial.loan">
+
+    <namespaceMappingRegistry>
+      <namespaceMapping namespace="http://jbpm.org/examples/task"
+        packageName="org.jbpm.bpel.tutorial.task" />
+      <namespaceMapping namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+        packageName="org.jbpm.bpel.tutorial.wsa" />
+    </namespaceMappingRegistry>
+
+  </wsdl>
+
+</configuration>

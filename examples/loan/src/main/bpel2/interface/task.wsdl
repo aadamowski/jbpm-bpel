@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="task" targetNamespace="http://jbpm.org/examples/task"
+  xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://jbpm.org/examples/task"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing">
+  <types>    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      targetNamespace="http://jbpm.org/examples/task">
+      <xsd:complexType name="TaskInfo">
+        <xsd:sequence>
+          <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="taskId" type="xsd:long" />
+        <xsd:attribute name="name" type="xsd:string" />
+        <xsd:attribute name="actorId" type="xsd:string" />
+        <xsd:attribute name="tokenId" type="xsd:long" />
+      </xsd:complexType>
+      <xsd:complexType name="TaskList">
+        <xsd:sequence>
+          <xsd:element name="taskInfo" type="tns:TaskInfo" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">      <xsd:import namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+        schemaLocation="addressing.xsd" />
+    </xsd:schema>
+  </types>
+  <message name="createTaskRequest">
+    <part name="taskInfo" type="tns:TaskInfo" />
+    <part name="replyTo" type="wsa:EndpointReferenceType" />
+  </message>
+  <message name="createTaskResponse">
+    <part name="taskId" type="xsd:long" />
+  </message>
+  <message name="endTaskRequest">
+    <part name="taskInfo" type="tns:TaskInfo" />
+  </message>
+  <message name="getTaskListRequest">
+    <part name="actorId" type="xsd:string" />
+  </message>
+  <message name="getTaskListResponse">
+    <part name="taskList" type="tns:TaskList" />
+  </message>
+  <portType name="TaskManager">
+    <operation name="createTask">
+      <input message="tns:createTaskRequest" />
+      <output message="tns:createTaskResponse" />
+    </operation>
+    <operation name="endTask">
+      <input message="tns:endTaskRequest" />
+    </operation>
+    <operation name="getTaskList">
+      <input message="tns:getTaskListRequest" />
+      <output message="tns:getTaskListResponse" />
+    </operation>
+  </portType>
+  <portType name="TaskCallback">
+    <operation name="taskEnded">
+      <input message="tns:endTaskRequest" />
+    </operation>
+  </portType>
+</definitions>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="org.jbpm.bpel.tutorial.atm"
+      namespace="http://jbpm.org/examples/atm" />
+  </global>
+  <wsdl-java file="wsdl/atm-service.wsdl">
+    <mapping file="atm-mapping.xml" />
+  </wsdl-java>
+</configuration>

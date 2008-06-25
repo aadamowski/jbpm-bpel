@@ -1,0 +1,51 @@
+<process name="translatorClient" targetNamespace="http://example.org/translator/client"
+  xmlns:tns="http://example.org/translator/client" xmlns:def="http://example.com/translator"
+  xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+
+  <import namespace="http://example.org/translator/client" location="translatorClient.wsdl"
+    importType="http://schemas.xmlsoap.org/wsdl/" />
+
+  <partnerLinks>
+    <partnerLink name="translator" partnerLinkType="tns:client-translator" partnerRole="translator" myRole="client" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="startReq" messageType="tns:startInput" />
+    <variable name="quoteReq" messageType="def:quoteTextInput" />
+    <variable name="statusReq" messageType="def:statusTextInput" />
+    <variable name="statusRsp" messageType="def:statusTextOutput" />
+    <variable name="translateReq" messageType="def:translateTextInput" />
+    <variable name="translateRsp" messageType="def:translateTextOutput" />
+  </variables>
+
+  <correlationSets>
+    <correlationSet name="client" properties="tns:clientName" />
+  </correlationSets>
+
+  <sequence>
+
+    <receive name="start" partnerLink="translator" operation="start" variable="startReq">
+      <correlations>
+        <correlation set="client" initiate="yes" />
+      </correlations>
+    </receive>
+
+    <invoke name="quote" partnerLink="translator" operation="quoteTranslation" inputVariable="quoteReq">
+      <correlations>
+        <correlation set="client" pattern="request" initiate="join" />
+      </correlations>
+    </invoke>
+
+    <invoke name="status" partnerLink="translator" operation="getQuotationStatus" inputVariable="statusReq"
+      outputVariable="statusRsp">
+      <correlations>
+        <correlation set="client" pattern="request" />
+      </correlations>
+    </invoke>
+
+    <invoke name="translate" partnerLink="translator" operation="translate" inputVariable="translateReq"
+      outputVariable="translateRsp" />
+
+  </sequence>
+
+</process>

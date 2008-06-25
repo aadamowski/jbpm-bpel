@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<project name="jbpm.bpel.examples" default="main">
+
+  <!-- ================== -->
+  <!-- === PROPERTIES === -->
+  <!-- ================== -->
+
+  <!-- Development section (begin) -->
+  <property name="jbpm.root" value="../.." />
+
+  <property name="common.dir" value="${jbpm.root}/bpel/examples/common" />
+  <property name="config.dir" value="${common.dir}/src/main/config" />
+
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+  <!-- Development section (end) -->
+
+  <!-- Distribution section (begin) ===
+  <property name="jbpm.bpel.home" value=".." />
+
+  <property name="common.dir" value="${jbpm.bpel.home}/examples/common" />
+  <property name="config.dir" value="${jbpm.bpel.home}/config" />
+
+  <property file="${config.dir}/build.properties" />
+  ==== Distribution section (end) -->
+
+  <property name="output.dir" value="target" />
+  <property name="output.test.dir" value="${output.dir}/test" />
+  <property name="test.reports.dir" value="${output.test.dir}/reports" />
+
+  <!-- =================== -->
+  <!-- === DEFINITIONS === -->
+  <!-- =================== -->
+
+  <macrodef name="iterate">
+    <attribute name="target" />
+    <sequential>
+      <subant target="@{target}">
+        <fileset dir="." includes="*/build.xml" />
+      </subant>
+    </sequential>
+  </macrodef>
+
+  <!-- =============== -->
+  <!-- === CLEANUP === -->
+  <!-- =============== -->
+
+  <target name="clean" description="removes all generated files">
+    <iterate target="clean" />
+    <delete dir="${common.dir}/${output.dir}" failonerror="no" />
+  </target>
+
+  <!-- =============================== -->
+  <!-- === DATABASE ADMINISTRATION === -->
+  <!-- =============================== -->
+
+  <target name="define.dbadmin">
+    <taskdef name="dbadmin" classname="org.jbpm.bpel.tools.ant.AdministrationTask">
+      <classpath>
+        <pathelement location="${config.dir}" />
+        <pathelement location="${lib.commons.codec.local}" />
+        <pathelement location="${lib.commons.httpclient.local}" />
+        <pathelement location="${lib.commons.logging.local}" />
+        <pathelement location="${lib.log4j.local}" />
+        <pathelement location="${lib.jbpm.bpel.tools.jar.local}" />
+      </classpath>
+    </taskdef>
+  </target>
+
+  <target name="create.schema" depends="define.dbadmin" description="create jbpm database schema">
+    <dbadmin operation="create_schema" />
+  </target>
+
+  <target name="drop.schema" depends="define.dbadmin" description="drop jbpm database schema">
+    <dbadmin operation="drop_schema" />
+  </target>
+
+  <!-- ============ -->
+  <!-- === MAIN === -->
+  <!-- ============ -->
+
+  <target name="main" description="deploy all modules">
+    <iterate target="main" />
+  </target>
+
+  <!-- ====================== -->
+  <!-- === TEST EXECUTION === -->
+  <!-- ====================== -->
+
+  <target name="test" description="test all modules">
+    <iterate target="test" />
+    <mkdir dir="${common.dir}/${test.reports.dir}/xml" />
+    <junitreport todir="${common.dir}/${test.reports.dir}/xml">
+      <fileset dir="." includes="*/${test.reports.dir}/xml/TEST-*.xml" />
+      <report todir="${common.dir}/${test.reports.dir}" />
+    </junitreport>
+  </target>
+
+</project>

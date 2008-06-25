@@ -1,0 +1,8 @@
+<endpointMetadataLookups>
+  <endpointMetadataLookup messageContextClass="org.jboss.axis.MessageContext"
+    lookupClass="org.jbpm.bpel.integration.server.JBoss403EndpointMetadataLookup" />
+  <endpointMetadataLookup messageContextClass="org.jboss.ws.soap.SOAPMessageContextImpl"
+    lookupClass="org.jbpm.bpel.integration.server.JBoss405EndpointMetadataLookup" />
+  <endpointMetadataLookup messageContextClass="org.jboss.ws.core.jaxrpc.handler.SOAPMessageContextJAXRPC"
+    lookupClass="org.jbpm.bpel.integration.server.JBoss420EndpointMetadataLookup" />
+</endpointMetadataLookups>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>Purchase Order Client</display-name>
+
+  <service-ref>
+
+    <service-ref-name>service/PurchaseOrder</service-ref-name>
+    <service-interface>
+      org.jbpm.bpel.tutorial.purchase.PurchaseOrderService
+    </service-interface>
+    <wsdl-file>META-INF/wsdl/purchase-service.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>META-INF/purchase-mapping.xml</jaxrpc-mapping-file>
+
+  </service-ref>
+
+</application-client>

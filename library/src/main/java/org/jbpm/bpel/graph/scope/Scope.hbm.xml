@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.graph.scope.Scope"
+    extends="org.jbpm.bpel.graph.def.CompositeActivity" discriminator-value="n">
+
+    <many-to-one name="compensationHandler" column="COMPENSATIONHANDLER_"
+      foreign-key="FK_SCOPE_COMPENSATIONHANDLER" cascade="all" />
+
+    <many-to-one name="terminationHandler" column="TERMINATIONHANDLER_"
+      foreign-key="FK_SCOPE_TERMINATIONHANDLER" cascade="all" />
+
+    <many-to-one name="catchAll" column="CATCHALL_" foreign-key="FK_SCOPE_CATCHALL" cascade="all" />
+
+    <list name="faultHandlers" cascade="all" where="CLASS_ = 'V'">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_FAULTHANDLER" />
+      <list-index column="NODECOLLECTIONINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.scope.Catch" />
+    </list>
+
+    <list name="onEvents" cascade="all" where="CLASS_ = 'X'">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_ONEVENT" />
+      <list-index column="NODECOLLECTIONINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.scope.OnEvent" />
+    </list>
+
+    <list name="onAlarms" cascade="all" where="CLASS_ = 'W'">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_ONALARM" />
+      <list-index column="NODECOLLECTIONINDEX_" />
+      <one-to-many class="org.jbpm.bpel.graph.scope.OnAlarm" />
+    </list>
+
+    <map name="partnerLinks" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_PARTNERLINKS" />
+      <index column="NAME_" type="string" />
+      <one-to-many class="org.jbpm.bpel.integration.def.PartnerLinkDefinition" />
+    </map>
+
+    <map name="variables" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_VARIABLES" />
+      <index column="NAME_" type="string" />
+      <one-to-many class="org.jbpm.bpel.variable.def.VariableDefinition" />
+    </map>
+
+    <map name="correlationSets" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="SCOPE_" foreign-key="FK_SCOPE_CORRELATIONSETS" />
+      <index column="NAME_" type="string" />
+      <one-to-many class="org.jbpm.bpel.integration.def.CorrelationSetDefinition" />
+    </map>
+
+    <property name="isolated" column="ISOLATED_" />
+
+    <many-to-one name="activity" column="ACTIVITY_" foreign-key="FK_SCOPE_ACTIVITY" cascade="all" />
+
+  </subclass>
+
+</hibernate-mapping>

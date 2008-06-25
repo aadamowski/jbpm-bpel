@@ -1,0 +1,37 @@
+<flow name="F1" xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"> 
+	<links> 
+		<link name="L1"/> <!-- L1 is defined here and ... --> 
+	</links> 
+	
+	<flow name="F2"> 
+		<links> 
+			<link name="L1"/> <!-- ... here --> 
+		</links> 
+		
+		<receive name="R1" partnerLink='aPartner' operation='o'> 
+			<sources>
+			<source linkName="L1"/> <!-- This matches F2.L1 and not F1.L1 --> 
+			</sources>
+		</receive> 
+		
+		<receive name="R2" partnerLink='aPartner' operation='o'>
+			<targets>
+			<target linkName="L1"/> <!-- This matches F2.L1 and not F1.L1 --> 
+			</targets>
+		</receive>	
+	</flow>
+
+	<receive name="R1" partnerLink='aPartner' operation='o'> 
+		<sources>
+		<source linkName="L1">    <!-- This matches F1.L1 --> 
+		<transitionCondition>false()</transitionCondition>
+		</source> 
+		</sources>
+	</receive>
+	
+	<receive name="R2" suppressJoinFailure="yes" partnerLink='aPartner' operation='o'> 
+		<targets>
+		<target linkName="L1" /> <!--  This matches F1.L1 --> 
+		</targets>
+	</receive> 
+</flow>

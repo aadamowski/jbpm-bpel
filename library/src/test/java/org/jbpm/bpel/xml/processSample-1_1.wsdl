@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://manufacturing.org/wsdl/purchase" xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/ http://schemas.xmlsoap.org/wsdl/">
+  <import namespace="http://manufacturing.org/wsdl/purchase" location="partnerLinkTypeSample-1_1.wsdl" />
+</definitions>

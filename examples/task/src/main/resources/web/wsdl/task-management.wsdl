@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="task-impl" targetNamespace="http://jbpm.org/examples/task"
+  xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://jbpm.org/examples/task" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <import namespace="http://jbpm.org/examples/task" location="task.wsdl" />
+  <binding name="TaskManagerBinding" type="tns:TaskManager">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="createTask">
+      <soap:operation soapAction="http://jbpm.org/examples/task/createTask" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </output>
+    </operation>
+    <operation name="endTask">
+      <soap:operation soapAction="http://jbpm.org/examples/task/endTask" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </input>
+    </operation>
+    <operation name="getTaskList">
+      <soap:operation soapAction="http://jbpm.org/examples/task/getTaskList" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/task" />
+      </output>
+    </operation>
+  </binding>
+  <service name="TaskManagementService">
+    <port name="TaskManagerPort" binding="tns:TaskManagerBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+  </service>
+</definitions>

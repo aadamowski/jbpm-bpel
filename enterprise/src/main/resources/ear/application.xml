@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee">
+
+  <display-name>jbpm-bpel-enterprise</display-name>
+
+  <module>
+    <web>
+      <web-uri>jbpm-bpel.war</web-uri>
+      <context-root>/jbpm-bpel</context-root>
+    </web>
+  </module>
+
+  <module>
+    <ejb>jbpm-enterprise.jar</ejb>
+  </module>
+
+</application>

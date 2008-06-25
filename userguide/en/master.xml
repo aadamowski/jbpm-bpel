@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+  "../../../jpdl/userguide/dtd/docbookx.dtd" [
+  <!ENTITY overview SYSTEM "modules/overview.xml">
+  <!ENTITY introduction SYSTEM "modules/introduction.xml">
+  <!ENTITY gettingStarted SYSTEM "modules/gettingStarted.xml">
+  <!ENTITY tutorial SYSTEM "modules/tutorial.xml">
+  <!ENTITY helloExample SYSTEM "modules/helloExample.xml">
+  <!ENTITY purchaseExample SYSTEM "modules/purchaseExample.xml">
+  <!ENTITY tripExample SYSTEM "modules/tripExample.xml">
+  <!ENTITY atmExample SYSTEM "modules/atmExample.xml">
+  <!ENTITY loanExample SYSTEM "modules/loanExample.xml">
+  <!ENTITY nextLine " «">
+  <!ENTITY version "1.1.1">
+  ]>
+
+<book lang="en">
+
+  <bookinfo>
+    <title>JBoss jBPM</title>
+    <subtitle>WS-BPEL Runtime User Guide</subtitle>
+    <releaseinfo>Version &version;</releaseinfo>
+  </bookinfo>
+
+  <toc />
+
+  &overview;
+
+  &introduction;
+
+  &gettingStarted;
+
+  &tutorial;
+
+  &helloExample;
+
+  &tripExample;
+
+  &purchaseExample;
+
+  &atmExample;
+
+  &loanExample;
+
+</book>

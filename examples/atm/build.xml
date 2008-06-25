@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project name="atm" default="main">
+
+  <import file="../common/bpel-build.xml" />
+  <import file="../common/test-build.xml" />
+
+  <!-- ============================ -->
+  <!-- === PARTNER REGISTRATION === -->
+  <!-- ============================ -->
+
+  <target name="register.partners"
+          depends="define.register.task"
+          description="register partner services">
+    <registerpartner baselocation="http://localhost:8080/ticket/ticketIssuer?wsdl" />
+    <registerpartner baselocation="http://localhost:8080/account/accountSystem?wsdl" />
+  </target>
+
+  <!-- ============================= -->
+  <!-- === INTERACTIVE EXECUTION === -->
+  <!-- ============================= -->
+
+  <target name="launch.terminal"
+          depends="package.client, compile.test"
+          description="launches the interactive terminal">
+    <java classname="org.jbpm.bpel.tutorial.atm.terminal.AtmTerminal"
+          dir="${output.dir}"
+          fork="yes">
+      <classpath>
+        <path refid="test.path" />
+        <pathelement location="${test.classes.dir}" />
+      </classpath>
+      <jvmarg value="-Djava.endorsed.dirs=${jboss.home}/lib/endorsed" />
+    </java>
+  </target>
+
+</project>

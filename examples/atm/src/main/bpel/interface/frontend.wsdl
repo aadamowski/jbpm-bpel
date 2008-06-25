@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/atm" xmlns:tns="http://jbpm.org/examples/atm"
+  xmlns:tic="http://jbpm.org/examples/ticket" xmlns:acc="http://jbpm.org/examples/account"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/ticket" location="ticket.wsdl" />
+  <import namespace="http://jbpm.org/examples/account" location="account.wsdl" />
+
+  <types>
+
+    <schema targetNamespace="http://jbpm.org/examples/atm"
+      xmlns="http://www.w3.org/2001/XMLSchema">
+
+      <complexType name="UnauthorizedAccess">
+        <sequence>
+          <element name="customerName" type="xsd:string" />
+        </sequence>
+      </complexType>
+
+      <element name="unauthorizedAccess" type="tns:UnauthorizedAccess" />
+
+      <complexType name="InsufficientFunds">
+        <sequence>
+          <element name="customerName" type="xsd:string" />
+          <element name="amount" type="xsd:double" />
+        </sequence>
+      </complexType>
+
+      <element name="insufficientFunds" type="tns:InsufficientFunds" />
+
+    </schema>
+
+  </types>
+
+  <message name="connectRequest" />
+
+  <message name="logOnRequest">
+    <part name="ticketNo" type="xsd:int" />
+    <part name="customerName" type="xsd:string" />
+  </message>
+
+  <message name="logOnResponse" />
+
+  <message name="statusResponse">
+    <part name="status" type="xsd:string" />
+  </message>
+
+  <message name="balanceChange">
+    <part name="customerName" type="xsd:string" />
+    <part name="amount" type="xsd:double" />
+  </message>
+
+  <message name="unauthorizedAccess">
+    <part name="detail" element="tns:unauthorizedAccess" />
+  </message>
+
+  <message name="insufficientFunds">
+    <part name="detail" element="tns:insufficientFunds" />
+  </message>
+
+  <portType name="FrontEnd">
+    <documentation>bank functions available to ATMs</documentation>
+
+    <operation name="connect">
+      <documentation>initiate bank connection</documentation>
+      <input message="tns:connectRequest" />
+      <output message="tic:ticketMessage" />
+    </operation>
+
+    <operation name="disconnect">
+      <documentation>terminate bank connection</documentation>
+      <input message="tic:ticketMessage" />
+    </operation>
+
+    <operation name="status">
+      <documentation>retrieve bank connection status</documentation>
+      <input message="tic:ticketMessage" />
+      <output message="tns:statusResponse" />
+    </operation>
+
+    <operation name="logOn">
+      <documentation>initiate customer access</documentation>
+      <input message="tns:logOnRequest" />
+      <output message="tns:logOnResponse" />
+      <fault name="unauthorizedAccess" message="tns:unauthorizedAccess" />
+    </operation>
+
+    <operation name="logOff">
+      <documentation>terminate customer access</documentation>
+      <input message="acc:customerMessage" />
+    </operation>
+
+    <operation name="getBalance">
+      <documentation>retrieve account balance</documentation>
+      <input message="acc:customerMessage" />
+      <output message="acc:balanceMessage" />
+    </operation>
+
+    <operation name="deposit">
+      <documentation>increase account balance</documentation>
+      <input message="tns:balanceChange" />
+      <output message="acc:balanceMessage" />
+    </operation>
+
+    <operation name="withdraw">
+      <documentation>decrease account balance</documentation>
+      <input message="tns:balanceChange" />
+      <output message="acc:balanceMessage" />
+      <fault name="insufficientFunds" message="tns:insufficientFunds" />
+    </operation>
+
+  </portType>
+
+</definitions>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/ticket"
+  xmlns:tns="http://jbpm.org/examples/ticket" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/ticket" location="ticket.wsdl" />
+
+  <binding name="TicketIssuerBinding" type="tns:TicketIssuer">
+
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <operation name="createTicket">
+      <soap:operation soapAction="http://jbpm.org/examples/ticket#createTicket" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/ticket" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/ticket" />
+      </output>
+    </operation>
+
+  </binding>
+
+  <service name="TicketService">
+    <port name="TicketIssuerPort" binding="tns:TicketIssuerBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+  </service>
+
+</definitions>

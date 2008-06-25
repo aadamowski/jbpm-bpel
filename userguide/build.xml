@@ -1,0 +1,51 @@
+<project name="jbpm.bpel.userguide" default="install">
+
+  <property name="jbpm.root" value="../.." />
+
+  <property file="${user.home}/jbpm/build.properties" />
+  <property file="${jbpm.root}/build/profiles/${profile}.profile.properties" />
+  <property file="${jbpm.root}/build/build.properties" />
+
+  <import file="${jbpm.root}/build/base.project.build.xml" />
+
+  <property name="build.dir" value="target" />
+  <property name="pdf.name" value="jbpm-bpel.pdf" />
+  <import file="${docbook.support.dir}/docbook-support/support.xml" />
+
+  <target name="get.docbook.support">
+    <ant antfile="${jbpm.root}/build/build.xml" target="get.docbook.support" />
+  </target>
+
+  <target name="generate" unless="userguide.uptodate">
+    <antcall target="clean" />
+    <antcall target="get.docbook.support" />
+    <antcall target="lang.all">
+      <param name="lang" value="en" />
+    </antcall>
+  </target>
+
+  <target name="package">
+    <uptodate property="userguide.uptodate" targetfile="target/en/pdf/${pdf.name}">
+      <srcfiles dir="en" />
+    </uptodate>
+    <antcall target="generate" />
+    <zip destfile="${lib.jbpm.bpel.userguide.target}">
+      <fileset dir="target/en" />
+    </zip>
+  </target>
+
+  <target name="install" depends="package">
+    <mkdir dir="${local.repository}/${lib.jbpm.bpel.dir}" />
+    <copy todir="${local.repository}/${lib.jbpm.bpel.dir}"
+          file="${lib.jbpm.bpel.userguide.target}" />
+  </target>
+
+  <target name="generate.html.only"
+          depends="get.docbook.support"
+          description="creates the html docs only">
+    <antcall target="lang.dochtml">
+      <param name="lang" value="en" />
+    </antcall>
+  </target>
+
+</project>

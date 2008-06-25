@@ -1,0 +1,211 @@
+body { font: 12px Verdana, Arial, Helvetica, sans-serif; }
+
+a:link { color: #005EB6; text-decoration: none; }
+a:active { color: #666666; text-decoration: none; }
+a:visited { color: #005EB6/*#888888*/; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1 { color: #000000; line-height: 22px; font: 20px Verdana, Arial, Helvetica, sans-serif; }
+h3 { color: #000000; line-height: 16px; font: bold 14px Verdana, Arial, Helvetica, sans-serif; margin-top: 8px; }
+h4 { color: #000000; line-height: 16px; font: 14px Verdana, Arial, Helvetica, sans-serif; margin-top: 8px; }
+h5 { color: #000000; line-height: 14px; font: 12px Verdana, Arial, Helvetica, sans-serif; margin-top: 8px; }
+
+strong { font-weight: bold; }
+em { font-style: italic; }
+
+p { line-height: 150%; }
+pre { font-family: Andale Mono, Courier New, Courier, monospace; }
+code { font: 11px Andale Mono, Courier New, Courier, monospace; line-height: 110%; white-space: pre; padding: 5px; margin: 5px; background-color: #efefef; width: 550px; overflow: visible; }
+
+hr { color: #6e6e6e; }
+
+dl {}
+dl dt { font-weight: bold; }
+dl dd { margin-top: 10px; margin-bottom: 20px; margin-left: 20px;}
+
+
+/* FOOTER ----------------------------------------------*/
+#PageFooter #Copyright { font: 9px Verdana, Helvetica, Arial, sans-serif;}
+#PageFooter a { color: #0044AA; }
+
+
+/* INFOTABLE ----------------------------------------------*/
+.infotable { border-spacing: 3px; text-align: left; color: #ffffff; }
+.infotable .grey{ background-color: #b2b2b2; }
+.infotable .blue { background-color: #b2b2b2; }
+.infotable .beige { background-color: #b2b2b2; }
+.infotable .orange { background-color: #b2b2b2; }
+.infotable .green { background-color: #b2b2b2; }
+.infotable .blank { color: #ffffff; background-color: #ffffff; }
+.infotable .headline { font-size: 110%; padding-left:5px; color:#000000; background-color: #cccccc; font-weight:bold;}
+.infotable .button { padding:3px; margin:0px; background-color: #777777; font: bold;}
+.infotable .button a { color: #ffffff; text-decoration: none; font: bold 10px Helvetica, Arial, sans-serif; }
+.infotable td { padding: 5px; background-color: #efefef; color: #000000; font: 11px Verdana, Arial, Helvetica, sans-serif; }
+.infotable th { padding: 5px; background-color: #aaaaaa; color: white; font: bold 13px Verdana, Arial, Helvetica, sans-serif; }
+
+table.infotable2 {}
+table.infotable2 td { padding: 10px 10px 10px 10px; background-color: #eaeaea; border-top: solid 1px #777777; line-height: 150% }
+table.infotable2 td:first-child { padding-top: 15px; padding-right: 20px; background-color: transparent; }
+table.infotable2 p { padding: 10px; }
+table.infotable2 p:first-child { padding-top: 0px; }
+table.infotable2 table {border-bottom: none;}
+table.infotable2 table td, table.infotable2 table td:first-child { padding: 5px; background-color: transparent; border: none; line-height: 100% }
+table.infotable2 table p, table.infotable2 table p:first-child { padding: 0px; }
+table.infotable2 h2 {margin: 0px;}
+
+/* PARTNERTABLE ----------------------------------------------*/
+.partnertable { border-spacing: 2px; border-color:#FFFFFF; text-align: left; color: #ffffff; }
+.partnertable .grey{ background-color: #b2b2b2;}
+.partnertable .blue { background-color: #b2b2b2; }
+.partnertable .beige { background-color: #b2b2b2; }
+.partnertable .orange { background-color: #b2b2b2; }
+.partnertable .green { background-color: #b2b2b2; }
+.partnertable .blank { color: #ffffff; background-color: #ffffff; }
+.partnertable .headline { font-size: 110%; padding-left:5px; color:#000000; background-color: #cccccc; font-weight:bold;}
+.partnertable .button { padding:3px; margin:0px; background-color: #777777; font: bold;}
+.partnertable .button a { color: #ffffff; text-decoration: none; font: bold 10px Helvetica, Arial, sans-serif; }
+.partnertable td { padding: 5px; background-color: #efefef; color: #000000; font: 11px Verdana, Arial, Helvetica, sans-serif; }
+.partnertable th { padding: 5px; background-color: #efefef; color: white; font: bold 13px Verdana, Arial, Helvetica, sans-serif; }
+
+
+.partnertable .partnerblue {color: #05229E}
+.partnertable .partnerred {color: #54110B}
+.partnertable .partnerorange {color: #98400C}
+.partnertable .partnergreen {color: #353925}
+.partnertable .partnerlavender {color: #936883}
+.partnertable .partnerpurple {color: #5C5675}
+
+
+
+table.partnertable2 {}
+table.partnertable2 td { padding: 10px 10px 10px 10px; background-color: #eaeaea; border-top: solid 1px #777777; line-height: 150% }
+table.partnertable2 td:first-child { padding-top: 15px; padding-right: 20px; background-color: transparent; }
+table.partnertable2 p { padding: 10px; }
+table.partnertable2 p:first-child { padding-top: 0px; }
+table.partnertable2 table {border-bottom: none;}
+table.partnertable2 table td, table.infotable2 table td:first-child { padding: 5px; background-color: transparent; border: none; line-height: 100% }
+table.partnertable2 table p, table.infotable2 table p:first-child { padding: 0px; }
+table.partnertable2 h2 {margin: 0px;}
+
+
+/* PARTNERLISTING ----------------------------------------------*/
+.partnerlist { border-spacing: 2px; border-color:#FFFFFF; text-align: left; color: #ffffff; }
+.partnerlist .grey{ background-color: #b2b2b2; }
+.partnerlist .blue { background-color: #b2b2b2; }
+.partnerlist .beige { background-color: #b2b2b2; }
+.partnerlist .orange { background-color: #b2b2b2; }
+.partnerlist .green { background-color: #b2b2b2; }
+.partnerlist .blank { color: #ffffff; background-color: #ffffff; }
+.partnerlist .headline { font-size: 110%; padding-left:5px; color:#000000; background-color: #cccccc; font-weight:bold;}
+.partnerlist .button { padding:3px; margin:0px; background-color: #777777; font: bold;}
+.partnerlist .button a { color: #ffffff; text-decoration: none; font: bold 10px Verdana, Arial, Helvetica, sans-serif; }
+.partnerlist td { padding: 5px; background-color: #ffffff; color: #000000; font: 11px Verdana, Arial, Helvetica, sans-serif; }
+.partnerlist th { padding: 5px; background-color: #efefef; color: white; font: bold 13px Verdana, Arial, Helvetica, sans-serif; }
+
+
+/* NEWSTABLE ----------------------------------------------*/
+.newstable { border-spacing: 3px; text-align: left; background-image: url(http://www.jboss.com/images/new_look_06/gradient_news_bkgd_650.gif); background-repeat:no-repeat; }
+.newstable .grey{ background-color: #b2b2b2; }
+.newstable .blue { background-color: #b2b2b2; }
+.newstable .beige { background-color: #b2b2b2; }
+.newstable .orange { background-color: #b2b2b2; }
+.newstable .green { background-color: #b2b2b2; }
+.newstable .blank { color: #ffffff; background-color: #ffffff; }
+.newstable .headline { font-size: 110%; padding-left:5px; color:#000000; background-color: #cccccc; font-weight:bold;}
+.newstable .button { padding:3px; margin:0px; background-color: #777777; font: bold;}
+.newstable .button a { color: #ffffff; text-decoration: none; font: bold 10px Verdana, Arial, Helvetica, sans-serif; }
+.newstable td { padding: 5px;  font: 11px Verdana, Arial, Helvetica, sans-serif; }
+.newstable th { padding: 5px; color: black; font: bold 14px Verdana, Arial, Helvetica, sans-serif; }
+
+table.newstable2 {}
+table.newstable2 td { padding: 10px 10px 10px 10px; background-color: #eaeaea; border-top: solid 1px #777777; line-height: 150% }
+table.newstable2 td:first-child { padding-top: 15px; padding-right: 20px; background-color: transparent; }
+table.newstable2 p { padding: 10px; }
+table.newstable2 p:first-child { padding-top: 0px; }
+table.newstable2 table {border-bottom: none;}
+table.newstable2 table td, table.infotable2 table td:first-child { padding: 5px; background-color: transparent; border: none; line-height: 100% }
+table.newstable2 table p, table.infotable2 table p:first-child { padding: 0px; }
+table.newstable2 h2 {margin: 0px;}
+
+
+
+
+/* DEFINITION TABLE ---------------------------------------*/
+.deftable { border-spacing: 5px; text-align: left; color: #ffffff; line-height: 150%; }
+.deftable .term { border: none; vertical-align: top; padding: 5px; background-color: #aaaaaa; color: #ffffff; font-weight: bold; }
+.deftable .def { border: none; vertical-align: top; padding: 5px; background-color: #efefef; color: #000000; }
+.deftable .def ul { margin-left: 1em; padding-left: 0px; margin-top: 0px; margin-bottom: 0px;}
+.deftable .def ol { margin-top: 0px; margin-bottom: 0px; }
+
+
+/* QUICKSTART BOX -----------------------------------------*/
+.quickstart-box { float: right; text-align: left; padding: 0px 0px 0px 0px; margin: 0px -9px 20px 20px; position: relative; }
+.quickstart-box td { font-family: Helvetica, Arial, sans-serif; }
+.quickstart-box a { color: #ffffff; font-size: 11px; text-decoration: none; }
+.quickstart-box a:active { color: #ffffff; font-size: 11px; text-decoration: none; }
+.quickstart-box a:visited { color: #ffffff; font-size: 11px; text-decoration: none; }
+.quickstart-head { font-weight: bold; font-size: 12px; margin-bottom: 4px; }
+.quickstart-red { color: #ffffff; font-weight: bold; border-bottom: 1px solid #ffffff; padding: 3px; padding-left: 15px; background: #EB1A24 url(/images/crn_left_bot_red.gif) 0 100% no-repeat; }
+.quickstart-blue { color: #ffffff; font-weight: bold; border-bottom: 1px solid #ffffff; padding: 3px; padding-left: 15px; background: #008FD6 url(/images/crn_left_bot_blue.gif) 0 100% no-repeat; }
+.quickstart-green { color: #ffffff; font-weight: bold; border-bottom: 1px solid #ffffff; padding: 3px; padding-left: 15px; background: #9BCD4B url(/images/crn_left_bot_green.gif) 0 100% no-repeat; }
+.quickstart-yellow { color: #ffffff; font-weight: bold; border-bottom: 1px solid #ffffff; padding: 3px; padding-left: 15px; background: #E5B335 url(/images/crn_left_bot_yellow.gif) 0 100% no-repeat; }
+
+
+/* Customizations */
+
+img.topaccent { margin-left: 10px; margin-bottom: 10px;}
+
+table.customermatrix {}
+table.customermatrix td { padding: 10px 10px 0px 10px; background-color: whitesmoke; border-top: solid 1px #666666; border-top: solid 1px #777777; }
+table.customermatrix td:first-child { padding-top: 25px; padding-right: 20px; background-color: transparent; }
+table.customermatrix p { padding: 10px; }
+table.customermatrix p:first-child { padding-top: 0px; }
+
+dl.faq { }
+dl.faq dt { font-weight: bold; font-size: 12px; color: #333333; border-bottom: 1px solid #9BCD4B; padding-bottom: 2px; padding-top: 20px;}
+dl.faq dd { margin: 10px 10px 10px 10px;}
+dl.faq dt:first-child { border-top: none; padding-top: 0px;}
+
+#points{
+background-image: url(/images/points.gif);
+background-repeat:no-repeat;
+color: #000000; 
+font:10px Verdana, Arial, Helvetica, sans-serif; 
+height: 118px;
+width: 200px;
+text-align: left; 
+padding: 5px 0px 5px 5px; 
+}
+
+#points .text{
+color: #000000; 
+font:10px Verdana, Arial, Helvetica, sans-serif; 
+}
+
+
+/* NUTCH --------------------------------------------------*/
+.menuTd {background-color: #F9F7F4; height: 25px; } /*#ECE5DC*/
+.menuTdhover {background-color: #ECE5DC; height: 25px; }
+.menuEntry { font: 12px Arial, Helvetica, sans-serif; color: #000000; text-decoration: none; }
+.body {background-color: #F9F7F4; }
+.bodytext { font: 12px Arial, Helvetica, sans-serif; color: #000000; text-decoration: none; }
+.title { font: 26px Arial, Helvetica, sans-serif; color: #FF9900; text-decoration: none; }
+.intro { font: 12px Arial, Helvetica, sans-serif; color: #FF9900; text-decoration: none; }
+.orangeTd { background-color: #FF9900; }
+ul { list-style-image: url(../images/reiter/ul.gif); }
+h4 { font: 14px Verdana, Arial, Helvetica, sans-serif; color: #000000; }
+.url { color: #996600; }
+
+
+
+/* these need to go away */
+.quote { line-height: 150%; margin-left: 25px; }
+.code { font-size: 90%; line-height: 110%; white-space: pre; padding: 5px; margin: 5px; background-color: #efefef; width: 550px; overflow: visible; font-family: Andale Mono, Courier New, Courier, monospace; }
+.pre { font-family: Andale Mono, Courier New, Courier, monospace; }
+.bold { font-weight: bold; }
+.italic { font-style: italic; }
+.fixed { font-size: 95%; font-family: Andale Mono, Courier New, Courier, monospace; }
+.ulist { font-family: Helvetica, Arial, sans-serif; }
+.ulist li { margin-left: -1em; list-style: none; line-height: 150%; }
+.olist { font-family: Verdana, Arial, Helvetica, sans-serif; line-height: 150%; }
+.olist li { line-height: 150%; }

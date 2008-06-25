@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="com.ibm.wsdl.PortTypeImpl" table="WSDL_PORTTYPE">
+
+    <cache usage="nonstrict-read-write" />
+    <id type="long">
+      <generator class="native" />
+    </id>
+
+    <property name="name" type="qname">
+      <column name="LOCALNAME_" />
+      <column name="NAMESPACE_" />
+    </property>
+
+    <list name="operations" cascade="all">
+      <cache usage="nonstrict-read-write" />
+      <key column="PORTTYPE_" foreign-key="FK_PORTTYPE_OPERATION" />
+      <list-index column="OPERATIONINDEX_" />
+      <one-to-many class="com.ibm.wsdl.OperationImpl" />
+    </list>
+
+  </class>
+
+</hibernate-mapping>

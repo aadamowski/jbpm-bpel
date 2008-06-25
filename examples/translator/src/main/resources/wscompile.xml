@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+  <wsdl location="src/main/resources/web/wsdl/translator.wsdl"
+    packageName="com.example.translator">
+    <namespaceMappingRegistry>
+      <namespaceMapping namespace="http://example.com/translator/types"
+        packageName="com.example.translator" />
+    </namespaceMappingRegistry>
+  </wsdl>
+</configuration>

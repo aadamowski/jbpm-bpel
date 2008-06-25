@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/account"
+  xmlns:tns="http://jbpm.org/examples/account" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <types>
+
+    <schema targetNamespace="http://jbpm.org/examples/account"
+      xmlns="http://www.w3.org/2001/XMLSchema">
+
+      <complexType name="AccountOperation">
+        <annotation>
+          <documentation>account data transfer type</documentation>
+        </annotation>
+        <sequence>
+          <element name="customerName" type="xsd:string" />
+          <element name="amount" type="xsd:double" />
+        </sequence>
+      </complexType>
+
+    </schema>
+
+  </types>
+
+  <message name="customerMessage">
+    <documentation>customer name wrapper</documentation>
+    <part name="customerName" type="xsd:string" />
+  </message>
+
+  <message name="accessMessage">
+    <documentation>access check response</documentation>
+    <part name="granted" type="xsd:boolean" />
+  </message>
+
+  <message name="balanceMessage">
+    <documentation>account balance wrapper</documentation>
+    <part name="balance" type="xsd:double" />
+  </message>
+
+  <message name="accountOperation">
+    <documentation>account operation request</documentation>
+    <part name="body" type="tns:AccountOperation" />
+  </message>
+
+  <portType name="AccountSystem">
+    <documentation>published account functions</documentation>
+
+    <operation name="checkAccess">
+      <documentation>tell whether a customer has an active account</documentation>
+      <input message="tns:customerMessage" />
+      <output message="tns:accessMessage" />
+    </operation>
+
+    <operation name="queryBalance">
+      <documentation>retrieve the balance of an account</documentation>
+      <input message="tns:customerMessage" />
+      <output message="tns:balanceMessage" />
+    </operation>
+
+    <operation name="updateBalance">
+      <documentation>increase/decrease the balance of an account</documentation>
+      <input message="tns:accountOperation" />
+      <output message="tns:balanceMessage" />
+    </operation>
+
+  </portType>
+
+</definitions>

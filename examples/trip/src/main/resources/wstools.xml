@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configuration xmlns="http://www.jboss.org/jbossws-tools">
+  <global>
+    <package-namespace package="org.jbpm.bpel.tutorial.trip"
+      namespace="http://jbpm.org/examples/trip" />
+  </global>
+  <wsdl-java file="wsdl/trip-service.wsdl">
+    <mapping file="trip-mapping.xml" />
+  </wsdl-java>
+</configuration>

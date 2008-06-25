@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <class name="org.jbpm.bpel.graph.exe.LinkInstance" table="BPEL_LINKINSTANCE">
+
+    <id name="id" column="ID_">
+      <generator class="native" />
+    </id>
+
+    <property name="status" column="STATUS_" />
+
+    <many-to-one name="definition" column="DEFINITION_" foreign-key="FK_LINKINST_LINKDEF" />
+    <many-to-one name="targetToken" column="TARGETTOKEN_" foreign-key="FK_LINKINST_TOKEN" />
+
+  </class>
+
+</hibernate-mapping>

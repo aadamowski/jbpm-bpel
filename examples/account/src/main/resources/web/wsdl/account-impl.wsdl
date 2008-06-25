@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://jbpm.org/examples/account"
+  xmlns:tns="http://jbpm.org/examples/account" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="http://jbpm.org/examples/account" location="account.wsdl" />
+
+  <binding name="AccountSystemBinding" type="tns:AccountSystem">
+
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <operation name="checkAccess">
+      <soap:operation soapAction="http://jbpm.org/examples/account#verifyAccess" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </output>
+    </operation>
+
+    <operation name="queryBalance">
+      <soap:operation soapAction="http://jbpm.org/examples/account#queryBalance" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </output>
+    </operation>
+
+    <operation name="updateBalance">
+      <soap:operation soapAction="http://jbpm.org/examples/account#updateBalance" />
+      <input>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://jbpm.org/examples/account" />
+      </output>
+    </operation>
+
+  </binding>
+
+  <service name="AccountService">
+
+    <port name="AccountSystemPort" binding="tns:AccountSystemBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URI" />
+    </port>
+
+  </service>
+
+</definitions>

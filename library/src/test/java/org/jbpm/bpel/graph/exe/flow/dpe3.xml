@@ -1,0 +1,41 @@
+<flow xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+  <links>
+    <link name="AtoB" />
+    <link name="AtoC" />
+  </links>
+
+  <receive name="A" partnerLink="aPartner" operation="o" createInstance="yes">
+    <sources>
+      <source linkName="AtoB">
+        <transitionCondition>false()</transitionCondition>
+      </source>
+      <source linkName="AtoC" />
+    </sources>
+  </receive>
+
+  <flow name="B">
+    <targets>
+      <target linkName="AtoB" />
+    </targets>
+    <links>
+      <link name="XtoY" />
+      <link name="YtoB" />
+    </links>
+    <receive name="X" partnerLink="aPartner" operation="o">
+      <sources>
+        <source linkName="XtoY" />
+      </sources>
+    </receive>
+    <receive name="Y" partnerLink="aPartner" operation="o">
+      <targets>
+        <target linkName="XtoY" />
+      </targets>
+    </receive>
+  </flow>
+
+  <receive name="C" partnerLink="aPartner" operation="o">
+    <targets>
+      <target linkName="AtoC" />
+    </targets>
+  </receive>
+</flow>

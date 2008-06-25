@@ -1,0 +1,10 @@
+<!--
+# This file specifies how jbpm will store variables into the database.
+#
+# POJO tests store no variable into the database.
+-->
+<jbpm-types>
+
+  <list name="jbpm.types" singleton="true" />
+  
+</jbpm-types>

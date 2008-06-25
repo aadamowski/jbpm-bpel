@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="LoanApproval" targetNamespace="http://jbpm.org/examples/loan"
+  xmlns:loan="http://jbpm.org/examples/loan" xmlns:task="http://jbpm.org/examples/task"
+  xmlns:bpel="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+  xmlns:jbpm="urn:jbpm.org:bpel-1.1"
+  xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/">
+
+  <partnerLinks>
+    <partnerLink name="borrower" partnerLinkType="loan:borrower-loaner" myRole="loaner" />
+    <partnerLink name="taskManager" partnerLinkType="loan:taskRequester-taskManager"
+      myRole="taskRequester" partnerRole="taskManager" />
+  </partnerLinks>
+
+  <variables>
+    <variable name="loanRequest" messageType="loan:loanRequest" />
+    <variable name="statusResponse" messageType="loan:statusResponse" />
+    <variable name="statusRequest" messageType="loan:statusRequest" />
+  </variables>
+
+  <correlationSets>
+    <correlationSet name="borrowerName" properties="loan:borrowerName" />
+  </correlationSets>
+
+  <sequence name="Main">
+
+    <receive name="AcceptLoanRequest" partnerLink="borrower" portType="loan:Loaner"
+      operation="requestLoan" variable="loanRequest" createInstance="yes">
+      <correlations>
+        <correlation initiate="yes" set="borrowerName" />
+      </correlations>
+    </receive>
+
+    <switch name="EvaluateAmount">
+
+      <case condition="bpel:getVariableData('loanRequest', 'amount') &lt; 1000">
+
+        <assign name="ApproveLoan">
+          <copy>
+            <from expression="'approved'" />
+            <to variable="statusResponse" part="status" />
+          </copy>
+        </assign>
+
+      </case>
+
+      <otherwise>
+
+        <scope name="EscalateToAgent">
+
+          <variables>
+            <variable name="taskCreationResponse" messageType="task:createTaskResponse" />
+            <variable name="taskCreationRequest" messageType="task:createTaskRequest" />
+            <variable name="taskEndedNotification" messageType="task:endTaskRequest" />
+          </variables>
+
+          <correlationSets>
+            <correlationSet name="evaluationTask" properties="loan:taskId" />
+          </correlationSets>
+
+          <sequence name="EscalateSeq">
+
+            <assign name="PrepareTaskCreation">
+              <copy>
+                <from expression="'evaluate loan'" />
+                <to variable="taskCreationRequest" part="taskInfo" query="/taskInfo/@name" />
+              </copy>
+              <copy>
+                <from expression="'agent'" />
+                <to variable="taskCreationRequest" part="taskInfo" query="/taskInfo/@actorId" />
+              </copy>
+              <copy>
+                <from expression="jbpm:getTokenId()" />
+                <to variable="taskCreationRequest" part="taskInfo" query="/taskInfo/@tokenId" />
+              </copy>
+              <copy>
+                <from partnerLink="taskManager" endpointReference="myRole" />
+                <to variable="taskCreationRequest" part="replyTo" />
+              </copy>
+            </assign>
+
+            <invoke name="CreateEvaluationTask" partnerLink="taskManager"
+              portType="task:TaskManager" operation="createTask" inputVariable="taskCreationRequest"
+              outputVariable="taskCreationResponse">
+              <correlations>
+                <correlation initiate="yes" pattern="in" set="evaluationTask" />
+              </correlations>
+            </invoke>
+
+            <assign name="SetEvaluating">
+              <copy>
+                <from expression="'evaluating'" />
+                <to variable="statusResponse" part="status" />
+              </copy>
+            </assign>
+
+            <while name="EvaluationLoop"
+              condition="bpel:getVariableData('statusResponse', 'status') = 'evaluating'">
+
+              <pick name="EvaluationMenu">
+
+                <onMessage partnerLink="taskManager" portType="task:TaskCallback"
+                  operation="taskEnded" variable="taskEndedNotification">
+
+                  <correlations>
+                    <correlation set="evaluationTask" />
+                  </correlations>
+
+                  <assign name="ReadEvaluationResult">
+                    <copy>
+                      <from variable="taskEndedNotification" part="taskInfo"
+                        query="/taskInfo/loanStatus" />
+                      <to part="status" variable="statusResponse" />
+                    </copy>
+                  </assign>
+
+                </onMessage>
+
+                <onMessage partnerLink="borrower" portType="loan:Loaner" operation="getLoanStatus"
+                  variable="statusRequest">
+
+                  <correlations>
+                    <correlation set="borrowerName" />
+                  </correlations>
+
+                  <reply name="NotifyEvaluating" partnerLink="borrower" portType="loan:Loaner"
+                    operation="getLoanStatus" variable="statusResponse" />
+
+                </onMessage>
+
+              </pick>
+
+            </while>
+
+          </sequence>
+
+        </scope>
+
+      </otherwise>
+
+    </switch>
+
+    <receive name="AcceptStatusRequest" partnerLink="borrower" portType="loan:Loaner"
+      operation="getLoanStatus" variable="statusRequest">
+      <correlations>
+        <correlation set="borrowerName" />
+      </correlations>
+    </receive>
+
+    <reply name="SendStatus" partnerLink="borrower" portType="loan:Loaner" operation="getLoanStatus"
+      variable="statusResponse" />
+
+  </sequence>
+
+</process>

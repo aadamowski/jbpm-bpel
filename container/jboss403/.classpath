@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/bpel"/>
+	<classpathentry kind="var" path="JBPM_REPO/jboss-ws4ee/4.0.3.SP1/lib/axis-ws4ee.jar"/>
+	<classpathentry kind="var" path="JBPM_REPO/jboss-ws4ee/4.0.3.SP1/lib/jboss-ws4ee.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

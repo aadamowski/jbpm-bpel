@@ -1,0 +1,5 @@
+<parsers>
+  <parser class="org.jbpm.bpel.par.DescriptorArchiveParser" />
+  <parser class="org.jbpm.bpel.par.BpelArchiveParser" />
+  <parser class="org.jbpm.jpdl.par.FileArchiveParser" />
+</parsers>

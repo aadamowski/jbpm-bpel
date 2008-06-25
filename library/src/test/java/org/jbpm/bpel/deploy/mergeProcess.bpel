@@ -1,0 +1,44 @@
+<process name="mergeProcess" targetNamespace="http://acme.com/ws-bp/purchase"
+  xmlns:def="http://manufacturing.org/wsdl/purchase"
+  xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+  <import namespace='http://manufacturing.org/wsdl/purchase' location='partnerLinkTypeSample.wsdl'
+    importType="http://schemas.xmlsoap.org/wsdl/" />
+  <partnerLinks>
+    <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT"
+      partnerRole="schedulingRequester" myRole="schedulingService" />
+  </partnerLinks>
+  <variables>
+    <variable name='schedule' messageType='def:scheduleMessage' />
+  </variables>
+  <sequence>
+    <receive partnerLink="schedulingPL" portType="def:schedulingPT" operation="sendShippingSchedule"
+      variable='schedule' />
+    <scope name="s1">
+      <partnerLinks>
+        <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT"
+          partnerRole="schedulingRequester" myRole="schedulingService" />
+      </partnerLinks>
+      <scope name="s1.1">
+        <partnerLinks>
+          <partnerLink name="schedulingPL" partnerLinkType="def:schedulingLT"
+            partnerRole="schedulingRequester" myRole="schedulingService" />
+        </partnerLinks>
+        <scope name="s1.1.1">
+          <empty />
+        </scope>
+      </scope>
+    </scope>
+    <scope>
+      <empty />
+    </scope>
+    <scope name="conflictingName">
+      <empty />
+    </scope>
+    <sequence>
+      <empty />
+      <scope name="conflictingName">
+        <empty />
+      </scope>
+    </sequence>
+  </sequence>
+</process>

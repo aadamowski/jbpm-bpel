@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field" auto-import="false">
+
+  <subclass name="org.jbpm.bpel.integration.def.InvokeAction"
+    extends="org.jbpm.bpel.integration.def.MessageAction" discriminator-value="K">
+
+    <many-to-one name="inputVariable" column="VARIABLEDEFINITION_"
+      foreign-key="FK_INVOKER_VARIABLEDEF" />
+    <many-to-one name="outputVariable" column="OUTPUTVARIABLEDEFINITION_"
+      foreign-key="FK_INVOKER_OUTPUTVARDEF" />
+    <many-to-one name="requestCorrelations" column="CORRELATIONS_" cascade="all"
+      foreign-key="FK_INVOKER_CORRELATIONS" />
+    <many-to-one name="responseCorrelations" column="RESPONSECORRELATIONS_" cascade="all"
+      foreign-key="FK_INVOKER_RSPCORRELATIONS" />
+
+  </subclass>
+
+</hibernate-mapping>

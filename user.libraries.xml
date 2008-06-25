@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE eclipse-userlibraries [
+<!ENTITY software.installation.dir "c:/dev">
+<!ENTITY jboss.home.4.0.3 "&software.installation.dir;/jboss-4.0.3.SP1">
+<!ENTITY jboss.home.4.0.4 "&software.installation.dir;/jboss-4.0.4.GA">
+<!ENTITY jboss.home.4.0.5 "&software.installation.dir;/jboss-4.0.5.GA">
+<!ENTITY jboss.home.4.2.0 "&software.installation.dir;/jboss-4.2.0.GA">
+<!ENTITY jboss.home.4.2.2 "&software.installation.dir;/jboss-4.2.2.GA">
+]>
+<eclipse-userlibraries version="2">
+  <library name="JBoss 4.0.3" systemlibrary="false">
+    <archive path="&jboss.home.4.0.3;/client/jnp-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/activation.jar" />
+    <archive path="&jboss.home.4.0.3;/client/axis-ws4ee.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jboss-ws4ee-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/concurrent.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jboss-common-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jbossmq-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jboss-remoting.jar" />
+    <archive path="&jboss.home.4.0.3;/client/commons-discovery.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jbosssx-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jmx-invoker-adaptor-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jmx-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jboss-client.jar" />
+    <archive path="&jboss.home.4.0.3;/client/jboss-transaction-client.jar" />
+  </library>
+  <library name="JBoss 4.0.4" systemlibrary="false">
+    <archive path="&jboss.home.4.0.4;/client/mail.jar" />
+    <archive path="&jboss.home.4.0.4;/client/activation.jar" />
+    <archive path="&jboss.home.4.0.4;/client/concurrent.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-backport-concurrent.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-common-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jbossmq-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-remoting.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jbossretro-rt.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jbossws14-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-xml-binding.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jnp-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jmx-invoker-adaptor-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jmx-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-serialization.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jbosssx-client.jar" />
+    <archive path="&jboss.home.4.0.4;/client/jboss-transaction-client.jar" />
+  </library>
+  <library name="JBoss 4.0.5" systemlibrary="false">
+    <archive path="&jboss.home.4.0.5;/client/jmx-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jmx-invoker-adaptor-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jnp-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/mail.jar" />
+    <archive path="&jboss.home.4.0.5;/client/activation.jar" />
+    <archive path="&jboss.home.4.0.5;/client/concurrent.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-backport-concurrent.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-common-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jbossmq-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-remoting.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jbossretro-rt.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-serialization.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jbosssx-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-transaction-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jbossws14-client.jar" />
+    <archive path="&jboss.home.4.0.5;/client/jboss-xml-binding.jar" />
+  </library>
+  <library name="JBoss 4.2.0" systemlibrary="false">
+    <archive path="&jboss.home.4.2.0;/client/jboss-jaxws.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-saaj.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jbossmq-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-remoting.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-serialization.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jbosssx-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-transaction-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jbossws-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-xml-binding.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jmx-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jmx-invoker-adaptor-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jnp-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/mail.jar" />
+    <archive path="&jboss.home.4.2.0;/client/activation.jar" />
+    <archive path="&jboss.home.4.2.0;/client/concurrent.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-client.jar" />
+    <archive path="&jboss.home.4.2.0;/client/jboss-common-client.jar" />
+  </library>
+  <library name="JBoss 4.2.2" systemlibrary="false">
+    <archive path="&jboss.home.4.2.2;/client/jboss-jaxws.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-saaj.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jbossmq-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-remoting.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-serialization.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jbosssx-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-transaction-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jbossws-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jbossws-common.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-xml-binding.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jmx-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jmx-invoker-adaptor-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jnp-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/mail.jar" />
+    <archive path="&jboss.home.4.2.2;/client/activation.jar" />
+    <archive path="&jboss.home.4.2.2;/client/concurrent.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-client.jar" />
+    <archive path="&jboss.home.4.2.2;/client/jboss-common-client.jar" />
+  </library>
+</eclipse-userlibraries>

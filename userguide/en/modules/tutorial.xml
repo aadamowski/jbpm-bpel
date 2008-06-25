@@ -1,0 +1,128 @@
+<chapter id="tutorial">
+
+  <title>Tutorial</title>
+
+  <para>The best way to get acquainted with BPEL is to see it in action. For this reason,
+    we included some examples that will help you get started quickly. At
+    this point, you should have the jBPM BPEL enterprise application running inside JBoss.
+    If you do not, please read the <link linkend="getstarted" endterm="getstarted.title"/>
+    chapter first. This chapter will guide you through the example setup procedure. The
+    subsequent chapters contain the actual examples.</para>
+    
+  <section id="tutorial.setup.jwsdp">
+
+    <title>Getting the Java Web Services Development Pack</title>
+    
+    <para>jBPM BPEL relies on the Web Services for J2EE (WSEE) model for exposing a BPEL
+      process as a web service. As of jBPM BPEL 1.1.GA, <emphasis>all</emphasis> 
+      server artifacts required for a WSEE deployment can be automatically generated 
+      from the BPEL process and its related WSDL definitions.</para>
+      
+    <para>The automatic generation process involves an external WSDL-to-Java mapping 
+      generator. Unfortunately, such a tool is not standardized in WSEE. jBPM BPEL
+      comes with support for the following tools. Support for other tools may become
+      available in the future if the community has interest in them.</para>
+      
+    <itemizedlist>
+    
+      <listitem>
+      
+        <para>JBoss AS 4.0.4 and later versions ship with a mapping generator by the name
+          of <literal>wstools</literal>. If you are deploying there, no further action
+          is required.</para>
+        
+        <para>Be aware that <literal>wstools</literal> has a number of known limitations.
+          If you encounter a problem while generating artifacts from your valid WSDL and
+          XML Schema documents, try using <literal>wscompile</literal> (see below).</para>
+          
+      </listitem>
+      
+      <listitem><para>Sun provides a mapping generator called <literal>wscompile</literal> 
+        as part of its Java Web Services Development Pack (JWSDP). Please refer to the <ulink 
+        url="http://tinyurl.com/2ten9o">JWSDP</ulink> site for installation instructions.</para>
+        </listitem>
+    
+    </itemizedlist>
+  
+  </section>
+
+  <section id="tutorial.setup.eclipse">
+  
+    <title>Getting the Eclipse BPEL designer</title>
+    
+    <para>The Eclipse community has begun a <ulink url="http://www.eclipse.org/bpel/">BPEL
+      project</ulink>. The goal of this project is "to add comprehensive support to 
+      Eclipse for the definition, authoring, editing, deploying, testing and debugging of 
+      WS-BPEL 2.0 processes".</para>
+      
+    <para>The JBoss jBPM team has been in touch with the committers of this project. Expect
+      tighter integration between the Eclipse Designer and jBPM BPEL shortly after key pieces
+      of functionality such as Runtime Framework and Debug become available.</para>
+      
+    <para>No need to wait, tough. You can get started with the Eclipse BPEL designer
+      and jBPM BPEL <emphasis role="bold">today</emphasis>! The provided examples have been
+      ported to BPEL 2 using version 0.3.0 of the designer. You can load them, experiment a
+      bit and then create your own processes. When you are ready to deploy, an Ant task and
+      the deployment page in the web console are at your disposal.</para>
+  
+  </section>
+
+  <section id="tutorial.setup.environment">
+  
+    <title>Defining the environment</title>
+    
+    <para>The resources related to each sample process reside in a separate directory 
+       under <literal>examples</literal>. Each directory contains an Ant script to assist
+       in carrying out process deployment tasks. Note that the individual scripts import 
+       generic build files located in the <literal>common</literal> directory. If you 
+       organize your resources in the same way as the examples, you can take advantage of
+       the templates in your own project.</para>
+      
+    <para>The generic build file needs to be aware of your particular environment. Back in the 
+      <link linkend="getstarted.setup.pack" endterm="getstarted.setup.pack.title" />
+      section, you specified the directory where you installed JBoss AS in the <literal>
+      build.properties</literal> file, located in the <literal>config</literal> directory.
+      If you chose to use the <literal>wscompile</literal> tool, edit <literal>build.properties
+      </literal> again to set the JWSDP install location.</para>
+    
+    <programlisting><![CDATA[# jwsdp.home is used for generating web service artifacts
+# wscompile is an alternative to wstools provided by jboss 4.0.4 and later
+jwsdp.home=${software.installation.dir}/jwsdp-1.6]]></programlisting>
+  
+  </section>
+
+  <section id="tutorial.setup.dbschema">
+  
+    <title>Creating the database schema</title>
+    
+    <para>Before you deploy process definitions, the jBPM schema must already exist
+      in the database. The build file from the <literal>examples</literal> directory provides a
+      target just for this purpose.</para>
+      
+    <synopsis>ant create.schema</synopsis>
+    
+    <para>The target above does not actually access the database. It merely contacts a servlet
+      deployed as part of the jBPM BPEL enterprise application. That servlet is the actual agent
+      in charge of executing the DDL statements.</para>
+      
+    <para>Hibernate emits a few log messages to the server console as it progresses. The next
+      screen corresponds to a successful creation.</para>
+          
+    <screen><![CDATA[19:18:38,890 INFO  [SchemaExport] Running hbm2ddl schema export
+19:18:38,890 INFO  [SchemaExport] exporting generated schema to database
+19:18:38,890 INFO  [DatasourceConnectionProvider] Using datasource: java:/DefaultDS
+19:18:39,046 INFO  [SchemaExport] schema export complete
+19:18:39,062 INFO  [[/jbpm-bpel]] administrationServlet: created schema]]></screen>
+      
+    <para>Alternatively, the database connection page in the web console offers the option
+      to create the schema as well.</para>
+      
+    <figure id="tutorial.database">
+      <title>Database connection page</title>
+      <mediaobject><imageobject><imagedata align="center" fileref="images/database.png"
+        width="6.27in" depth="4.92in" scalefit="0" /></imageobject></mediaobject>
+    </figure>  
+
+  </section>
+
+</chapter>

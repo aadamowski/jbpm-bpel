@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="urn:samples:atm" xmlns:tns="urn:samples:atm"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <import namespace="urn:samples:atm" location="interface/rpc.wsdl" />
+
+  <binding name="atmBinding" type="tns:atm">
+
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <operation name="logon">
+      <soap:operation soapAction="urn:samples:atm#logon" />
+      <input>
+        <soap:body use="literal" namespace="urn:samples:atm" />
+      </input>
+    </operation>
+
+    <operation name="deposit">
+      <soap:operation soapAction="urn:samples:atm#deposit" />
+      <input>
+        <soap:body use="literal" namespace="urn:samples:atm" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:atm" />
+      </output>
+    </operation>
+
+    <operation name="withdraw">
+      <soap:operation soapAction="urn:samples:atm#withdraw" />
+      <input>
+        <soap:body use="literal" namespace="urn:samples:atm" />
+      </input>
+      <output>
+        <soap:body use="literal" namespace="urn:samples:atm" />
+      </output>
+      <fault name="notEnoughFunds">
+        <soap:fault name="notEnoughFunds" use="literal" />
+      </fault>
+    </operation>
+
+  </binding>
+
+</definitions>

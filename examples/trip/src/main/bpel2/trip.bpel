@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpws:process exitOnStandardFault="yes" name="TripReservation"
+    targetNamespace="http://jbpm.org/examples/trip"
+    xmlns:bpws="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:tic="http://jbpm.org/examples/ticket"
+    xmlns:tns="http://jbpm.org/examples/trip"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <bpws:import importType="http://schemas.xmlsoap.org/wsdl/"
+        location="trip.wsdl" namespace="http://jbpm.org/examples/trip"/>
+    <bpws:import importType="http://schemas.xmlsoap.org/wsdl/"
+        location="ticket.wsdl" namespace="http://jbpm.org/examples/ticket"/>
+    <bpws:partnerLinks>
+        <bpws:partnerLink myRole="Agent" name="traveler" partnerLinkType="tns:Traveler-Agent"/>
+        <bpws:partnerLink name="ticket"
+            partnerLinkType="tns:Agent-Ticket" partnerRole="TicketIssuer"/>
+    </bpws:partnerLinks>
+    <bpws:variables>
+        <bpws:variable messageType="tns:purchaseRequest" name="purchaseRequest"/>
+        <bpws:variable name="cost" type="xsd:double"/>
+        <bpws:variable name="items" type="tns:ItemSet"/>
+        <bpws:variable name="dateReached" type="xsd:boolean"/>
+        <bpws:variable messageType="tns:detailRequest" name="detailRequest"/>
+        <bpws:variable messageType="tns:detailResponse" name="detailResponse"/>
+        <bpws:variable messageType="tns:cancelRequest" name="cancelRequest"/>
+        <bpws:variable messageType="tns:cancelResponse" name="cancelResponse"/>
+    </bpws:variables>
+    <bpws:correlationSets>
+        <bpws:correlationSet name="trip" properties="tns:tripLocator"/>
+    </bpws:correlationSets>
+    <bpws:faultHandlers>
+        <bpws:catch faultName="tns:cancelation">
+            <bpws:sequence name="Cancel">
+                <bpws:compensateScope name="UndoPurchase" target="TripPurchase" />
+                <bpws:assign name="PreparePenalty" validate="no">
+                    <bpws:copy>
+                        <bpws:from variable="cost"/>
+                        <bpws:to part="penalty" variable="cancelResponse">
+                            <bpws:query><![CDATA[@fee]]></bpws:query>
+                        </bpws:to>
+                    </bpws:copy>
+                </bpws:assign>
+                <bpws:reply name="SendPenalty" operation="cancelTrip"
+                    partnerLink="traveler" portType="tns:TravelAgent" variable="cancelResponse"/>
+            </bpws:sequence>
+        </bpws:catch>
+    </bpws:faultHandlers>
+    <bpws:sequence name="Main">
+        <bpws:scope name="TripPurchase">
+            <bpws:variables>
+                <bpws:variable messageType="tic:ticketRequest" name="ticketRequest"/>
+                <bpws:variable messageType="tic:ticketMessage" name="ticketMessage"/>
+                <bpws:variable messageType="tns:purchaseResponse" name="purchaseResponse"/>
+            </bpws:variables>
+            <bpws:sequence name="PurchaseTrip">
+                <bpws:receive createInstance="yes"
+                    name="ReceiveTripOrder" operation="purchaseTrip"
+                    partnerLink="traveler" portType="tns:TravelAgent" variable="purchaseRequest"/>
+                <bpws:flow>
+                    <bpws:invoke inputVariable="ticketRequest"
+                        name="CreateTicket" operation="createTicket"
+                        outputVariable="ticketMessage"
+                        partnerLink="ticket" portType="tic:TicketIssuer">
+                        <bpws:correlations>
+                            <bpws:correlation initiate="yes"
+                                pattern="in" set="trip"/>
+                        </bpws:correlations>
+                    </bpws:invoke>
+                    <bpws:sequence name="EvaluateCost">
+                        <bpws:assign name="InitializeCost" validate="no">
+                            <bpws:copy>
+                                <bpws:from><![CDATA[0]]></bpws:from>
+                                <bpws:to variable="cost"/>
+                            </bpws:copy>
+                            <bpws:copy>
+                                <bpws:from part="order" variable="purchaseRequest">
+                                    <bpws:query><![CDATA[items]]></bpws:query>
+                                </bpws:from>
+                                <bpws:to variable="items"/>
+                            </bpws:copy>
+                        </bpws:assign>
+                        <bpws:if name="FlightDecision">
+                            <bpws:condition><![CDATA[$items/flight and string($items/flight/@xsi:nil) != '1']]></bpws:condition>
+                            <bpws:scope name="FlightReservation">
+                                <bpws:compensationHandler>
+                                    <bpws:assign name="ReimburseFlight" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost - 300 + 100]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                    </bpws:assign>
+                                </bpws:compensationHandler>
+                                <bpws:assign name="ChargeFlight" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost + 300]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                </bpws:assign>
+                            </bpws:scope>
+                        </bpws:if>
+                        <bpws:if name="HotelDecision">
+                            <bpws:condition><![CDATA[$items/hotel and string($items/hotel/@xsi:nil) != '1']]></bpws:condition>
+                            <bpws:scope name="HotelReservation">
+                                <bpws:compensationHandler>
+                                    <bpws:assign name="ReimburseHotel" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost - 100 + 25]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                    </bpws:assign>
+                                </bpws:compensationHandler>
+                                <bpws:assign name="ChargeHotel" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost + 100]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                </bpws:assign>
+                            </bpws:scope>
+                        </bpws:if>
+                        <bpws:if name="CarDecision">
+                            <bpws:condition><![CDATA[$items/rentalCar and string($items/rentalCar/@xsi:nil) != '1']]></bpws:condition>
+                            <bpws:scope name="CarReservation">
+                                <bpws:compensationHandler>
+                                    <bpws:assign name="reimburseCar" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost - 50 + 5]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                    </bpws:assign>
+                                </bpws:compensationHandler>
+                                <bpws:assign name="ChargeCar" validate="no">
+                                    <bpws:copy>
+                                    <bpws:from><![CDATA[$cost + 50]]></bpws:from>
+                                    <bpws:to variable="cost"/>
+                                    </bpws:copy>
+                                </bpws:assign>
+                            </bpws:scope>
+                        </bpws:if>
+                    </bpws:sequence>
+                </bpws:flow>
+                <bpws:assign name="PrepareInvoice" validate="no">
+                    <bpws:copy>
+                        <bpws:from part="ticketNo" variable="ticketMessage"/>
+                        <bpws:to part="invoice" variable="purchaseResponse">
+                            <bpws:query><![CDATA[@locator]]></bpws:query>
+                        </bpws:to>
+                    </bpws:copy>
+                    <bpws:copy>
+                        <bpws:from variable="cost"/>
+                        <bpws:to part="invoice" variable="purchaseResponse">
+                            <bpws:query><![CDATA[@cost]]></bpws:query>
+                        </bpws:to>
+                    </bpws:copy>
+                </bpws:assign>
+                <bpws:reply name="SendInvoice" operation="purchaseTrip"
+                    partnerLink="traveler" portType="tns:TravelAgent" variable="purchaseResponse">
+                    <bpws:correlations>
+                        <bpws:correlation initiate="no" set="trip"/>
+                    </bpws:correlations>
+                </bpws:reply>
+            </bpws:sequence>
+        </bpws:scope>
+        <bpws:assign name="SetDateNotReached" validate="no">
+            <bpws:copy>
+                <bpws:from><![CDATA[false()]]></bpws:from>
+                <bpws:to variable="dateReached"/>
+            </bpws:copy>
+        </bpws:assign>
+        <bpws:while name="PredateLoop">
+            <bpws:condition><![CDATA[$dateReached = 'false']]></bpws:condition>
+            <bpws:pick name="PredateMenu">
+                <bpws:onMessage operation="getTripDetail"
+                    partnerLink="traveler" portType="tns:TravelAgent" variable="detailRequest">
+                    <bpws:correlations>
+                        <bpws:correlation initiate="no" set="trip"/>
+                    </bpws:correlations>
+                    <bpws:sequence name="GetTripDetail">
+                        <bpws:assign name="PrepareTripDetail" validate="no">
+                            <bpws:copy>
+                                <bpws:from part="order" variable="purchaseRequest">
+                                    <bpws:query><![CDATA[items]]></bpws:query>
+                                </bpws:from>
+                                <bpws:to part="detail" variable="detailResponse">
+                                    <bpws:query><![CDATA[items]]></bpws:query>
+                                </bpws:to>
+                            </bpws:copy>
+                            <bpws:copy>
+                                <bpws:from variable="cost"/>
+                                <bpws:to part="detail" variable="detailResponse">
+                                    <bpws:query><![CDATA[@cost]]></bpws:query>
+                                </bpws:to>
+                            </bpws:copy>
+                        </bpws:assign>
+                        <bpws:reply name="SendTripDetail"
+                            operation="getTripDetail"
+                            partnerLink="traveler"
+                            portType="tns:TravelAgent" variable="detailResponse"/>
+                    </bpws:sequence>
+                </bpws:onMessage>
+                <bpws:onMessage operation="cancelTrip"
+                    partnerLink="traveler" portType="tns:TravelAgent" variable="cancelRequest">
+                    <bpws:correlations>
+                        <bpws:correlation initiate="no" set="trip"/>
+                    </bpws:correlations>
+                    <bpws:throw faultName="tns:cancelation" name="CancelTrip"/>
+                </bpws:onMessage>
+                <bpws:onAlarm>
+                    <bpws:until><![CDATA[$purchaseRequest.order/date]]></bpws:until>
+                    <bpws:assign name="SetDateReached" validate="no">
+                        <bpws:copy>
+                            <bpws:from><![CDATA[true()]]></bpws:from>
+                            <bpws:to variable="dateReached"/>
+                        </bpws:copy>
+                    </bpws:assign>
+                </bpws:onAlarm>
+            </bpws:pick>
+        </bpws:while>
+    </bpws:sequence>
+</bpws:process>

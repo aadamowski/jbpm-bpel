@@ -14,11 +14,12 @@
  */
 package org.jbpm.bpel.sublang.xpath;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.jaxen.NamespaceContext;
-
 import org.jbpm.bpel.graph.def.Namespace;
 
 /**
@@ -28,18 +29,19 @@ import org.jbpm.bpel.graph.def.Namespace;
 class SetNamespaceContext implements NamespaceContext {
 
   private final Set namespaces;
+  private final Map prefixToUriMap;
 
   public SetNamespaceContext(Set namespaces) {
     this.namespaces = namespaces;
-  }
-
-  public String translateNamespacePrefixToUri(String prefix) {
+    prefixToUriMap = new HashMap();
     Iterator namespaceIt = namespaces.iterator();
     while (namespaceIt.hasNext()) {
       Namespace namespace = (Namespace) namespaceIt.next();
-      if (prefix.equals(namespace.getPrefix()))
-        return namespace.getURI();
+      prefixToUriMap.put(namespace.getPrefix(), namespace.getURI());
     }
-    return null;
+  }
+
+  public String translateNamespacePrefixToUri(String prefix) {
+        return (String) prefixToUriMap.get(prefix);
   }
 }

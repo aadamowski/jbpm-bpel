@@ -14,8 +14,13 @@
  */
 package org.jbpm.bpel.graph.def;
 
-import org.jbpm.bpel.graph.scope.Scope;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jbpm.bpel.graph.scope.Handler;
+import org.jbpm.bpel.graph.scope.Scope;
 import org.jbpm.bpel.graph.struct.StructuredActivity;
 import org.jbpm.bpel.integration.def.CorrelationSetDefinition;
 import org.jbpm.bpel.integration.def.PartnerLinkDefinition;
@@ -36,6 +41,8 @@ import org.jbpm.graph.def.ProcessDefinition;
  * @version $Revision$ $Date: 2008/02/01 05:43:08 $
  */
 public abstract class CompositeActivity extends Activity implements NodeCollection {
+  private static final Log log = LogFactory.getLog(CompositeActivity.class);
+  private Map<String, VariableDefinition> variableDefinitionCache = null;
 
   protected CompositeActivity() {
   }
@@ -52,8 +59,21 @@ public abstract class CompositeActivity extends Activity implements NodeCollecti
   // //////////////////////////////////////////////////////////////////////
 
   public VariableDefinition findVariable(String name) {
+    if (variableDefinitionCache != null && variableDefinitionCache.containsKey(name)) {
+      // log.debug("Returning cached definition of variable [" + name + "]");
+      return variableDefinitionCache.get(name);
+    }
     CompositeActivity parent = getCompositeActivity();
-    return parent != null ? parent.findVariable(name) : null;
+    VariableDefinition variableDefinition = parent != null ? parent.findVariable(name) : null;
+    if (variableDefinition != null) {
+      // Create lazily:
+      if (variableDefinitionCache == null) {
+        variableDefinitionCache = new ConcurrentHashMap<String, VariableDefinition>();
+      }
+      log.debug("Caching variable definition [" + name + "]");
+      variableDefinitionCache.put(name, variableDefinition);
+    }
+    return variableDefinition;
   }
 
   public CorrelationSetDefinition findCorrelationSet(String name) {

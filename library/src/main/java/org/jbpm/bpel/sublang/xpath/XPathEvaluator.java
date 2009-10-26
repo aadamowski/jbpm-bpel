@@ -104,12 +104,17 @@ abstract class XPathEvaluator extends BaseXPath {
 
   private static Node createNode(Step step, Context context) {
     List nodeset = context.getNodeSet();
-    if (nodeset.size() != 1) {
+    /*
+     * Using narrowToSingleNode() to get the single node is more efficient than calling
+     * nodeset.size().
+     */
+    Node contextNode;
+    try {
+      contextNode = narrowToSingleNode(nodeset);
+    } catch (BpelFaultException e) {
       log.error("cannot create node for context node set of size other than one: " + nodeset);
       throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
     }
-
-    Object contextNode = nodeset.get(0);
     if (!(contextNode instanceof Element)) {
       log.error("cannot create node for non-element context node: " + contextNode);
       throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
@@ -196,11 +201,27 @@ abstract class XPathEvaluator extends BaseXPath {
           log.error("cannot create element for step with non-numeric predicate: " + step);
           throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
         }
+        
+        /*
+         * The nodeset may be a lazy list, so calling contextNodes.size() here would be inefficient.
+         * contextNodes.get(position) only fetches nodes as necessary.
+         */
+        int resultIntValue = ((Number) result).intValue();
 
-        if (((Number) result).intValue() != contextNodes.size() + 1) {
-          log.error("cannot create element for step with numeric predicate "
-              + "beyond the next position: "
-              + step);
+        boolean wrongNodesetSize = true;
+        try {
+          // Check that the list isn't too short:
+          contextNodes.get(resultIntValue - 2);
+          wrongNodesetSize = false;
+          // Check that the list isn't too long:
+          contextNodes.get(resultIntValue - 1);
+          // An exception should be thrown and we shouldn't get here:
+          wrongNodesetSize = true;
+        } catch (IndexOutOfBoundsException ex) {
+        }
+        if (wrongNodesetSize) {
+          log.error("cannot create element for step with numeric predicate " + resultIntValue
+              + " beyond the next position: " + step);
           throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
         }
       }
@@ -253,16 +274,25 @@ abstract class XPathEvaluator extends BaseXPath {
 
   protected static Node narrowToSingleNode(List nodeset) {
     log.debug("narrowing to single node: " + nodeset);
-    if (nodeset == null || nodeset.size() != 1) {
-      log.error("selection of size other than one: " + nodeset);
+    /*
+     * Avoid calling List.size(): using iterators takes advantage of Jaxen's List laziness, while
+     * calling size() breaks it.
+     */
+    if (nodeset == null || nodeset.isEmpty()) {
+      log.error("selection of size less than one: " + nodeset);
       throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
     }
-    Object singleResult = nodeset.get(0);
-    if (!(singleResult instanceof Node)) {
-      log.error("selection is not a node: " + singleResult);
+    Iterator iterator = nodeset.iterator();
+    // There must be a first element since we already know that nodeSet isn't empty:
+    Object firstNode = iterator.next();
+    if (iterator.hasNext()) {
+      // There is more than one element
+      log.error("selection of size greater than one: " + nodeset);
       throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
+    } else {
+      // No more elements found, only one:
+      return (Node) firstNode;
     }
-    return (Node) singleResult;
   }
 
   protected static FunctionContext readFunctionLibrary(String configName) {

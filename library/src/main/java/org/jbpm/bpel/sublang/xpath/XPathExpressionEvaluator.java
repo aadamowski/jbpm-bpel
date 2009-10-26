@@ -78,19 +78,24 @@ class XPathExpressionEvaluator extends XPathEvaluator implements ExpressionEvalu
   public Object evaluate(Token contextToken) {
     try {
       List nodeSet = selectNodes(contextToken);
-      if (nodeSet != null) {
-        switch (nodeSet.size()) {
-        case 0:
-          break;
-        case 1:
-          return nodeSet.get(0);
-        default:
-          return nodeSet;
-        }
+      /*
+       * Avoid calling List.size(): using iterators takes advantage of Jaxen's List laziness, while
+       * calling size() breaks it.
+       */
+      if (nodeSet == null || nodeSet.isEmpty()) {
+        return null;
       }
-      return null;
-    }
-    catch (JaxenException e) {
+      Iterator iterator = nodeSet.iterator();
+      // There must be a first element since we already know that nodeSet isn't empty:
+      Object firstElement = iterator.next();
+      if (iterator.hasNext()) {
+        // There is more than one element
+        return nodeSet;
+      } else {
+        // No more elements found, only one:
+        return firstElement;
+      }
+    } catch (JaxenException e) {
       log.error("expression evaluation failed", e);
       throw new BpelFaultException(BpelConstants.FAULT_SUB_LANGUAGE_EXECUTION);
     }

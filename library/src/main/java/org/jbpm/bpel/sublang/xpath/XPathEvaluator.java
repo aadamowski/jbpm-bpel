@@ -207,21 +207,32 @@ abstract class XPathEvaluator extends BaseXPath {
          * contextNodes.get(position) only fetches nodes as necessary.
          */
         int resultIntValue = ((Number) result).intValue();
+        int indexOfSuccessfulGet = -1;
 
         boolean wrongNodesetSize = true;
         try {
-          // Check that the list isn't too short:
-          contextNodes.get(resultIntValue - 2);
+          int indexToGet;
+          // resultIntValue == 1 is a corner case: we don't want to check whether the list isn't too
+          // short - it MUST be empty; So we will only check whether it isn't too long.
+          if (resultIntValue != 1) {
+            // Check that the list isn't too short:
+            indexToGet = resultIntValue - 2;
+            contextNodes.get(indexToGet);
+            indexOfSuccessfulGet = indexToGet;
+          }
           wrongNodesetSize = false;
           // Check that the list isn't too long:
-          contextNodes.get(resultIntValue - 1);
+          indexToGet = resultIntValue - 1;
+          contextNodes.get(indexToGet);
           // An exception should be thrown and we shouldn't get here:
+          indexOfSuccessfulGet = indexToGet;
           wrongNodesetSize = true;
         } catch (IndexOutOfBoundsException ex) {
         }
         if (wrongNodesetSize) {
-          log.error("cannot create element for step with numeric predicate " + resultIntValue
-              + " beyond the next position: " + step);
+          log.error("cannot create element for step with numeric predicate [" + resultIntValue
+              + "] beyond the next position: [" + step + "], index of last successful get: ["
+              + indexOfSuccessfulGet + "].");
           throw new BpelFaultException(BpelConstants.FAULT_SELECTION_FAILURE);
         }
       }
